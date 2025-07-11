@@ -77,7 +77,7 @@ export default function AboutToursSection() {
   }, []); // The empty dependency array ensures this effect runs only once after the initial render
 
   return (
-    <section id="about" className="py-20 bg-black">
+    <section id="about" className="py-20 bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-3 gap-12">
           {/* About Section - 2/3 width (This section remains unchanged from your original code) */}

@@ -11,7 +11,7 @@ import { Calendar, Clock, Mail, Music, DollarSign } from "lucide-react"
 
 export default function BookingSection() {
   return (
-    <section id="book" className="py-20 bg-black">
+    <section id="book" className="py-20 bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
@@ -118,7 +118,7 @@ export default function BookingSection() {
                         <Input
                           id="prod-name"
                           placeholder="Your name"
-                          className="bg-black border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500"
+                          className="bg-[#0a0a0a] border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500"
                           style={{ borderRadius: "0px" }}
                         />
                       </div>
@@ -130,7 +130,7 @@ export default function BookingSection() {
                           id="prod-email"
                           type="email"
                           placeholder="your@email.com"
-                          className="bg-black border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500"
+                          className="bg-[#0a0a0a] border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500"
                           style={{ borderRadius: "0px" }}
                         />
                       </div>
@@ -144,7 +144,7 @@ export default function BookingSection() {
                         id="prod-message"
                         placeholder="Tell me about your track... What's your vision? Do you have vocals recorded? What services do you need?"
                         rows={6}
-                        className="bg-black border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500 resize-none"
+                        className="bg-[#0a0a0a] border-blue-500/20 text-white placeholder:text-gray-400 focus:border-blue-500 resize-none"
                         style={{ borderRadius: "0px" }}
                       />
                     </div>

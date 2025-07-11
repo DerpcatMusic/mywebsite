@@ -94,7 +94,7 @@ export default function Navigation() {
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="bg-black border-primary/20">
+              <SheetContent side="right" className="bg-[#0a0a0a] border-primary/20">
                 {/* FIX: Add SheetTitle for accessibility to prevent hydration error */}
                 <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
 

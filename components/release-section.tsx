@@ -28,7 +28,7 @@ export default function ReleaseSection({
           crossOrigin="anonymous"
         />
         {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-[#0a0a0a]/50" />
       </div>
 
  {/* Content */}

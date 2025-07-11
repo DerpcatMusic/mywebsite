@@ -23,7 +23,7 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#000000",
+        background: "#2a2a2a",
         foreground: "#ffffff",
         primary: {
           DEFAULT: "#FF2400", // Pure red
@@ -50,7 +50,7 @@ const config: Config = {
           foreground: "#ffffff",
         },
         card: {
-          DEFAULT: "#0a0a0a",
+          DEFAULT: "#2a2a2a",
           foreground: "#ffffff",
         },
         blue: {
