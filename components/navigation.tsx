@@ -7,11 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 
-// Import the socialLinks array and SocialLink type from your new file
-import { socialLinks, SocialLink } from "@/lib/social-links"; // Adjust the path if your file is elsewhere, e.g., "../lib/social-links" or "@/constants/social-links"
-
-// REMOVE ALL react-icons IMPORTS FROM HERE, they are now in lib/social-links.ts
-// REMOVE the socialLinks array definition from here.
+import { socialLinks, SocialLink } from "@/lib/social-links";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -23,15 +19,17 @@ export default function Navigation() {
           {/* Social Icons - Left Side */}
           <div className="flex items-center justify-start space-x-1">
             <div className="hidden md:flex items-center space-x-1">
-              {socialLinks.map((social: SocialLink, index) => ( // Use the SocialLink type here
+              {socialLinks.map((social: SocialLink, index) => (
                 <Link
                   key={index}
                   href={social.href}
-                  className={`p-2 transition-all duration-150 ${social.color} group`}
+                  // FIX: Use fill-white for initial color and group-hover:fill-primary for hover
+                  className={`p-2 transition-all duration-150 fill-white group group-hover:fill-primary`}
                   aria-label={social.label}
                   target={social.href.startsWith('http') ? '_blank' : '_self'}
                   rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >
+                  {/* Icon inherits fill from parent link */}
                   <social.icon className="w-6 h-6 transition-transform duration-150" />
                 </Link>
               ))}
@@ -42,7 +40,7 @@ export default function Navigation() {
           <div className="flex justify-center">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="relative p-2 transition-all duration-150 group focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="relative p-2 transition-all duration-150 group focus:outline-none focus:ring-0 focus:ring-primary/20"
               aria-label="Scroll to top"
             >
               <Image
@@ -77,7 +75,7 @@ export default function Navigation() {
                 rel="noopener noreferrer"
                 className="text-white hover:text-primary transition-colors duration-150 font-bold text-lg tracking-wide"
               >
-                MERCH
+                SHOP
               </Link>
               <Button
                 asChild
@@ -131,16 +129,18 @@ export default function Navigation() {
 
                   {/* Mobile Social Links */}
                   <div className="flex space-x-4 pt-4 border-t border-primary/20">
-                    {socialLinks.map((social: SocialLink, index) => ( // Use the SocialLink type here
+                    {socialLinks.map((social: SocialLink, index) => (
                       <Link
                         key={index}
                         href={social.href}
-                        className={`p-3 transition-all duration-150 ${social.color}`}
+                        // FIX: Use fill-white for initial color and group-hover:fill-primary for hover
+                        className={`p-3 transition-all duration-150 fill-white group group-hover:fill-primary`}
                         aria-label={social.label}
                         target={social.href.startsWith('http') ? '_blank' : '_self'}
                         rel={social.href.startsWith('http') ? 'noopener noreferrer' : undefined}
                         onClick={() => setIsOpen(false)}
                       >
+                        {/* Icon inherits fill from parent link */}
                         <social.icon className="w-6 h-6" />
                       </Link>
                     ))}

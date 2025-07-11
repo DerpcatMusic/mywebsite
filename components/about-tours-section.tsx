@@ -94,20 +94,21 @@ export default function AboutToursSection() {
               I got a big passion for Sound Design, Graphic Design, Software and many many more.
               </p>
 
-              <p className="text-lg text-gray-400 leading-relaxed">
+              {/* <p className="text-lg text-gray-400 leading-relaxed">
                 Been Studying Music Production for over 10 years, Primarily focused on composition, sound design and most importantly how to convey emotions through music.
               </p>
 
               <p className="text-lg text-gray-400 leading-relaxed">
-                
-              </p>
+                I believe that music is a universal language that can connect people from all walks of life, and I strive to create experiences that resonate on a deep emotional level.
+              </p> 
+              </p>*/}
 
               <div className="inline-block p-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 mt-12">
                 <p className="text-lg text-gray-300 mb-4 italic">
                   "My name isn't typical but so is my music, and for that I always say: Expect the Unexpected"
-              
+              ."
                 </p>
-                <p className="text-primary font-semibold">- Derpcat</p>
+                <p className="text-primary font-semibold">- Your Artist</p>
               </div>
             </div>
           </div>

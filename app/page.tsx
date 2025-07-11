@@ -19,9 +19,9 @@ export default function ArtistLandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-primary/20 bg-black">
+      <footer className="py-8 border-t border-secondary/10 bg-secondary/5">
         <div className="container mx-auto px-4 text-center">
-          <p className="text-gray-400">© {new Date().getFullYear()} Artist Portfolio. All rights reserved.</p>
+          <p className="text-gray-400">© {new Date().getFullYear()} Derpcat 2025. All rights reserved.</p>
         </div>
       </footer>
     </div>
