@@ -26,7 +26,7 @@ const config: Config = {
         background: "#000000",
         foreground: "#ffffff",
         primary: {
-          DEFAULT: "#FF0000", // Pure red
+          DEFAULT: "#FF2400", // Pure red
           foreground: "#ffffff",
         },
         secondary: {
@@ -42,7 +42,7 @@ const config: Config = {
           foreground: "#a3a3a3",
         },
         accent: {
-          DEFAULT: "#FF0000",
+          DEFAULT: "#FF2400",
           foreground: "#ffffff",
         },
         popover: {
@@ -85,8 +85,8 @@ const config: Config = {
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         glow: {
-          "0%, 100%": { boxShadow: "0 0 5px #FF0000" },
-          "50%": { boxShadow: "0 0 20px #FF0000, 0 0 30px #FF0000" },
+          "0%, 100%": { boxShadow: "0 0 5px #FF2400" },
+          "50%": { boxShadow: "0 0 20px #FF2400, 0 0 30px #FF2400" },
         },
       },
       animation: {

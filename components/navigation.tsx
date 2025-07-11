@@ -71,7 +71,7 @@ export default function Navigation() {
                 ABOUT
               </Link>
               <Link
-                href="https://store.derpcatmusic.com"
+                href="https://shop.derpcatmusic.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white hover:text-primary transition-colors duration-150 font-bold text-lg tracking-wide"
@@ -114,7 +114,7 @@ export default function Navigation() {
                     ABOUT
                   </Link>
                   <Link
-                    href="https://store.derpcatmusic.com"
+                    href="https://shop.derpcatmusic.com"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-white hover:text-primary transition-colors duration-150 font-bold text-xl tracking-wide"
