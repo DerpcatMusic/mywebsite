@@ -4,7 +4,8 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+// FIX: Import SheetTitle from your sheet component
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 
 import { socialLinks, SocialLink } from "@/lib/social-links";
@@ -94,6 +95,9 @@ export default function Navigation() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="right" className="bg-black border-primary/20">
+                {/* FIX: Add SheetTitle for accessibility to prevent hydration error */}
+                <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
+
                 <div className="flex flex-col space-y-8 mt-8">
                   <Link
                     href="#tours"

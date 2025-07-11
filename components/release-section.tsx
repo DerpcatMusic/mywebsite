@@ -31,7 +31,7 @@ export default function ReleaseSection({
         <div className="absolute inset-0 bg-black/50" />
       </div>
 
-      {/* Content */}
+ {/* Content */}
       <div className="relative z-10 h-full flex items-center justify-center">
         <div className="text-center px-4">
           <div className="mb-8">
@@ -44,10 +44,17 @@ export default function ReleaseSection({
           <Button
             asChild
             size="lg"
-            className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-bold px-12 py-6 text-xl transition-all duration-150 hover:shadow-2xl hover:shadow-primary/50 group"
+            // FIX: Add 'block', 'mx-auto', and 'w-fit' to ensure the button itself is centered
+            className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-bold px-12 py-6 text-xl transition-all duration-150 hover:shadow-2xl hover:shadow-primary/50 group block mx-auto w-fit"
             style={{ borderRadius: "0px" }}
           >
-            <a href={streamLink} target="_blank" rel="noopener noreferrer">
+            <a
+              href={streamLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              // Ensure internal content is centered (Button usually handles this, but good to be explicit)
+              className="flex items-center justify-center"
+            >
               <Play className="w-6 h-6 mr-3 transition-transform duration-150" />
               Stream Now
             </a>
