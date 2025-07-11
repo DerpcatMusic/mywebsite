@@ -6,23 +6,23 @@ export const metadata: Metadata = {
   title: 'Derpcat',
   description: 'Derpcat\'s official music site featuring releases, merch, and more.',
   generator: 'derpcat',
-  // ADD THIS BLOCK FOR YOUR FAVICON
   icons: {
-    icon: '/Derpcat.ico', // This path correctly points to your favicon in the public directory
-    // You can add apple: '/apple-touch-icon.png', etc. if needed
+    icon: '/Derpcat.ico',
   },
 }
 
 export default function RootLayout({
   children,
 }: Readonly<{
-children: React.ReactNode
+  children: React.ReactNode
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
-      {/* REMOVE THE FOLLOWING LINE: */}
-      {/* <link rel="icon" href="/Derpcat.ico" /> */}
+      <body>
+        {/* You can add a header, navigation, or footer here */}
+        {children}
+        {/* Your main content (where products would be displayed) will be rendered by `children` */}
+      </body>
     </html>
   )
 }

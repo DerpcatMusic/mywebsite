@@ -1,9 +1,12 @@
+// app/page.tsx
 import Navigation from "@/components/navigation"
 import AboutToursSection from "@/components/about-tours-section"
 import BookingSection from "@/components/booking-section"
 import ReleaseSection from "@/components/release-section"
+import FourthwallProductsSection from "@/components/fourthwall-products-section" // Import the self-sufficient component
 import { currentRelease } from "@/config/releases"
 
+// This is no longer an async component
 export default function ArtistLandingPage() {
   return (
     <div className="min-h-screen bg-[#090909] text-white">
@@ -15,6 +18,10 @@ export default function ArtistLandingPage() {
           streamLink={currentRelease.streamLink}
         />
         <AboutToursSection />
+
+        {/* The component now fetches its own data, so we don't pass any props */}
+        <FourthwallProductsSection />
+
         <BookingSection />
       </main>
 

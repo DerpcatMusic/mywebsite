@@ -1,5 +1,4 @@
-import type { Config } from "tailwindcss"
-
+/** @type {import('tailwindcss').Config} */
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -97,7 +96,10 @@ const config: Config = {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [
+    require("tailwindcss-animate"),
+    require("tailwind-scrollbar-hide"), // <--- This line was missing or misplaced
+  ],
 }
 
 export default config
