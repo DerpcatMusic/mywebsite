@@ -6,7 +6,7 @@ import { currentRelease } from "@/config/releases"
 
 export default function ArtistLandingPage() {
   return (
-    <div className="min-h-screen bg-[#1e1e1e] text-white">
+    <div className="min-h-screen bg-[#090909] text-white">
       <Navigation />
       <main>
         <ReleaseSection

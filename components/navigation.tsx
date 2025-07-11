@@ -4,7 +4,6 @@ import { useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
-// FIX: Import SheetTitle from your sheet component
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 
@@ -89,8 +88,9 @@ export default function Navigation() {
             {/* Mobile Menu */}
             <Sheet open={isOpen} onOpenChange={setIsOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-primary">
-                  <Menu className="h-10 w-10" />
+                {/* MODIFIED: Added p-0 to the Button className to remove default padding */}
+                <Button variant="ghost" className="md:hidden text-white hover:text-primary h-20 w-20 p-0">
+                  <Menu className="h-20 w-20" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>

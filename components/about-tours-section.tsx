@@ -106,9 +106,8 @@ export default function AboutToursSection() {
               <div className="inline-block p-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 mt-12">
                 <p className="text-lg text-gray-300 mb-4 italic">
                   "My name isn't typical but so is my music, and for that I always say: Expect the Unexpected"
-              ."
                 </p>
-                <p className="text-primary font-semibold">- Your Artist</p>
+                <p className="text-primary font-semibold">- Derpcat</p>
               </div>
             </div>
           </div>
