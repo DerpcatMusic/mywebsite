@@ -95,22 +95,19 @@ export default function AboutToursSection() {
               </p>
 
               <p className="text-lg text-gray-400 leading-relaxed">
-                My journey as an artist has been driven by a passion for authentic expression and connecting with people
-                through the universal language of music. Each track tells a story, each beat carries emotion, and every
-                performance is an opportunity to share something real and meaningful.
+                Been Studying Music Production for over 10 years, Primarily focused on composition, sound design and most importantly how to convey emotions through music.
               </p>
 
               <p className="text-lg text-gray-400 leading-relaxed">
-                From intimate studio sessions to electrifying live performances, I bring the same level of dedication
-                and artistry to every project. Whether I'm producing a track, teaching a lesson, or performing on stage,
-                my goal is always to create something that moves people and leaves a lasting impact.
+                
               </p>
 
               <div className="inline-block p-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 mt-12">
                 <p className="text-lg text-gray-300 mb-4 italic">
-                  "Music is not what you hear, but what you feel. Let's create something extraordinary together."
+                  "My name isn't typical but so is my music, and for that I always say: Expect the Unexpected"
+              
                 </p>
-                <p className="text-primary font-semibold">- Your Artist</p>
+                <p className="text-primary font-semibold">- Derpcat</p>
               </div>
             </div>
           </div>
