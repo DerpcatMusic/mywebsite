@@ -17,7 +17,7 @@ export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-black/30 backdrop-blur-xl border-b border-primary/20">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/10 backdrop-blur-xl border-b border-primary/30">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-3 items-center h-20">
           {/* Social Icons - Left Side */}
@@ -77,13 +77,13 @@ export default function Navigation() {
                 rel="noopener noreferrer"
                 className="text-white hover:text-primary transition-colors duration-150 font-bold text-lg tracking-wide"
               >
-                SHOP
+                MERCH
               </Link>
               <Button
                 asChild
                 className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-medium px-6 py-2 transition-all duration-150 hover:shadow-lg hover:shadow-primary/25"
               >
-                <Link href="#book">Book with Me</Link>
+                <Link href="#book">Book Me</Link>
               </Button>
             </div>
 
@@ -125,7 +125,7 @@ export default function Navigation() {
                     className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-medium px-6 py-3 w-fit transition-all duration-150"
                   >
                     <Link href="#book" onClick={() => setIsOpen(false)}>
-                      Book with Me
+                      Book Me
                     </Link>
                   </Button>
 
