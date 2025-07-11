@@ -6,6 +6,8 @@ import { NextResponse } from 'next/server';
 const BANDSINTOWN_ARTIST_NAME = process.env.BANDSINTOWN_ARTIST_NAME;
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID;
 
+export const runtime = 'edge'; // <--- ADD THIS LINE HERE!
+
 // Define the structure of an event object as returned by Bandsintown's API
 interface BandsintownEvent {
   id: string;
