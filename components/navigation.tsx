@@ -44,7 +44,7 @@ export default function Navigation() {
               aria-label="Scroll to top"
             >
               <Image
-                src="/derpcat.svg"
+                src="/Derpcat.svg" // Corrected capitalization to match the file name
                 alt="Derpcat Artist Logo"
                 width={60}
                 height={60}

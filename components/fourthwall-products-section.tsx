@@ -30,10 +30,6 @@ export default function FourthwallProductsSection() {
 
   // Ref for the scrollable container - This is specifically for the desktop horizontal scroll
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isDragging = useRef(false);
-  const startX = useRef(0);
-  const scrollLeft = useRef(0);
-
   // Data fetching logic (remains the same)
   useEffect(() => {
     async function fetchProducts() {
@@ -49,38 +45,6 @@ export default function FourthwallProductsSection() {
     }
     fetchProducts();
   }, []);
-
-  // --- Drag to Scroll Handlers (Re-added for Desktop View) ---
-  const handleMouseDown = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!scrollContainerRef.current) return;
-    isDragging.current = true;
-    scrollContainerRef.current.classList.add('active-dragging');
-    startX.current = e.pageX - scrollContainerRef.current.offsetLeft;
-    scrollLeft.current = scrollContainerRef.current.scrollLeft;
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    isDragging.current = false;
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.classList.remove('active-dragging');
-    }
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    isDragging.current = false;
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.classList.remove('active-dragging');
-    }
-  }, []);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isDragging.current || !scrollContainerRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollContainerRef.current.offsetLeft;
-    const walk = (x - startX.current) * 1.5;
-    scrollContainerRef.current.scrollLeft = scrollLeft.current - walk;
-  }, []);
-  // --- End Drag to Scroll Handlers ---
 
   if (loading) {
     return (
@@ -110,48 +74,20 @@ export default function FourthwallProductsSection() {
           </p>
         ) : (
           <>
-            {/* DESKTOP/LARGER SCREENS: Original Horizontal Scroll Layout */}
-            {/* This div will be hidden on screens smaller than 'md' (e.g., mobile) */}
             <div
               ref={scrollContainerRef}
-              className="hidden md:flex overflow-x-auto pb-4 gap-8 scrollbar-hide snap-x snap-mandatory cursor-grab"
-              onMouseDown={handleMouseDown}
-              onMouseLeave={handleMouseLeave}
-              onMouseUp={handleMouseUp}
-              onMouseMove={handleMouseMove}
-              onTouchStart={(e) => handleMouseDown(e as any as React.MouseEvent<HTMLDivElement>)}
-              onTouchMove={(e) => handleMouseMove(e as any as React.MouseEvent<HTMLDivElement>)}
-              onTouchEnd={handleMouseUp}
-              onTouchCancel={handleMouseLeave}
-              // --- Original FADE EFFECT ---
+              className="flex overflow-x-auto pb-4 gap-8"
               style={{
-                maskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent, black 10%, black 90%, transparent)',
+                maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
               }}
-              // --- END FADE EFFECT ---
             >
               {products.map((product) => (
                 <ProductCard
                   key={product.id}
                   product={product}
                   fourthwallCheckoutDomain={FOURTHWALL_CHECKOUT_DOMAIN}
-                  className="snap-center"
-                />
-              ))}
-            </div>
-
-            {/* MOBILE VIEW: 2x3 Grid Layout (or 6x1 if preferred as fallback) */}
-            {/* This div will be hidden on screens 'md' and larger */}
-            <div
-              className="grid grid-cols-2 gap-4 md:hidden" // grid-cols-2 for 2 cards width, md:hidden ensures it only shows on small screens
-            >
-              {/* Only render the first 6 products for the 2x3 grid */}
-              {products.slice(0, 6).map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  fourthwallCheckoutDomain={FOURTHWALL_CHECKOUT_DOMAIN}
-                  // No snap-center needed as it's a grid, not horizontally scrolling
+                  className="flex-shrink-0"
                 />
               ))}
             </div>

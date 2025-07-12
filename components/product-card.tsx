@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight } from 'lucide-react'; // Keep these for internal image carousel
 
+
 interface Product {
   id: string;
   name: string;
@@ -16,13 +17,17 @@ interface Product {
     value?: number;
     currency?: string;
   };
-  product?: {
-    images?: { url: string }[];
+  thumbnailImage?: { // Updated interface to match API response
+    url: string;
+    // Include other properties if needed, e.g., id, width, height, transformedUrl
   };
-  attributes?: {
+  attributes?: { // Attributes object itself can be optional
     description?: string;
   }
+  // Removed the 'product' nesting for images
+  // Removed the 'images' array if it's not used for display
 }
+
 
 interface ProductCardProps {
   product: Product;
@@ -33,24 +38,11 @@ interface ProductCardProps {
 const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/224x224?text=No+Image+Available';
 
 export default function ProductCard({ product, fourthwallCheckoutDomain, className }: ProductCardProps) {
-  const productImages = product.product?.images || [];
-  const hasMultipleImages = productImages.length > 1;
 
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // Log the entire product object to inspect its structure
+  console.log("Product data received by ProductCard:", product);
 
-  const handlePrevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? productImages.length - 1 : prevIndex - 1
-    );
-  };
-
-  const handleNextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === productImages.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const imageUrl = productImages[currentImageIndex]?.url || PLACEHOLDER_IMAGE_URL;
+  const imageUrl = product.thumbnailImage?.url || PLACEHOLDER_IMAGE_URL; // Use thumbnailImage URL
   const priceValue = product.unitPrice?.value?.toFixed(2) || '0.00';
   const priceCurrency = product.unitPrice?.currency || 'USD';
   const priceDisplay = product.unitPrice ? `${priceCurrency} ${priceValue}` : 'N/A';
@@ -64,7 +56,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain, classNa
         hover:border-purple-500 transition-all duration-300
         w-72 // Fixed width for all screen sizes (you can adjust this, e.g., w-64, w-80)
         flex-shrink-0 // Crucial: Prevents cards from shrinking in a flex container, forcing scroll
-        ${className || ''} // Apply external className prop (e.g., snap-center)
+        ${className || ''} // Apply external className prop (e.g., flex-shrink-0)
       `}
     >
       <CardHeader className="p-0">
@@ -77,27 +69,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain, classNa
             style={{ objectFit: 'cover' }}
             className="rounded-t-lg"
           />
-
-          {hasMultipleImages && (
-            <>
-              <Button
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-                size="icon"
-                onClick={handlePrevImage}
-                aria-label="Previous image"
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              <Button
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity"
-                size="icon"
-                onClick={handleNextImage}
-                aria-label="Next image"
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </>
-          )}
+          {/* Removed image carousel buttons */}
         </div>
       </CardHeader>
       <CardContent className="flex-grow p-4">
@@ -111,7 +83,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain, classNa
           {priceDisplay}
         </span>
         {fourthwallCheckoutDomain && product.slug ? (
-          <Link href={`https://${fourthwallCheckoutDomain}/product/${product.slug}`} passHref target="_blank" rel="noopener noreferrer">
+          <Link href={`https://${fourthwallCheckoutDomain}/products/${product.slug}`} passHref target="_blank" rel="noopener noreferrer">
             <Button className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-300">
               View Product
             </Button>

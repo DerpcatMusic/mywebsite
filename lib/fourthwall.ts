@@ -11,9 +11,11 @@ interface FourthwallProduct {
     value?: number; // Value can be optional too
     currency?: string; // Currency can be optional too
   };
-  product?: { // Made optional
-    images?: { url: string }[]; // Images array can be optional
+  thumbnailImage?: { // Added thumbnailImage based on API response
+    url: string; // Assuming url is always a string if thumbnailImage exists
+    // Include other properties if needed, e.g., id, width, height, transformedUrl
   };
+  images?: any[]; // Keep images as any[] or refine based on actual data if needed
   attributes?: { // Attributes object itself can be optional
     description?: string;
   }
