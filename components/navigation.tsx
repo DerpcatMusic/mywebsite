@@ -161,7 +161,7 @@ export default function Navigation() {
                   </Link>
                   <Button
                     asChild
-                    className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-medium px-6 py-3 w-fit transition-all duration-150"
+                    className="bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-medium py-3 w-fit transition-all duration-150"
                   >
                     <Link href="#book" onClick={closeMenu}>
                       Book Me
