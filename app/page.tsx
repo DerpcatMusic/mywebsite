@@ -4,6 +4,7 @@ import AboutToursSection from "@/components/about-tours-section"
 import BookingSection from "@/components/booking-section"
 import ReleaseSection from "@/components/release-section"
 import FourthwallProductsSection from "@/components/fourthwall-products-section" // Import the self-sufficient component
+import AltProductsSection from "@/components/alt-products-section";
 import { currentRelease } from "@/config/releases"
 
 // This is no longer an async component
@@ -21,6 +22,9 @@ export default function ArtistLandingPage() {
 
         {/* The component now fetches its own data, so we don't pass any props */}
         <FourthwallProductsSection />
+
+        {/* New section for Gumroad and Lemon Squeezy products */}
+        <AltProductsSection />
 
         <BookingSection />
       </main>
