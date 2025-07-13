@@ -2,10 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* --- Your Custom Base Styles --- */
 body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* --- Your Custom Utility Classes --- */
 .cursor-grab {
   cursor: grab;
 }
@@ -18,8 +20,30 @@ body {
   .text-balance {
     text-wrap: balance;
   }
+
+  /* --- Carousel Animation --- */
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      /* This moves the carousel left by the width of the first set of items */
+      transform: translateX(calc(-100% - 2rem)); /* 2rem is your gap (gap-8) */
+    }
+  }
+
+  .animate-scroll {
+    /* Adjust duration to control speed. Higher value = slower. */
+    animation: scroll 60s linear infinite;
+  }
+
+  /* Utility class to pause animation on hover */
+  .pause {
+    animation-play-state: paused;
+  }
 }
 
+/* --- Your Theme Variables (Light & Dark Mode) --- */
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -100,4 +124,3 @@ body {
     @apply bg-background text-foreground;
   }
 }
-

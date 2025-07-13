@@ -1,71 +1,274 @@
 // lib/fourthwall.ts
-const FOURTHWALL_API_URL = process.env.NEXT_PUBLIC_FOURTHWALL_API_URL;
-const FOURTHWALL_STOREFRONT_TOKEN = process.env.NEXT_PUBLIC_FW_STOREFRONT_TOKEN;
-const FOURTHWALL_COLLECTION_SLUG = process.env.NEXT_PUBLIC_FW_COLLECTION;
+import { z } from 'zod';
 
-interface FourthwallProduct {
-  id: string;
-  name: string;
-  slug?: string; // Made optional
-  unitPrice?: { // Made optional
-    value?: number; // Value can be optional too
-    currency?: string; // Currency can be optional too
-  };
-  thumbnailImage?: { // Added thumbnailImage based on API response
-    url: string; // Assuming url is always a string if thumbnailImage exists
-    // Include other properties if needed, e.g., id, width, height, transformedUrl
-  };
-  images?: any[]; // Keep images as any[] or refine based on actual data if needed
-  attributes?: { // Attributes object itself can be optional
-    description?: string;
+// Environment variables validation
+const envSchema = z.object({
+  NEXT_PUBLIC_FOURTHWALL_API_URL: z.string().url(),
+  NEXT_PUBLIC_FW_STOREFRONT_TOKEN: z.string().min(1),
+  NEXT_PUBLIC_FW_COLLECTION: z.string().optional(),
+});
+
+function getEnvVars() {
+  const result = envSchema.safeParse({
+    NEXT_PUBLIC_FOURTHWALL_API_URL: process.env.NEXT_PUBLIC_FOURTHWALL_API_URL,
+    NEXT_PUBLIC_FW_STOREFRONT_TOKEN: process.env.NEXT_PUBLIC_FW_STOREFRONT_TOKEN,
+    NEXT_PUBLIC_FW_COLLECTION: process.env.NEXT_PUBLIC_FW_COLLECTION,
+  });
+
+  if (!result.success) {
+    throw new Error(`Invalid environment variables: ${result.error.flatten().fieldErrors}`);
+  }
+
+  return result.data;
+}
+
+// API Response Schemas
+const imageSchema = z.object({
+  url: z.string().url(),
+  id: z.string().optional(),
+  width: z.number().optional(),
+  height: z.number().optional(),
+  transformedUrl: z.string().url().optional(),
+});
+
+const moneySchema = z.object({
+  value: z.number(),
+  currency: z.string().default('USD'),
+});
+
+const productVariantSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  unitPrice: moneySchema.optional().nullable(),
+  attributes: z.object({
+    description: z.string().optional().nullable(),
+  }).optional().nullable(),
+});
+
+const productSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  slug: z.string().optional(),
+  description: z.string().optional().nullable(),
+  images: z.preprocess(
+    (val) => (val === null || val === undefined ? [] : val),
+    z.array(imageSchema)
+  ).default([]),
+  thumbnailImage: imageSchema.optional().nullable(),
+  variants: z.array(productVariantSchema).default([]),
+});
+
+const apiResponseSchema = z.object({
+  results: z.array(productSchema),
+  count: z.number().optional(),
+  next: z.string().optional(),
+  previous: z.string().optional(),
+});
+
+const collectionSchema = z.object({
+  id: z.string(),
+  slug: z.string(),
+  name: z.string(),
+});
+
+const collectionsResponseSchema = z.object({
+  results: z.array(collectionSchema),
+});
+
+// Types
+export type FourthwallProduct = z.infer<typeof productSchema>;
+export type FourthwallCollection = z.infer<typeof collectionSchema>;
+
+// API Error class
+class FourthwallAPIError extends Error {
+  constructor(
+    message: string,
+    public status?: number,
+    public response?: string
+  ) {
+    super(message);
+    this.name = 'FourthwallAPIError';
   }
 }
 
-export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
-  if (!FOURTHWALL_API_URL || !FOURTHWALL_STOREFRONT_TOKEN) {
-    console.error("Fourthwall API URL or Storefront Token is not set. Check your .env.local file.");
-    return [];
+// Base API client
+class FourthwallClient {
+  private baseURL: string;
+  private token: string;
+
+  constructor() {
+    const env = getEnvVars();
+    this.baseURL = env.NEXT_PUBLIC_FOURTHWALL_API_URL;
+    this.token = env.NEXT_PUBLIC_FW_STOREFRONT_TOKEN;
   }
 
-  try {
-    let allProducts: FourthwallProduct[] = [];
+  private async makeRequest<T>(
+    endpoint: string,
+    schema: z.ZodSchema<T>
+  ): Promise<T> {
+    const url = `${this.baseURL}${endpoint}`;
+    const fullUrl = url.includes('?') 
+      ? `${url}&storefront_token=${this.token}`
+      : `${url}?storefront_token=${this.token}`;
 
-    if (FOURTHWALL_COLLECTION_SLUG) {
-      const productsRes = await fetch(`${FOURTHWALL_API_URL}/collections/${FOURTHWALL_COLLECTION_SLUG}/products?storefront_token=${FOURTHWALL_STOREFRONT_TOKEN}`);
-      if (!productsRes.ok) {
-        const errorText = await productsRes.text();
-        // Log the full error response for better debugging
-        console.error(`Failed to fetch products for collection "${FOURTHWALL_COLLECTION_SLUG}": ${productsRes.status} ${errorText}. Please check the collection slug in your .env.local file.`);
+    try {
+      const response = await fetch(fullUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        next: { revalidate: 300 },
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new FourthwallAPIError(
+          `API request failed: ${response.status} ${response.statusText}`,
+          response.status,
+          errorText
+        );
+      }
+
+      const data = await response.json();
+      const result = schema.safeParse(data);
+
+      if (!result.success) {
+        throw new FourthwallAPIError(
+          `Invalid API response format: ${result.error.message}`
+        );
+      }
+      
+      return result.data;
+
+    } catch (error) {
+      if (error instanceof FourthwallAPIError) {
+        throw error;
+      }
+      throw new FourthwallAPIError(
+        `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`
+      );
+    }
+  }
+
+  async getCollections(): Promise<FourthwallCollection[]> {
+    const response = await this.makeRequest('/collections', collectionsResponseSchema);
+    return response.results;
+  }
+
+  async getProductsFromCollection(slug: string): Promise<FourthwallProduct[]> {
+    const response = await this.makeRequest(
+      `/collections/${slug}/products`,
+      apiResponseSchema
+    );
+    return response.results;
+  }
+
+  async getProductBySlug(slug: string): Promise<FourthwallProduct | null> {
+    try {
+      const response = await this.makeRequest(
+        `/products?slug=${slug}`,
+        apiResponseSchema
+      );
+      // The API might return an array even for a single slug, so return the first item
+      return response.results.length > 0 ? response.results[0] : null;
+    } catch (error) {
+      // Log the error but return null if a specific product isn't found
+      console.error(`Error fetching product by slug ${slug}:`, error);
+      return null;
+    }
+  }
+}
+
+export async function getFourthwallProductBySlug(slug: string): Promise<FourthwallProduct | null> {
+  try {
+    const client = new FourthwallClient();
+    return await client.getProductBySlug(slug);
+  } catch (error) {
+    console.error(`Error in getFourthwallProductBySlug for slug ${slug}:`, error);
+    return null;
+  }
+}
+
+// --- START OF FIX ---
+export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
+  try {
+    const client = new FourthwallClient();
+    const env = getEnvVars();
+
+    const collectionSlug = env.NEXT_PUBLIC_FW_COLLECTION;
+    if (!collectionSlug || collectionSlug === 'all-products') {
+      
+      console.log("Fetching products from ALL collections...");
+      const collections = await client.getCollections();
+      
+      if (collections.length === 0) {
+        console.warn('No collections found in the store.');
         return [];
       }
-      const productsData = await productsRes.json();
-      allProducts = productsData.results || [];
-    } else {
-      // Fallback: If no specific collection slug, try to fetch from all collections
-      // (This part assumes a structure where /collections returns slugs that can be used)
-      const collectionsRes = await fetch(`${FOURTHWALL_API_URL}/collections?storefront_token=${FOURTHWALL_STOREFRONT_TOKEN}`);
-      if (!collectionsRes.ok) {
-        const errorText = await collectionsRes.text();
-        throw new Error(`Failed to fetch collections: ${collectionsRes.status} ${errorText}`);
-      }
-      const collectionsData = await collectionsRes.json();
-      const collections: { slug: string; id: string; name: string }[] = collectionsData.results || [];
 
-      // Fetch products from each collection
-      for (const collection of collections) {
-        const productsRes = await fetch(`${FOURTHWALL_API_URL}/collections/${collection.slug}/products?storefront_token=${FOURTHWALL_STOREFRONT_TOKEN}`);
-        if (!productsRes.ok) {
-          console.warn(`Failed to fetch products for collection ${collection.slug}: ${productsRes.status}`);
-          continue; // Continue to next collection if one fails
+      let allProducts: FourthwallProduct[] = [];
+      const results = await Promise.allSettled(
+        collections.map(collection => client.getProductsFromCollection(collection.slug))
+      );
+
+      results.forEach((result) => {
+        if (result.status === 'fulfilled') {
+          // Temporarily gather all products, including potential duplicates
+          allProducts.push(...result.value);
         }
-        const productsData = await productsRes.json();
-        allProducts = allProducts.concat(productsData.results || []);
-      }
-    }
+      });
 
-    return allProducts;
+      // --- START OF FIX: De-duplicate the products array ---
+      // Use a Map to ensure each product ID is represented only once.
+      const uniqueProductsMap = new Map<string, FourthwallProduct>();
+      allProducts.forEach(product => {
+        uniqueProductsMap.set(product.id, product);
+      });
+
+      // Convert the Map's values back into an array of unique products.
+      const uniqueProducts = Array.from(uniqueProductsMap.values());
+      console.log(`Fetched ${allProducts.length} products, returning ${uniqueProducts.length} unique products.`);
+      
+      return uniqueProducts;
+      // --- END OF FIX ---
+
+    } else {
+      console.log(`Fetching products from specific collection: "${collectionSlug}"`);
+      return await client.getProductsFromCollection(collectionSlug);
+    }
   } catch (error) {
-    console.error("Error fetching Fourthwall products:", error);
+    if (error instanceof FourthwallAPIError) {
+      console.error('Fourthwall API Error:', error.message);
+    } else {
+      console.error('Unexpected error:', error);
+    }
     return [];
   }
+}
+// --- END OF FIX ---
+
+
+// Utility functions (No changes needed here)
+export function getProductPrice(product: FourthwallProduct): string {
+  const firstVariant = product.variants?.[0];
+  if (!firstVariant?.unitPrice?.value) {
+    return 'Price not available';
+  }
+  const currency = firstVariant.unitPrice.currency || 'USD';
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+  });
+  return formatter.format(firstVariant.unitPrice.value);
+}
+
+export function getProductImage(product: FourthwallProduct): string | null {
+  return product.thumbnailImage?.url || product.images[0]?.url || null;
+}
+
+export function getProductDescription(product: FourthwallProduct): string {
+  const firstVariant = product.variants?.[0];
+  const mainDescription = product.description;
+  const variantDescription = firstVariant?.attributes?.description;
+  return mainDescription || variantDescription || 'No description available';
 }
