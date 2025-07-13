@@ -108,7 +108,7 @@ export default function FourthwallProductsSection() {
         }
         
         .animate-scroll {
-          animation: scroll 40s linear infinite;
+          animation: scroll 80s linear infinite;
         }
         
         .animate-scroll.paused {
