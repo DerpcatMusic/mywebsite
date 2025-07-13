@@ -11,7 +11,7 @@ export default function BookingSection() {
   const [state, handleSubmit] = useForm("mblynnle")
 
   return (
-    <section id="book" className="py-20 bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#1a1a2e]">
+    <section id="book" className="py-20 bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header Section */}
@@ -19,10 +19,7 @@ export default function BookingSection() {
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
               Work <span className="text-blue-400">With Me</span>
             </h2>
-            <p className="text-xl text-gray-300 max-w-2xl mx-auto leading-relaxed">
-              Wanna learn something new or get a professionally produced track?
-              <br />I'm your guy.
-            </p>
+
           </div>
 
           {/* Main Content Grid */}

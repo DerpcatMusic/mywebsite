@@ -63,9 +63,9 @@ export default function FourthwallProductsSection() {
   }
 
   return (
-    <section className="py-16 bg-gradient-to-br from-secondary/5 to-primary/5">
+    <section className="py-16 bg-[#0a0a0a]">
       <div className="container mx-auto px-4">
-        <h2 className="text-5xl font-extrabold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">
+        <h2 className="text-5xl font-extrabold text-center mb-12 text-purple-400">
           Official Merchandise
         </h2>
         {products.length === 0 ? (

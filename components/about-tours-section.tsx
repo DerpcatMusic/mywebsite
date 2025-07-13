@@ -113,7 +113,7 @@ export default function AboutToursSection() {
           </div>
 
           {/* Tours Section - 1/3 width (This section dynamically displays tour dates) */}
-          <div id="tours" className="lg:col-span-1">
+          <div id="tours" className="lg:col-span-1 flex flex-col justify-end">
             <h3 className="text-3xl md:text-4xl font-bold text-white mb-8">
               Upcoming <span className="text-primary">Shows</span>
             </h3>
@@ -121,14 +121,14 @@ export default function AboutToursSection() {
             {/* Conditional rendering based on the loading and error states */}
             {isLoading ? (
               // Display a loading indicator while data is being fetched
-              <div className="text-center py-8">
+              <div className="text-center py-8 flex-grow">
                 <RefreshCw className="w-12 h-12 text-primary/50 mx-auto mb-4 animate-spin" />
                 <h4 className="text-lg font-semibold text-white mb-2">Loading Shows...</h4>
                 <p className="text-gray-400 text-sm">Fetching latest tour dates.</p>
               </div>
             ) : error ? (
               // Display an error message if fetching failed
-              <div className="text-center py-8">
+              <div className="text-center py-8 flex-grow">
                 <XCircle className="w-12 h-12 text-red-500/70 mx-auto mb-4" />
                 <h4 className="text-lg font-semibold text-red-400 mb-2">Error Loading Shows</h4>
                 <p className="text-gray-400 text-sm">{error}</p>
@@ -136,7 +136,7 @@ export default function AboutToursSection() {
               </div>
             ) : (
               // If data is loaded successfully and there are no errors, display the tour dates
-              <div className="space-y-4">
+              <div className="space-y-4 flex-grow">
                 {tourDates.map((show) => { // Map over the dynamically fetched tourDates
                   const dateInfo = formatDate(show.date) // Format the date for display
                   return (
@@ -174,7 +174,7 @@ export default function AboutToursSection() {
                             {show.soldOut ? (
                               // Display "Sold Out" if the show is marked as such
                               <div
-                                className="w-full px-4 py-2 bg-gray-600 text-gray-300 text-center font-medium text-sm"
+                                className="w-full px-4 py-2 bg-gray-600 text-gray-300 text-center font-bold text-sm"
                                 style={{ borderRadius: "0px" }}
                               >
                                 Sold Out
@@ -183,7 +183,7 @@ export default function AboutToursSection() {
                               // Display "Get Tickets" button if not sold out
                               <Button
                                 asChild // Renders as an <a> tag
-                                className="w-full bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-medium px-4 py-2 text-sm transition-all duration-150 group"
+                                className="w-full bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-white font-bold px-4 py-2 text-sm transition-all duration-150 group"
                                 style={{ borderRadius: "0px" }}
                               >
                                 <a href={show.ticketLink} target="_blank" rel="noopener noreferrer">
@@ -203,12 +203,32 @@ export default function AboutToursSection() {
 
             {/* Display message if no shows are scheduled after loading completes and no errors */}
             {!isLoading && !error && tourDates.length === 0 && (
-              <div className="text-center py-8">
+              <div className="text-center py-8 flex-grow">
                 <Calendar className="w-12 h-12 text-primary/50 mx-auto mb-4" />
                 <h4 className="text-lg font-semibold text-white mb-2">No Shows Scheduled</h4>
                 <p className="text-gray-400 text-sm">Check back soon for upcoming tour dates!</p>
               </div>
             )}
+
+            {/* Bandsintown Buttons */}
+            <div className="flex flex-row space-x-4 lg:flex-col lg:space-y-4 lg:space-x-0">
+              <Button
+                asChild
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2 text-base transition-all duration-150"
+              >
+                <a href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat" target="_blank" rel="noopener noreferrer">
+                  Follow Me on Bandsintown
+                </a>
+              </Button>
+              <Button
+                asChild
+                className="w-full bg-primary hover:bg-primary/90 text-white font-bold px-4 py-2 text-base transition-all duration-150"
+              >
+                <a href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat?affil_code=js_&app_id=js_&bg-color=rgba%28255%2C255%2C255%2C1%29&border-color=rgba%2874%2C74%2C74%2C1%29&came_from=700&cta-bg-color=rgba%2874%2C74%2C74%2C1%29&cta-border-color=rgba%2874%2C74%2C74%2C1%29&cta-border-radius=2px&cta-border-width=0px&cta-text-color=rgba%28255%2C255%2C255%2C1%29&font=Helvetica&play-my-city=true&signature=ZZ7a6c5a954bfa5ccf256789d33d35925c0a4085d514f28cc54384a917b1c25a73&spn=0&text-color=rgba%2866%2C66%2C66%2C1%29&utm_campaign=play_my_city&utm_medium=web&utm_source=widget" target="_blank" rel="noopener noreferrer">
+                  Request a Show
+                </a>
+              </Button>
+            </div>
           </div>
         </div>
       </div>
