@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { notFound } from 'next/navigation';
 
+// Add this line to export the runtime configuration
+export const runtime = 'edge';
+
 // Assuming you have a function to fetch a single product by slug
 // import { getFourthwallProductBySlug } from '@/lib/fourthwall'; 
 
