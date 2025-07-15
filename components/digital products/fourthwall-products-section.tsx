@@ -4,7 +4,7 @@
 import React from 'react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { getAllFourthwallProducts, FourthwallProduct } from '@/lib/fourthwall';
-import ProductCard from './product-card';
+import ProductCard from '../product-card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { RefreshCw, AlertCircle } from 'lucide-react';
@@ -64,6 +64,7 @@ export default function FourthwallProductsSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isScrollPaused, setIsScrollPaused] = useState(false);
+  const [focusedProduct, setFocusedProduct] = useState<string | null>(null);
   const checkoutDomain = process.env.NEXT_PUBLIC_FW_CHECKOUT;
 
   const fetchProducts = useCallback(async () => {
@@ -97,6 +98,18 @@ export default function FourthwallProductsSection() {
     setIsScrollPaused(isHovering);
   };
 
+  const handleProductTap = (productKey: string) => {
+    if (focusedProduct === productKey) {
+      // Second tap - unfocus
+      setFocusedProduct(null);
+      setIsScrollPaused(false);
+    } else {
+      // First tap - focus
+      setFocusedProduct(productKey);
+      setIsScrollPaused(true);
+    }
+  };
+
   const isScrollable = !loading && !error && products.length > 0;
 
   return (
@@ -122,11 +135,44 @@ export default function FourthwallProductsSection() {
         
         .product-item {
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          cursor: pointer;
         }
         
         .product-item:hover {
           transform: scale(1.05);
           z-index: 10;
+        }
+        
+        .product-item.focused {
+          transform: scale(1.05);
+          z-index: 10;
+        }
+        
+        .product-item.focused::after {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          background: linear-gradient(45deg, #a855f7, #8b5cf6);
+          border-radius: 10px;
+          z-index: -1;
+          opacity: 0.6;
+        }
+        
+        /* Mobile-specific styles */
+        @media (hover: none) and (pointer: coarse) {
+          .product-item:hover {
+            transform: none;
+          }
+        }
+        
+        /* Disable hover effects on mobile */
+        @media (max-width: 768px) {
+          .product-item:hover {
+            transform: none;
+          }
         }
       `}</style>
       
@@ -151,41 +197,73 @@ export default function FourthwallProductsSection() {
                 <div className="flex gap-8 pb-4">
                   <div className={`flex gap-8 animate-scroll ${isScrollPaused ? 'paused' : ''}`}>
                     {/* First set of products */}
-                    {products.map((product, index) => (
-                      <div
-                        key={`${product.id}-${index}-a`}
-                        className="product-item flex-shrink-0"
-                        onMouseEnter={() => handleProductHover(true)}
-                        onMouseLeave={() => handleProductHover(false)}
-                      >
-                        <ProductCard
-                          product={product}
-                          fourthwallCheckoutDomain={checkoutDomain}
-                          className="w-72"
-                        />
-                      </div>
-                    ))}
+                    {products.map((product, index) => {
+                      const productKey = `${product.id}-${index}-a`;
+                      const isFocused = focusedProduct === productKey;
+                      
+                      return (
+                        <div
+                          key={productKey}
+                          className={`product-item flex-shrink-0 relative ${isFocused ? 'focused' : ''}`}
+                          onMouseEnter={() => handleProductHover(true)}
+                          onMouseLeave={() => handleProductHover(false)}
+                          onClick={() => handleProductTap(productKey)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleProductTap(productKey);
+                            }
+                          }}
+                        >
+                          <ProductCard
+                            product={product}
+                            fourthwallCheckoutDomain={checkoutDomain}
+                            className="w-72"
+                          />
+                        </div>
+                      );
+                    })}
                     {/* Second set of products for seamless loop */}
-                    {products.map((product, index) => (
-                      <div
-                        key={`${product.id}-${index}-b`}
-                        className="product-item flex-shrink-0"
-                        onMouseEnter={() => handleProductHover(true)}
-                        onMouseLeave={() => handleProductHover(false)}
-                      >
-                        <ProductCard
-                          product={product}
-                          fourthwallCheckoutDomain={checkoutDomain}
-                          className="w-72"
-                        />
-                      </div>
-                    ))}
+                    {products.map((product, index) => {
+                      const productKey = `${product.id}-${index}-b`;
+                      const isFocused = focusedProduct === productKey;
+                      
+                      return (
+                        <div
+                          key={productKey}
+                          className={`product-item flex-shrink-0 relative ${isFocused ? 'focused' : ''}`}
+                          onMouseEnter={() => handleProductHover(true)}
+                          onMouseLeave={() => handleProductHover(false)}
+                          onClick={() => handleProductTap(productKey)}
+                          role="button"
+                          tabIndex={0}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              handleProductTap(productKey);
+                            }
+                          }}
+                        >
+                          <ProductCard
+                            product={product}
+                            fourthwallCheckoutDomain={checkoutDomain}
+                            className="w-72"
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
               
               <div className="text-center mt-8">
-
+                {focusedProduct && (
+                  <p className="text-gray-400 text-sm">
+                    Tap the product again to continue scrolling
+                  </p>
+                )}
               </div>
             </div>
           )}

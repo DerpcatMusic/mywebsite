@@ -50,10 +50,10 @@ const productSchema = z.object({
   name: z.string(),
   slug: z.string().optional(),
   description: z.string().optional().nullable(),
-  images: z.preprocess(
-    (val) => (val === null || val === undefined ? [] : val),
-    z.array(imageSchema)
-  ).default([]),
+  // --- FIX APPLIED HERE ---
+  // Replaced z.preprocess with optional().nullable().default([]) for cleaner type inference
+  images: z.array(imageSchema).optional().nullable().default([]),
+  // --- END FIX ---
   thumbnailImage: imageSchema.optional().nullable(),
   variants: z.array(productVariantSchema).default([]),
 });
@@ -189,7 +189,6 @@ export async function getFourthwallProductBySlug(slug: string): Promise<Fourthwa
   }
 }
 
-// --- START OF FIX ---
 export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
   try {
     const client = new FourthwallClient();
@@ -218,7 +217,6 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
         }
       });
 
-      // --- START OF FIX: De-duplicate the products array ---
       // Use a Map to ensure each product ID is represented only once.
       const uniqueProductsMap = new Map<string, FourthwallProduct>();
       allProducts.forEach(product => {
@@ -230,7 +228,6 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
       console.log(`Fetched ${allProducts.length} products, returning ${uniqueProducts.length} unique products.`);
       
       return uniqueProducts;
-      // --- END OF FIX ---
 
     } else {
       console.log(`Fetching products from specific collection: "${collectionSlug}"`);
@@ -245,8 +242,6 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
     return [];
   }
 }
-// --- END OF FIX ---
-
 
 // Utility functions (No changes needed here)
 export function getProductPrice(product: FourthwallProduct): string {

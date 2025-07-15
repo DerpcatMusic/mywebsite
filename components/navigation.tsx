@@ -21,7 +21,7 @@ export default function Navigation() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-primary/10 backdrop-blur-xl border-b border-primary/30">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 max-w-full">
         <div className="flex justify-between items-center h-24 md:grid md:grid-cols-3">
           
           {/* Desktop Social Media Icons - Left Side */}
@@ -127,12 +127,12 @@ export default function Navigation() {
                   variant="ghost" 
                   className="text-white hover:text-white/80 focus:text-white/80 hover:bg-transparent h-12 w-12 flex items-center justify-center focus:outline-none focus:ring-0"
                 >
-                  <HamburgerIcon isOpen={isOpen} className="h-6 w-6" />
+                  <HamburgerIcon isOpen={isOpen} className="h-6 w-6 text-white" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
               
-              <SheetContent side="right" className="bg-[#0a0a0a] border-primary/20">
+              <SheetContent side="right" className="bg-[#0a0a0a] border-primary/20 w-[300px] sm:w-[400px]">
                 <SheetTitle className="sr-only">Mobile Navigation Menu</SheetTitle>
 
                 <style jsx global>{`
@@ -153,6 +153,7 @@ export default function Navigation() {
                   .sheet-content svg.lucide {
                     width: 24px;
                     height: 24px;
+                    color: white;
                   }
                 `}</style>
 

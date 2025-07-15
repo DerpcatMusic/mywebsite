@@ -1,87 +1,82 @@
 // lib/lemonsqueezy.ts
 
-// Placeholder type for Lemon Squeezy product
+// --- FIX APPLIED HERE ---
+// This interface is now "flat" and matches the object structure created by the mapping function below.
+// It includes the fields that the component actually needs.
 export interface LemonSqueezyProduct {
   id: string;
   name: string;
   description: string;
-  price: string; // Lemon Squeezy price might be a string
-  currency: string;
-  url: string; // Assuming API provides a direct URL or it can be constructed
-  large_thumb_url: string | null; // Assuming this field exists in attributes
-  // Add other relevant fields from Lemon Squeezy API as needed
+  price_formatted: string;
+  buy_now_url: string;
+  thumb_url: string | null;
 }
 
 const API_BASE_URL = "https://api.lemonsqueezy.com/v1";
 
 export async function getAllLemonSqueezyProducts(): Promise<LemonSqueezyProduct[]> {
   const apiKey = process.env.LEMONSQUEEZY_API_KEY;
-  const storeId = process.env.LEMONSQUEEZY_STORE_ID; // Optional: filter by store ID
-
   if (!apiKey) {
     console.error("LEMONSQUEEZY_API_KEY is not set.");
-    // Return empty array or throw an error, depending on desired behavior
     return [];
   }
 
-  let url = `${API_BASE_URL}/products`;
-  if (storeId) {
-    url = `${url}?filter[store_id]=${storeId}`;
-  }
+  // NOTE: You must include `variants` to get pricing information for a base product.
+  const url = `${API_BASE_URL}/products?include=variants`;
 
   try {
     const response = await fetch(url, {
+      method: 'GET',
       headers: {
         'Accept': 'application/vnd.api+json',
         'Content-Type': 'application/vnd.api+json',
         'Authorization': `Bearer ${apiKey}`,
       },
+      next: { revalidate: 3600 } // Revalidate cache every hour
     });
 
     if (!response.ok) {
-      // Attempt to read error body if available
-      let errorBody = 'Unknown error';
-      try {
-        errorBody = await response.text();
-      } catch (e) {
-        // Ignore parsing errors
-      }
-      console.error(`Lemon Squeezy API error: ${response.status} ${response.statusText}`, errorBody);
-      // Return empty array or throw a more specific error
+      const errorBody = await response.json();
+      console.error("Lemon Squeezy API Error:", errorBody);
       return [];
     }
 
-    const data = await response.json();
+    const jsonResponse = await response.json();
 
-    // Map API response to LemonSqueezyProduct interface
-    // NOTE: The exact field names for price, currency, url, and large_thumb_url
-    // might need adjustment based on the full API response structure.
-    const products: LemonSqueezyProduct[] = data.data.map((item: any) => ({
-      id: item.id,
-      name: item.attributes.name,
-      description: item.attributes.description || '', // description can be null
-      price: item.attributes.price || 'N/A', // Assuming price is in attributes
-      currency: item.attributes.currency || '', // Assuming currency is in attributes
-      url: item.attributes.url || `https://your-store-url.lemonsqueezy.com/buy/${item.attributes.slug}` || '', // Assuming url or slug for construction
-      large_thumb_url: item.attributes.large_thumb_url || null, // Assuming large_thumb_url is in attributes
-    }));
+    // Map the API response to our clean, flat LemonSqueezyProduct interface
+    const products: LemonSqueezyProduct[] = jsonResponse.data.map((item: any) => {
+      // Get the first variant for price details (a common pattern)
+      const firstVariant = jsonResponse.included?.find(
+        (variant: any) =>
+          variant.type === 'variants' && variant?.relationships?.product?.data?.id === item.id
+      );
+      return {
+        id: item.id,
+        name: item.attributes.name,
+        description: item.attributes.description || '',
+        // Use the variant's price, as the base product doesn't have one
+        price_formatted: firstVariant?.attributes.price_formatted || 'N/A',
+        buy_now_url: firstVariant?.attributes.buy_now_url || '',
+        thumb_url: item.attributes.thumb_url || null
+      };
+    });
 
     return products;
 
   } catch (error) {
-    console.error("Error fetching Lemon Squeezy products:", error);
-    // Return empty array or throw error
+    console.error("Failed to fetch Lemon Squeezy products:", error);
     return [];
   }
 }
 
-// Helper functions (already defined, keeping for completeness)
+// --- FIX APPLIED HERE ---
+// These helper functions now correctly access the properties of our flat product object.
 export function getLemonSqueezyProductImage(product: LemonSqueezyProduct): string | null {
-  return product.large_thumb_url;
+  return product.thumb_url;
 }
 
 export function getLemonSqueezyProductPrice(product: LemonSqueezyProduct): string {
-  return product.price;
+  return product.price_formatted;
 }
 
 export function getLemonSqueezyProductDescription(product: LemonSqueezyProduct): string {
