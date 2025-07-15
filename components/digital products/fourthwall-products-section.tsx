@@ -7,9 +7,10 @@ import { getAllFourthwallProducts, FourthwallProduct } from '@/lib/fourthwall';
 import ProductCard from '../product-card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RefreshCw, AlertCircle } from 'lucide-react';
+import { RefreshCw, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react';
 
 // --- Helper Components ---
+// (ProductSkeleton, ErrorDisplay, EmptyState components remain the same)
 function ProductSkeleton() {
   return (
     <div className="flex-shrink-0 w-72 bg-secondary/20 rounded-lg animate-pulse">
@@ -58,30 +59,24 @@ function EmptyState({ onRetry }: { onRetry: () => void }) {
   );
 }
 
+
 // --- Main Products Section ---
 export default function FourthwallProductsSection() {
   const [products, setProducts] = useState<FourthwallProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isScrollPaused, setIsScrollPaused] = useState(false);
-  const [focusedProduct, setFocusedProduct] = useState<string | null>(null);
   const checkoutDomain = process.env.NEXT_PUBLIC_FW_CHECKOUT;
+  
+  // Ref for the scrollable container
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const fetchProducts = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const fetchedProducts = await getAllFourthwallProducts();
-      if (fetchedProducts && fetchedProducts.length > 0) {
-        // Duplicate products to ensure smooth infinite scroll
-        let duplicatedProducts = [...fetchedProducts];
-        while (duplicatedProducts.length < 20 && fetchedProducts.length > 0) {
-          duplicatedProducts = [...duplicatedProducts, ...fetchedProducts];
-        }
-        setProducts(duplicatedProducts);
-      } else {
-        setProducts([]);
-      }
+      // NOTE: No longer duplicating products as infinite scroll is disabled
+      setProducts(fetchedProducts || []);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load products');
       setProducts([]);
@@ -94,19 +89,10 @@ export default function FourthwallProductsSection() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const handleProductHover = (isHovering: boolean) => {
-    setIsScrollPaused(isHovering);
-  };
-
-  const handleProductTap = (productKey: string) => {
-    if (focusedProduct === productKey) {
-      // Second tap - unfocus
-      setFocusedProduct(null);
-      setIsScrollPaused(false);
-    } else {
-      // First tap - focus
-      setFocusedProduct(productKey);
-      setIsScrollPaused(true);
+  const handleScroll = (direction: 'left' | 'right') => {
+    if (scrollContainerRef.current) {
+      const scrollAmount = direction === 'left' ? -300 : 300; // Scroll by roughly one card width
+      scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
     }
   };
 
@@ -115,64 +101,56 @@ export default function FourthwallProductsSection() {
   return (
     <>
       <style jsx>{`
-        @keyframes scroll {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
+        /* 
+          SCROLLING DISABLED: All @keyframes and .animate-scroll classes have been removed.
+          Scrolling is now handled manually by the arrow buttons.
+        */
+        .scroll-wrapper {
+          position: relative;
         }
-        
-        .animate-scroll {
-          animation: scroll 80s linear infinite;
-        }
-        
-        .animate-scroll.paused {
-          animation-play-state: paused;
-        }
-        
+
         .scroll-container {
+          display: flex;
+          gap: 2rem; /* 32px */
+          overflow-x: auto;
+          scrollbar-width: none; /* For Firefox */
+          -ms-overflow-style: none; /* For Internet Explorer and Edge */
+          padding-bottom: 1rem;
+          scroll-behavior: smooth; /* Enables smooth scrolling for scrollBy */
+
+          /* Fade out effect on the edges */
           mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
           -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
         }
-        
-        .product-item {
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          cursor: pointer;
+
+        .scroll-container::-webkit-scrollbar {
+          display: none; /* For Chrome, Safari, and Opera */
         }
         
         .product-item:hover {
-          transform: scale(1.05);
-          z-index: 10;
+          z-index: 10; /* Ensure hovered card is on top */
+          /* Scaling is handled internally by the card's 3D transform, not here */
         }
-        
-        .product-item.focused {
-          transform: scale(1.05);
-          z-index: 10;
-        }
-        
-        .product-item.focused::after {
-          content: '';
+
+        .arrow-button {
           position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(45deg, #a855f7, #8b5cf6);
-          border-radius: 10px;
-          z-index: -1;
-          opacity: 0.6;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 20;
+          height: 3.5rem;
+          width: 3.5rem;
+          border-radius: 9999px;
+          background-color: rgba(0, 0, 0, 0.4);
+          color: white;
+          transition: all 0.2s ease-in-out;
         }
-        
-        /* Mobile-specific styles */
-        @media (hover: none) and (pointer: coarse) {
-          .product-item:hover {
-            transform: none;
-          }
+        .arrow-button:hover {
+          background-color: rgba(128, 0, 255, 0.6);
+          transform: translateY(-50%) scale(1.1);
         }
-        
-        /* Disable hover effects on mobile */
-        @media (max-width: 768px) {
-          .product-item:hover {
-            transform: none;
-          }
+        .arrow-button:disabled {
+          opacity: 0.2;
+          cursor: not-allowed;
         }
       `}</style>
       
@@ -192,79 +170,23 @@ export default function FourthwallProductsSection() {
           {!loading && !error && products.length === 0 && <EmptyState onRetry={fetchProducts} />}
 
           {isScrollable && (
-            <div className="relative">
-              <div className="scroll-container py-4">
-                <div className="flex gap-8 pb-4">
-                  <div className={`flex gap-8 animate-scroll ${isScrollPaused ? 'paused' : ''}`}>
-                    {/* First set of products */}
-                    {products.map((product, index) => {
-                      const productKey = `${product.id}-${index}-a`;
-                      const isFocused = focusedProduct === productKey;
-                      
-                      return (
-                        <div
-                          key={productKey}
-                          className={`product-item flex-shrink-0 relative ${isFocused ? 'focused' : ''}`}
-                          onMouseEnter={() => handleProductHover(true)}
-                          onMouseLeave={() => handleProductHover(false)}
-                          onClick={() => handleProductTap(productKey)}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleProductTap(productKey);
-                            }
-                          }}
-                        >
-                          <ProductCard
-                            product={product}
-                            fourthwallCheckoutDomain={checkoutDomain}
-                            className="w-72"
-                          />
-                        </div>
-                      );
-                    })}
-                    {/* Second set of products for seamless loop */}
-                    {products.map((product, index) => {
-                      const productKey = `${product.id}-${index}-b`;
-                      const isFocused = focusedProduct === productKey;
-                      
-                      return (
-                        <div
-                          key={productKey}
-                          className={`product-item flex-shrink-0 relative ${isFocused ? 'focused' : ''}`}
-                          onMouseEnter={() => handleProductHover(true)}
-                          onMouseLeave={() => handleProductHover(false)}
-                          onClick={() => handleProductTap(productKey)}
-                          role="button"
-                          tabIndex={0}
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter' || e.key === ' ') {
-                              e.preventDefault();
-                              handleProductTap(productKey);
-                            }
-                          }}
-                        >
-                          <ProductCard
-                            product={product}
-                            fourthwallCheckoutDomain={checkoutDomain}
-                            className="w-72"
-                          />
-                        </div>
-                      );
-                    })}
+            <div className="scroll-wrapper">
+              <Button onClick={() => handleScroll('left')} className="arrow-button left-0 md:-left-4">
+                  <ArrowLeft />
+              </Button>
+              <div ref={scrollContainerRef} className="scroll-container py-8">
+                {products.map((product) => (
+                  <div key={product.id} className="product-item flex-shrink-0">
+                    <ProductCard
+                      product={product}
+                      fourthwallCheckoutDomain={checkoutDomain}
+                    />
                   </div>
-                </div>
+                ))}
               </div>
-              
-              <div className="text-center mt-8">
-                {focusedProduct && (
-                  <p className="text-gray-400 text-sm">
-                    Tap the product again to continue scrolling
-                  </p>
-                )}
-              </div>
+              <Button onClick={() => handleScroll('right')} className="arrow-button right-0 md:-right-4">
+                <ArrowRight />
+              </Button>
             </div>
           )}
         </div>
