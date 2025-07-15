@@ -1,6 +1,6 @@
-// components/product-card.tsx - Pokemon-style holographic version
+// components/product-card.tsx
 'use client';
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,380 +17,377 @@ import {
 interface ProductCardProps {
   product: FourthwallProduct;
   fourthwallCheckoutDomain: string | undefined;
-  className?: string;
 }
 
 const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/288x288/1a1a1a/6b46c1?text=No+Image';
 
-// Define colors based on CodePen's :root variables
-const DEFAULT_COLOR1 = 'rgb(0, 231, 255)';
-const DEFAULT_COLOR2 = 'rgb(255, 0, 231)';
-
-// For the sparkle linear gradient (Eevee-inspired from CodePen)
-const SPARKLE_GRADIENT_COLORS = 'linear-gradient(125deg, #ff008450 15%, #fca40040 30%, #ffff0030 40%, #00ff8a20 60%, #00cfff40 70%, #cc4cfa50 85%)';
-
-// Pre-defined background images for sparkles, including the holo.png
-const SPARKLE_BG_IMAGES = `url("https://assets.codepen.io/13471/sparkles.gif"), url("https://assets.codepen.io/13471/holo.png"), ${SPARKLE_GRADIENT_COLORS}`;
-
-// Pre-defined gradient for the main holographic overlay (CodePen's .card:before)
-const GRADIENT_DEFAULT = `linear-gradient(115deg, transparent 0%, ${DEFAULT_COLOR1} 25%, transparent 47%, transparent 53%, ${DEFAULT_COLOR2} 75%, transparent 100%)`;
-const GRADIENT_HOVER = `linear-gradient(110deg, transparent 25%, ${DEFAULT_COLOR1} 48%, ${DEFAULT_COLOR2} 52%, transparent 75%)`;
-
-
-// Helper function to create a slug from product name
 function createSlugFromName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 }
 
-export default function ProductCard({ product, fourthwallCheckoutDomain, className }: ProductCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const [isHovered, setIsHovered] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false); // Controls the CSS animation for non-hovered state
-  const [transformStyle, setTransformStyle] = useState(''); // JS controlled transform for hover
-  const [gradientDynamicPos, setGradientDynamicPos] = useState('50% 50%'); // JS controlled gradient pos for hover
-  const [sparkleDynamicPos, setSparkleDynamicPos] = useState('50% 50%'); // JS controlled sparkle pos for hover
-  const [sparkleDynamicOpacity, setSparkleDynamicOpacity] = useState(0.75); // JS controlled sparkle opacity for hover
-  
+export default function ProductCard({ product, fourthwallCheckoutDomain }: ProductCardProps) {
+  const transformRef = useRef<HTMLDivElement>(null);
+
   const imageUrl = getProductImage(product) || PLACEHOLDER_IMAGE_URL;
   const priceDisplay = getProductPrice(product);
   const description = getProductDescription(product);
-  
-  // Create a reliable slug - use the product's slug or generate one from the name
   const productSlug = product.slug || createSlugFromName(product.name);
   const productUrl = `/products/${productSlug}`;
-  
-  // Check if product has variants and is available
   const hasVariants = product.variants && product.variants.length > 0;
   const isAvailable = hasVariants && product.variants.some(variant => variant.unitPrice);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    
-    const card = cardRef.current;
-    const rect = card.getBoundingClientRect();
-    const l = e.clientX - rect.left;
-    const t = e.clientY - rect.top;
-    const h = rect.height;
+    const el = transformRef.current;
+    if (!el) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
     const w = rect.width;
+    const h = rect.height;
     
-    // Math for mouse position (from the Pokemon card effect - CodePen values)
-    const px = Math.abs(Math.floor(100 / w * l) - 100);
-    const py = Math.abs(Math.floor(100 / h * t) - 100);
-    const pa = (50 - px) + (50 - py);
-    
-    // Math for gradient / background positions - CodePen values
-    const lp = (50+(px - 50)/1.5);
-    const tp = (50+(py - 50)/1.5);
-    const px_spark = (50+(px - 50)/7);
-    const py_spark = (50+(py - 50)/7);
-    const p_opc = 20+(Math.abs(pa)*1.5);
-    const ty = ((tp - 50)/2) * -1;
-    const tx = ((lp - 50)/1.5) * .5;
-    
-    // Apply transformations
-    setTransformStyle(`rotateX(${ty}deg) rotateY(${tx}deg)`);
-    setGradientDynamicPos(`${lp}% ${tp}%`);
-    setSparkleDynamicPos(`${px_spark}% ${py_spark}%`);
-    setSparkleDynamicOpacity(Math.min(p_opc / 100, 1));
-  };
+    const ty = (y - h / 2) / 25 * -1;
+    const tx = (x - w / 2) / 20;
 
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-    setIsAnimating(false); // Stop animation when hovered
+    el.style.setProperty('--tx', `${tx}deg`);
+    el.style.setProperty('--ty', `${ty}deg`);
   };
 
   const handleMouseLeave = () => {
-    setIsHovered(false);
-    // Allow transitions to complete before triggering CSS animation
-    setTimeout(() => {
-        setIsAnimating(true);
-        // Stop the animation after its full cycle
-        setTimeout(() => setIsAnimating(false), 12000); // Animation duration
-    }, 550); // Slightly more than the longest transition (0.5s for transform)
+    const el = transformRef.current;
+    if (!el) return;
+    el.style.setProperty('--tx', '0deg');
+    el.style.setProperty('--ty', '0deg');
   };
 
   return (
-    <Card
-      ref={cardRef}
-      className={`
-        relative
-        flex flex-col
-        w-72 h-full
-        flex-shrink-0
-        overflow-hidden
-        touch-none
-        border-0
-        ${isAnimating ? 'animate-holo-card' : ''}
-        ${className || ''}
-      `}
-      style={{
-        // Apply JS transform only when hovered, otherwise let CSS animation handle it.
-        transform: isHovered ? transformStyle : undefined, 
-        transformOrigin: 'center',
-        transformStyle: 'preserve-3d',
-        borderRadius: '0', // Made edges square
-        backgroundColor: '#040712',
-        // CodePen's box-shadows for border glow
-        boxShadow: isHovered 
-          ? `-20px -20px 30px -25px ${DEFAULT_COLOR1}, 
-             20px 20px 30px -25px ${DEFAULT_COLOR2}, 
-             -7px -7px 10px -5px ${DEFAULT_COLOR1}, 
-             7px 7px 10px -5px ${DEFAULT_COLOR2}, 
-             0 0 13px 4px rgba(255,255,255,0.3),
-             0 55px 35px -20px rgba(0, 0, 0, 0.5)`
-          : `-5px -5px 5px -5px ${DEFAULT_COLOR1}, 
-             5px 5px 5px -5px ${DEFAULT_COLOR2}, 
-             -7px -7px 10px -5px transparent, 
-             7px 7px 10px -5px transparent, 
-             0 0 5px 0px rgba(255,255,255,0),
-             0 55px 35px -20px rgba(0, 0, 0, 0.5)`, // Subtle initial shadow from CodePen
-        willChange: 'transform, filter',
-      }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      {/* Holographic gradient overlay (Corresponds to .card:before in CodePen) */}
-      <div
-        className={`absolute inset-0 pointer-events-none z-10 ${isAnimating ? 'animate-holo-gradient' : ''}`}
-        style={{
-          backgroundImage: isHovered 
-            ? GRADIENT_HOVER 
-            : GRADIENT_DEFAULT,
-          backgroundPosition: isHovered ? gradientDynamicPos : '50% 50%',
-          backgroundSize: isHovered ? '250% 250%' : '300% 300%', // From CodePen
-          opacity: isHovered ? 0.88 : 0.5, // From CodePen
-          mixBlendMode: 'color-dodge',
-          filter: isHovered ? 'brightness(0.66) contrast(1.33)' : 'brightness(0.5) contrast(1)', // From CodePen
-        }}
-      />
-      
-      {/* Sparkles and holographic effect (Corresponds to .card:after in CodePen) */}
-      <div
-        className={`absolute inset-0 pointer-events-none z-20 ${isAnimating ? 'animate-holo-sparkle' : ''}`}
-        style={{
-          backgroundImage: SPARKLE_BG_IMAGES, // Pre-defined for cleaner code
-          backgroundPosition: isHovered ? sparkleDynamicPos : '50% 50%',
-          backgroundSize: '160%', // From CodePen
-          backgroundBlendMode: 'overlay',
-          mixBlendMode: 'color-dodge',
-          opacity: isHovered ? Math.min(sparkleDynamicOpacity * 1.8, 1) : 0.75, // Increased sparkle opacity on hover, base from CodePen
-          filter: isHovered ? 'brightness(1) contrast(1)' : 'brightness(1) contrast(1)', // From CodePen, will be overridden by animation
-        }}
-      />
-
-      <CardHeader className="p-0 relative z-30">
-        <div className="relative w-full h-56 overflow-hidden" style={{ borderRadius: '0' }}> {/* Made image edges square */}
-          <Image
-            src={imageUrl}
-            alt={product.name}
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            fill
-            style={{ objectFit: 'cover' }}
-            className="transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
-      </CardHeader>
-      
-      <CardContent className="flex-grow p-4 relative z-30">
-        <CardTitle className="text-xl font-bold mb-2 text-white line-clamp-2 transition-colors duration-300">
-          {product.name}
-        </CardTitle>
-        
-        <CardDescription
-          className="text-sm text-gray-300 line-clamp-3 prose dark:prose-invert prose-sm"
-          dangerouslySetInnerHTML={{ __html: description }}
-        />
-        
-        {/* Variants preview */}
-        {hasVariants && product.variants.length > 1 && (
-          <div className="mt-3">
-            <p className="text-xs text-gray-400 mb-1">
-              {product.variants.length} variant{product.variants.length > 1 ? 's' : ''} available
-            </p>
-            <div className="flex flex-wrap gap-1 max-h-8 overflow-hidden">
-              {product.variants.slice(0, 3).map((variant) => (
-                <Badge 
-                  key={variant.id}
-                  variant="outline"
-                  className="text-xs px-2 py-0 border-purple-400/40 text-purple-200 bg-purple-900/20"
-                >
-                  {variant.name}
-                </Badge>
-              ))}
-              {product.variants.length > 3 && (
-                <Badge 
-                  variant="outline"
-                  className="text-xs px-2 py-0 border-purple-400/40 text-purple-200 bg-purple-900/20"
-                >
-                  +{product.variants.length - 3} more
-                </Badge>
-              )}
-            </div>
-          </div>
-        )}
-      </CardContent>
-      
-      <CardFooter className="flex justify-between items-start p-4 pt-0 relative z-30">
-        {/* Left side: Price and Stock */}
-        <div className="flex flex-col">
-          <span className="text-2xl font-extrabold text-white">
-            {priceDisplay}
-          </span>
-          {hasVariants && product.variants.length > 1 && (
-            <span className="text-xs text-gray-400 -mt-1">
-              Starting from
-            </span>
-          )}
-          {/* Stock Status Indicator */}
-          <div className="flex items-center gap-2 mt-2">
-            <span
-              className={`
-                w-2.5 h-2.5 rounded-full
-                ${isAvailable ? 'bg-green-400' : 'bg-gray-500'}
-              `}
-            />
-            <span
-              className={`
-                text-xs font-medium
-                ${isAvailable ? 'text-green-300' : 'text-gray-400'}
-              `}
-            >
-              {isAvailable ? 'In Stock' : 'Out of Stock'}
-            </span>
-          </div>
-        </div>
-        
-        {/* Right side: Buttons */}
-        <div className="flex flex-col gap-2">
-          <Link href={productUrl} passHref>
-            <Button 
-              className="bg-purple-600 hover:bg-purple-500 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300 shadow-lg shadow-purple-500/25 button-holo-glow"
-              size="sm"
-            >
-              View Details
-            </Button>
-          </Link>
-          
-          {/* Quick buy button for external link */}
-          {fourthwallCheckoutDomain && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-purple-400/40 text-purple-200 hover:bg-purple-600/20 text-xs bg-purple-900/20 button-holo-glow"
-              onClick={() => window.open(`https://${fourthwallCheckoutDomain}/products/${productSlug}`, '_blank')}
-            >
-              <ExternalLink className="h-3 w-3 mr-1" />
-              Quick Buy
-            </Button>
-          )}
-        </div>
-      </CardFooter>
-      
-      {/* CSS animations for the holographic effect and button glows */}
+    <>
       <style jsx>{`
-        /* Card transitions (from CodePen) */
-        .card {
-          transition: transform 0.5s ease, box-shadow 0.2s ease;
+        /* 1. Layout Wrapper: Consistent fixed dimensions */
+        .card-layout-wrapper {
+          width: 18rem;
+          height: 32rem;
+          perspective: 1000px;
+          flex-shrink: 0;
         }
 
-        /* Before/After pseudo-element transitions (from CodePen) */
-        .card > div:first-of-type, .card > div:nth-of-type(2) { /* Targeting the overlay divs */
-            transition: all 0.33s ease;
+        /* 2. Transform Wrapper: Handles ONLY 3D rotation */
+        .card-transform-wrapper {
+          --tx: 0deg; --ty: 0deg;
+          width: 100%;
+          height: 100%;
+          transform-style: preserve-3d;
+          transform: rotateX(var(--ty)) rotateY(var(--tx));
+          transition: transform 0.1s ease;
         }
 
-        /* Keyframes from CodePen */
-        @keyframes holo-card {
-          0%, 100% { transform: rotateZ(0deg) rotateX(0deg) rotateY(0deg); }
-          5%, 8% { transform: rotateZ(0deg) rotateX(6deg) rotateY(-20deg); }
-          13%, 16% { transform: rotateZ(0deg) rotateX(-9deg) rotateY(32deg); }
-          35%, 38% { transform: rotateZ(3deg) rotateX(12deg) rotateY(20deg); }
-          55% { transform: rotateZ(-3deg) rotateX(-12deg) rotateY(-27deg); }
+        /* 3. Visual Wrapper: Handles scaling and visual effects */
+        .card-visual-wrapper {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          transform: scale(1);
+          transition: transform 0.2s ease-out;
+          will-change: transform;
+          border-radius: 0.75rem;
+          overflow: hidden;
+        }
+
+        .card-layout-wrapper:hover .card-visual-wrapper {
+          transform: scale(1.05);
+          transition: transform 0.1s ease-in;
         }
         
-        @keyframes holo-sparkle {
-          0%, 100% { 
-            opacity: 0.75; 
-            background-position: 50% 50%; 
-            filter: brightness(1.2) contrast(1.25);
-          }
-          5%, 8% { 
-            opacity: 1; 
-            background-position: 40% 40%; 
-            filter: brightness(0.8) contrast(1.2);
-          }
-          13%, 16% { 
-            opacity: 0.5; 
-            background-position: 50% 50%; 
-            filter: brightness(1.2) contrast(0.8);
-          }
-          35%, 38% { 
-            opacity: 1; 
-            background-position: 60% 60%; 
-            filter: brightness(1) contrast(1);
-          }
-          55% { 
-            opacity: 0.33; 
-            background-position: 45% 45%; 
-            filter: brightness(1.2) contrast(1.25);
-          }
+        .card-visual-wrapper::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          mix-blend-mode: color-dodge;
+          transition: opacity .4s ease-in-out, filter .4s ease-in-out;
+          
+          background-image: url("https://assets.codepen.io/13471/sparkles.gif");
+          background-position: 50% 50%;
+          background-size: 180%;
+
+          opacity: 0.2;
+          filter: brightness(0.9) contrast(1.3);
         }
 
-        @keyframes holo-gradient {
-          0%, 100% {
-            opacity: 0.5;
-            background-position: 50% 50%;
-            filter: brightness(.5) contrast(1);
-          }
-          5%, 9% {
-            background-position: 100% 100%;
-            opacity: 1;
-            filter: brightness(.75) contrast(1.25);
-          }
-          13%, 17% {
-            background-position: 0% 0%;
-            opacity: .88;
-          }
-          35%, 39% {
-            background-position: 100% 100%;
-            opacity: 1;
-            filter: brightness(.5) contrast(1);
-          }
-          55% {
-            background-position: 0% 0%;
-            opacity: 1;
-            filter: brightness(.75) contrast(1.25);
-          }
-        }
-        
-        .animate-holo-card {
-          animation: holo-card 12s ease 0s 1;
-        }
-        
-        .animate-holo-sparkle {
-          animation: holo-sparkle 12s ease 0s 1;
+        /* 
+          MODIFICATION: Reduced the glow effect on hover.
+          - Lowered opacity from 1 to 0.6
+          - Reduced brightness from 2.5 to 1.6
+          - Reduced contrast from 3 to 1.8
+          This creates a more subtle and less overwhelming "glow".
+        */
+        .card-layout-wrapper:hover .card-visual-wrapper::after {
+          opacity: 0.6;
+          filter: brightness(1.6) contrast(1.8);
         }
 
-        .animate-holo-gradient {
-          animation: holo-gradient 12s ease 0s 1;
+        /* Gradient overlay for better text readability */
+        .card-visual-wrapper::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+          pointer-events: none;
+          background: linear-gradient(
+            135deg,
+            rgba(147, 51, 234, 0.1) 0%,
+            rgba(79, 70, 229, 0.05) 25%,
+            transparent 50%,
+            rgba(147, 51, 234, 0.15) 100%
+          );
+          border-radius: 0.75rem;
+          opacity: 0;
+          transition: opacity 0.3s ease;
         }
 
-        /* Button Holographic Glow */
-        .button-holo-glow {
-          transition: box-shadow 0.2s ease-in-out;
+        .card-layout-wrapper:hover .card-visual-wrapper::before {
+          opacity: 1;
         }
 
-        .button-holo-glow:hover {
-          box-shadow: 0 0 15px 3px rgba(128, 0, 255, 0.7), 0 0 5px 1px rgba(255, 255, 255, 0.5);
+        .card-ui-content {
+          position: relative;
+          z-index: 3;
+          width: 100%;
+          height: 100%;
+          border-radius: 0.75rem;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          background: linear-gradient(135deg, 
+            rgba(88, 28, 135, 0.15) 0%, 
+            rgba(17, 24, 39, 0.8) 100%
+          );
+          border: 2px solid rgba(147, 51, 234, 0.3);
+          box-shadow: 
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        .button-holo-glow:active {
-          box-shadow: 0 0 8px 1px rgba(128, 0, 255, 0.9), 0 0 2px 0px rgba(255, 255, 255, 0.7);
+        /* Fixed image container */
+        .image-container {
+          position: relative;
+          width: 100%;
+          height: 14rem;
+          flex-shrink: 0;
+          overflow: hidden;
+          background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+        }
+
+        /* Content area with consistent spacing */
+        .content-area {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          padding: 1rem;
+          min-height: 0;
+        }
+
+        /* Title with consistent height */
+        .product-title {
+          font-size: 1.25rem; /* 20px */
+          font-weight: 700;
+          margin-bottom: 0.25rem;
+          color: white;
+          height: 3.2rem; 
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          line-height: 1.25;
+        }
+
+        /* Description with flexible height */
+        .product-description {
+          font-size: 0.875rem;
+          color: rgb(209, 213, 219);
+          flex: 1;
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          line-height: 1.4;
+          margin-bottom: 1rem;
+        }
+
+        /* Footer with consistent height */
+        .card-footer {
+          flex-shrink: 0;
+          display: flex;
+          justify-content: space-between;
+          align-items: end;
+          padding: 0 1rem 1rem;
+          min-height: 5rem;
+        }
+
+        /* Price section */
+        .price-section {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .price-display {
+          font-size: 1.5rem;
+          font-weight: 800;
+          color: white;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .price-label {
+          font-size: 0.75rem;
+          color: rgb(156, 163, 175);
+          margin-top: -0.25rem;
+        }
+
+        .stock-indicator {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+
+        .stock-dot {
+          width: 0.625rem;
+          height: 0.625rem;
+          border-radius: 50%;
+        }
+
+        .stock-text {
+          font-size: 0.75rem;
+          font-weight: 500;
+        }
+
+        /* Button styling */
+        .button-group {
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+          align-items: end;
+        }
+
+        .view-details-btn {
+          background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+          color: white;
+          font-weight: 600;
+          border-radius: 0.5rem;
+          padding: 0.5rem 1rem;
+          font-size: 0.875rem;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 14px 0 rgba(147, 51, 234, 0.3);
+        }
+
+        .view-details-btn:hover {
+          background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 20px 0 rgba(147, 51, 234, 0.4);
+        }
+
+        .quick-buy-btn {
+          background: rgba(147, 51, 234, 0.1);
+          border: 1px solid rgba(147, 51, 234, 0.3);
+          color: rgb(196, 181, 253);
+          font-size: 0.75rem;
+          padding: 0.375rem 0.75rem;
+          border-radius: 0.375rem;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          backdrop-filter: blur(4px);
+        }
+
+        .quick-buy-btn:hover {
+          background: rgba(147, 51, 234, 0.2);
+          border-color: rgba(147, 51, 234, 0.5);
+          transform: translateY(-1px);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .card-layout-wrapper {
+            width: 16rem;
+            height: 28rem;
+          }
+          
+          .image-container {
+            height: 12rem;
+          }
         }
       `}</style>
-    </Card>
+      
+      <div
+        className="card-layout-wrapper"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div ref={transformRef} className="card-transform-wrapper">
+          <div className="card-visual-wrapper">
+            <div className="card-ui-content">
+              {/* Fixed height image container */}
+              <div className="image-container">
+                <Image 
+                  src={imageUrl} 
+                  alt={product.name} 
+                  sizes="(max-width: 768px) 16rem, 18rem"
+                  fill 
+                  style={{ objectFit: 'cover' }} 
+                  priority 
+                />
+              </div>
+
+              {/* Content area with consistent layout */}
+              <div className="content-area">
+                <h3 className="product-title">
+                  {product.name}
+                </h3>
+                
+                <div 
+                  className="product-description" 
+                  dangerouslySetInnerHTML={{ __html: description }}
+                />
+              </div>
+
+              {/* Fixed footer */}
+              <div className="card-footer">
+                <div className="price-section">
+                  <span className="price-display">{priceDisplay}</span>
+                  {hasVariants && product.variants.length > 1 && (
+                    <span className="price-label">Starting from</span>
+                  )}
+                  <div className="stock-indicator">
+                    <span className={`stock-dot ${isAvailable ? 'bg-green-400' : 'bg-gray-500'}`} />
+                    <span className={`stock-text ${isAvailable ? 'text-green-300' : 'text-gray-400'}`}>
+                      {isAvailable ? 'In Stock' : 'Out of Stock'}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="button-group">
+                  <Link href={productUrl} passHref>
+                    <button className="view-details-btn">
+                      View Details
+                    </button>
+                  </Link>
+                  {fourthwallCheckoutDomain && (
+                    <button 
+                      className="quick-buy-btn"
+                      onClick={() => window.open(`https://${fourthwallCheckoutDomain}/products/${productSlug}`, '_blank')}
+                    >
+                      <ExternalLink className="inline w-3 h-3 mr-1" /> 
+                      Quick Buy
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }
