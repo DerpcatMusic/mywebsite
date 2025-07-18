@@ -3,7 +3,7 @@ import Navigation from "@/components/navigation"
 import AboutToursSection from "@/components/about-tours-section"
 import BookingSection from "@/components/booking-section"
 import ReleaseSection from "@/components/release-section"
-import FourthwallProductsSection from "@/components/digital products/fourthwall-products-section"
+import FourthwallProductsSection from "@/components/fourthwall-products-section"
 // import AltProductsSection from "@/components/digital products/alt-products-section"; // REMOVE THIS LINE
 import ProductLoader from "@/components/digital products/product-loader"; // ADD THIS LINE
 import { currentRelease } from "@/config/releases"
