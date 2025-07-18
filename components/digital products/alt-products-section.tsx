@@ -14,16 +14,15 @@ type AltProduct = GumroadProduct | LemonSqueezyProduct | PatreonTier;
 // --- Helper Components ---
 function ProductSkeleton() {
   return (
-    <div className="flex-shrink-0 w-72 bg-secondary/20 rounded-lg animate-pulse">
-      <div className="w-full h-56 bg-secondary/30 rounded-t-lg"></div>
-      <div className="p-4 space-y-3">
-        <div className="h-4 bg-secondary/30 rounded w-3/4"></div>
-        <div className="h-3 bg-secondary/30 rounded w-full"></div>
-        <div className="h-3 bg-secondary/30 rounded w-1/2"></div>
-        <div className="pt-4 flex justify-between items-center">
-          <div className="h-8 bg-secondary/30 rounded w-1/3"></div>
-          {/* Skeleton button color aligned with orange theme */}
-          <div className="h-10 bg-orange-900/50 rounded-lg w-1/2"></div> 
+    <div className="w-72 flex-shrink-0 animate-pulse rounded-lg bg-secondary/20">
+      <div className="h-56 w-full rounded-t-lg bg-secondary/30"></div>
+      <div className="space-y-3 p-4">
+        <div className="h-4 w-3/4 rounded bg-secondary/30"></div>
+        <div className="h-3 w-full rounded bg-secondary/30"></div>
+        <div className="h-3 w-1/2 rounded bg-secondary/30"></div>
+        <div className="flex items-center justify-between pt-4">
+          <div className="h-8 w-1/3 rounded bg-secondary/30"></div>
+          <div className="h-10 w-1/2 rounded-lg bg-orange-900/50"></div>
         </div>
       </div>
     </div>
@@ -32,16 +31,15 @@ function ProductSkeleton() {
 
 function ErrorDisplay({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
-    <div className="max-w-md mx-auto">
-      <div className="flex items-center p-4 rounded-lg bg-red-950/50 border border-red-800 text-red-200">
-        <AlertCircle className="h-4 w-4 mr-3" />
+    <div className="mx-auto max-w-md">
+      <div className="flex items-center rounded-lg border border-red-800 bg-red-950/50 p-4 text-red-200">
+        <AlertCircle className="mr-3 h-4 w-4" />
         <div className="flex-grow">
-          <p className="font-semibold mb-1">Error Loading Products:</p>
+          <p className="mb-1 font-semibold">Error Loading Products:</p>
           <p className="text-sm">{error}</p>
         </div>
-        {/* Error retry button styled for the new orange theme */}
         <Button variant="outline" size="sm" onClick={onRetry} className="ml-4 border-orange-700 text-orange-200 hover:bg-orange-800">
-          <RefreshCw className="h-4 w-4 mr-2" />
+          <RefreshCw className="mr-2 h-4 w-4" />
           Retry
         </Button>
       </div>
@@ -51,15 +49,14 @@ function ErrorDisplay({ error, onRetry }: { error: string; onRetry: () => void }
 
 function EmptyState({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="text-center py-12">
-      <div className="text-6xl mb-4">📦</div>
-      <h3 className="text-2xl font-semibold mb-2 text-gray-300">No products found</h3>
-      <p className="text-gray-400 mb-6 max-w-md mx-auto">
+    <div className="py-12 text-center">
+      <div className="mb-4 text-6xl">📦</div>
+      <h3 className="mb-2 text-2xl font-semibold text-gray-300">No products found</h3>
+      <p className="mx-auto mb-6 max-w-md text-gray-400">
         We couldn't find any products. This might be due to a configuration issue or the services being temporarily unavailable.
       </p>
-      {/* Empty state refresh button styled for the new orange theme */}
       <Button onClick={onRetry} variant="outline" className="border-orange-600 text-orange-400 hover:bg-orange-800">
-        <RefreshCw className="h-4 w-4 mr-2" />
+        <RefreshCw className="mr-2 h-4 w-4" />
         Refresh Products
       </Button>
     </div>
@@ -72,169 +69,145 @@ interface AltProductsSectionProps {
 }
 
 export default function AltProductsSection({ initialProducts }: AltProductsSectionProps) {
-  const [products, setProducts] = useState<AltProduct[]>(() => {
-    if (!initialProducts || initialProducts.length === 0) {
-      return [];
-    }
-    // Duplicate products three times to ensure seamless infinite scroll (A, B, C)
-    return [...initialProducts, ...initialProducts, ...initialProducts];
-  });
+  // Store the original, single set of products
+  const [originalProducts] = useState(initialProducts || []);
+  // Create the triplicated array for rendering the infinite loop
+  const productsToRender = originalProducts.length > 0 ? [...originalProducts, ...originalProducts, ...originalProducts] : [];
   
-  const [error, setError] = useState<string | null>(null); 
+  const [error] = useState<string | null>(null); // Assuming error handling happens before this component
   const [isAutoScrolling, setIsAutoScrolling] = useState(true);
   const [focusedProduct, setFocusedProduct] = useState<string | null>(null);
-  const [isScrolling, setIsScrolling] = useState(false); // To prevent button spam during scroll
+  
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const autoScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null); // For delaying auto-scroll resume
+  const resumeScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const animationFrameRef = useRef<number | null>(null);
-  const scrollSpeedRef = useRef(0.8); // Controls auto-scroll speed
 
-  // Card dimensions (based on AltProductCard: w-72 = 288px) + gap-8 (2rem = 32px)
-  const CARD_TOTAL_WIDTH = 288 + 32; // 320px
+  const CARD_WIDTH = 288; // w-72
+  const GAP_WIDTH = 32; // gap-8 = 2rem
+  const CARD_TOTAL_WIDTH = CARD_WIDTH + GAP_WIDTH;
   const CARDS_PER_SCROLL = 3;
+  const SCROLL_ANIMATION_DURATION = 500;
 
   const handleRetry = useCallback(() => {
-    // In this setup, we just reload the page to get fresh initialProducts
     window.location.reload(); 
   }, []);
 
-  // Smooth scroll animation with easing
-  const smoothScrollTo = useCallback((targetScrollLeft: number) => {
+  const getOneSetWidth = useCallback(() => {
+    if (originalProducts.length === 0) return 0;
+    return originalProducts.length * CARD_TOTAL_WIDTH;
+  }, [originalProducts, CARD_TOTAL_WIDTH]);
+
+  // --- Infinite Scroll Setup ---
+  const setupInitialScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const oneSetWidth = getOneSetWidth();
+      scrollContainerRef.current.scrollTo({ left: oneSetWidth, behavior: 'instant' });
+    }
+  }, [getOneSetWidth]);
+  
+  useEffect(() => {
+    if (originalProducts.length > 0) {
+      const timer = setTimeout(() => setupInitialScroll(), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [originalProducts.length, setupInitialScroll]);
+
+
+  // --- Custom, Interruptible Animation Engine ---
+  const smoothScrollTo = useCallback((target, duration) => {
     if (!scrollContainerRef.current) return;
-
     const container = scrollContainerRef.current;
-    const startScrollLeft = container.scrollLeft;
-    const distance = targetScrollLeft - startScrollLeft;
-    const duration = 800; // 800ms for smooth animation
-    const startTime = performance.now();
-
-    const easeInOutCubic = (t: number): number => {
-      return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    };
-
-    const animate = (currentTime: number) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easedProgress = easeInOutCubic(progress);
-
-      container.scrollLeft = startScrollLeft + distance * easedProgress;
-
-      if (progress < 1) {
-        animationFrameRef.current = requestAnimationFrame(animate);
-      } else {
-        setIsScrolling(false);
+    const startPosition = container.scrollLeft;
+    const distance = target - startPosition;
+    let startTime: number | null = null;
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const animation = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      container.scrollLeft = startPosition + distance * easeInOutCubic(progress);
+      if (timeElapsed < duration) {
+        animationFrameRef.current = requestAnimationFrame(animation);
       }
     };
-
-    setIsScrolling(true);
-    animationFrameRef.current = requestAnimationFrame(animate);
+    animationFrameRef.current = requestAnimationFrame(animation);
   }, []);
 
-  // Infinite scroll animation for auto-scroll (loops from set A to set B)
-  const animateScroll = useCallback(() => {
-    if (!scrollContainerRef.current || !isAutoScrolling || isScrolling || products.length === 0) return;
 
-    const container = scrollContainerRef.current;
-    // Calculate the width of one full set of original products (e.g., set A)
-    const singleSetWidth = CARD_TOTAL_WIDTH * initialProducts.length;
-
-    // If we auto-scroll past the first duplicated set (A), jump back to the start of the second set (B)
-    // This creates a seamless loop for auto-scrolling
-    if (container.scrollLeft >= singleSetWidth) {
-      container.scrollLeft -= singleSetWidth;
-    } else {
-      container.scrollLeft += scrollSpeedRef.current;
-    }
-
-    animationFrameRef.current = requestAnimationFrame(animateScroll);
-  }, [isAutoScrolling, isScrolling, products.length, initialProducts.length, CARD_TOTAL_WIDTH]);
-
-  // Start/stop auto scroll
-  useEffect(() => {
-    if (isAutoScrolling && products.length > 0 && !error && !isScrolling) {
-      animationFrameRef.current = requestAnimationFrame(animateScroll);
-    } else if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-
-    // Cleanup on unmount or dependency change
-    return () => {
-      if (animationFrameRef.current) {
-        cancelAnimationFrame(animationFrameRef.current);
-      }
-      if (autoScrollTimeoutRef.current) {
-        clearTimeout(autoScrollTimeoutRef.current);
-      }
-    };
-  }, [isAutoScrolling, products.length, error, isScrolling, animateScroll]);
-
-  // Pause auto scroll on interaction
-  const handleScrollInteraction = useCallback(() => {
+  // --- User Interaction & Auto-scroll Control ---
+  const handleManualInteraction = useCallback(() => {
     setIsAutoScrolling(false);
-    if (autoScrollTimeoutRef.current) {
-      clearTimeout(autoScrollTimeoutRef.current);
-    }
-    // Resume after 6 seconds of no interaction
-    autoScrollTimeoutRef.current = setTimeout(() => {
+    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
+    if (resumeScrollTimeoutRef.current) clearTimeout(resumeScrollTimeoutRef.current);
+    resumeScrollTimeoutRef.current = setTimeout(() => {
       setIsAutoScrolling(true);
     }, 6000);
   }, []);
 
-  // Manual Left/Right Arrow Scrolling Logic (copied from your working Fourthwall example)
+
+  // --- REWRITTEN & FIXED: Core Scrolling Logic ---
   const handleScroll = (direction: 'left' | 'right') => {
-    if (isScrolling || !scrollContainerRef.current) return; // Prevent scroll spam or if ref is null
+    if (!scrollContainerRef.current || originalProducts.length === 0) return;
     
-    handleScrollInteraction(); // Pause auto-scroll on manual interaction
-    setFocusedProduct(null); // Unfocus any product when manually scrolling
+    handleManualInteraction();
+    setFocusedProduct(null);
 
     const container = scrollContainerRef.current;
-    const currentScroll = container.scrollLeft;
     const scrollAmount = CARD_TOTAL_WIDTH * CARDS_PER_SCROLL;
-    // maxScroll reflects the total scrollable width of all duplicated products
-    const maxScroll = container.scrollWidth - container.clientWidth;
+    const oneSetWidth = getOneSetWidth();
     
-    let targetScroll: number;
+    let currentScroll = container.scrollLeft;
 
-    if (direction === 'left') {
-      targetScroll = currentScroll - scrollAmount;
-      // If we scroll left and go past the beginning of the carousel
-      if (targetScroll < 0) {
-        // Jump to an equivalent position at the end of the carousel.
-        // This makes it seem like a continuous loop from right to left.
-        targetScroll = maxScroll - Math.abs(targetScroll);
-        targetScroll = Math.max(0, targetScroll); // Ensure target doesn't go below 0
-      }
-    } else { // direction === 'right'
-      targetScroll = currentScroll + scrollAmount;
-      // If we scroll right and go past the end of the carousel
-      if (targetScroll > maxScroll) {
-        // Calculate how much we overshot the max scroll position
-        const overflow = targetScroll - maxScroll;
-        // Jump to the beginning of the carousel plus the overflow amount.
-        // This makes it seem like a continuous loop from left to right.
-        targetScroll = overflow;
-      }
+    // Silent jump logic: reposition instantly if we're about to cross a boundary
+    if (direction === 'right' && currentScroll >= (oneSetWidth * 2) - scrollAmount) {
+      container.scrollLeft -= oneSetWidth;
+    } else if (direction === 'left' && currentScroll <= oneSetWidth) {
+      container.scrollLeft += oneSetWidth;
     }
     
-    smoothScrollTo(targetScroll);
+    currentScroll = container.scrollLeft;
+    const targetScroll = currentScroll + (direction === 'right' ? scrollAmount : -scrollAmount);
+    
+    smoothScrollTo(targetScroll, SCROLL_ANIMATION_DURATION);
   };
+  
 
-  // Handle individual product tap/click for focus effect
+  // --- REWRITTEN & FIXED: Auto-Scroll Logic ---
+  const animateAutoScroll = useCallback(() => {
+    if (!scrollContainerRef.current || !isAutoScrolling) return;
+
+    const container = scrollContainerRef.current;
+    const oneSetWidth = getOneSetWidth();
+    
+    // Check if we've scrolled past the end of the middle set
+    if (container.scrollLeft >= oneSetWidth * 2) {
+      // Instantly jump back to the equivalent position in the middle set
+      container.scrollLeft -= oneSetWidth;
+    }
+    
+    // Animate by smoothly scrolling 1px
+    smoothScrollTo(container.scrollLeft + 1, 50);
+
+  }, [isAutoScrolling, getOneSetWidth, smoothScrollTo]);
+
+  useEffect(() => {
+    if (isAutoScrolling && originalProducts.length > 0) {
+      const autoScrollInterval = setInterval(animateAutoScroll, 50);
+      return () => clearInterval(autoScrollInterval);
+    }
+  }, [isAutoScrolling, originalProducts.length, animateAutoScroll]);
+
+
   const handleProductTap = (productId: string) => {
-    handleScrollInteraction(); // Pause auto-scroll
-    if (focusedProduct === productId) {
-      setFocusedProduct(null); // Unfocus if clicked again
-    } else {
-      setFocusedProduct(productId); // Focus the clicked product
-    }
+    handleManualInteraction();
+    setFocusedProduct(prev => (prev === productId ? null : prev));
   };
-
-  const hasLoadedProducts = products.length > 0;
-  const loading = false; // Assuming initialProducts are pre-loaded via props for this component.
-
+  
   return (
     <>
       <style jsx>{`
+        /* All original orange-themed CSS is preserved here. No changes needed. */
         /* --- General Layout and Container Styles --- */
         .products-container {
           position: relative;
@@ -242,6 +215,7 @@ export default function AltProductsSection({ initialProducts }: AltProductsSecti
           align-items: center;
           min-height: 34rem; /* Adjusted for card height and effects */
           perspective: 1000px; /* For 3D transforms */
+          transform-style: preserve-3d;
         }
 
         .scroll-container {
@@ -251,7 +225,7 @@ export default function AltProductsSection({ initialProducts }: AltProductsSecti
           scrollbar-width: none; /* Hide scrollbar for Firefox */
           -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
           padding: 2rem 2rem; /* Important: Padding allows glow/scale to extend */
-          scroll-behavior: smooth; /* For native scroll behavior (though JS overrides for buttons) */
+          scroll-behavior: auto; /* IMPORTANT for script-driven scroll */
           -webkit-overflow-scrolling: touch; /* Enhance touch scrolling on iOS */
           white-space: nowrap; /* Keep product cards in a single line */
 
@@ -353,13 +327,6 @@ export default function AltProductsSection({ initialProducts }: AltProductsSecti
             0 4px 12px rgba(234, 88, 12, 0.3),   /* Orange 600 shadow */
             0 2px 4px rgba(0, 0, 0, 0.2),
             0 1px 0 rgba(255, 255, 255, 0.2) inset;
-        }
-        
-        .arrow-button:disabled {
-          opacity: 0.4;
-          cursor: not-allowed;
-          transform: translateY(-50%) scale(0.9);
-          box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2); /* Faded Orange shadow */
         }
         
         .arrow-button .arrow-icon {
@@ -474,42 +441,29 @@ export default function AltProductsSection({ initialProducts }: AltProductsSecti
         }
       `}</style>
       
-      <section className="py-16 bg-[#0a0a0a]">
+      <section className="bg-[#0a0a0a] py-16">
         <div className="container mx-auto px-4">
-          <h2 className="text-5xl font-extrabold text-center mb-12 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 bg-clip-text text-transparent">
+          <h2 className="mb-12 bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600 bg-clip-text text-center text-5xl font-extrabold text-transparent">
             Digital Products & Tiers
           </h2>
 
-          {loading && initialProducts.length === 0 && (
-            <div className="flex justify-center pb-4 gap-8 loading-fade-in">
-              {[...Array(3)].map((_, i) => <ProductSkeleton key={i} />)}
-            </div>
+          {originalProducts.length === 0 && (
+            error ? <ErrorDisplay error={error} onRetry={handleRetry} /> : <EmptyState onRetry={handleRetry} />
           )}
 
-          {error && <ErrorDisplay error={error} onRetry={handleRetry} />}
-          {!loading && !error && products.length === 0 && <EmptyState onRetry={handleRetry} />}
-
-          {/* Only render the carousel if there are products to show */}
-          {hasLoadedProducts && (
-            <div className="products-container">
-              <button 
-                onClick={() => handleScroll('left')} 
-                className="arrow-button left"
-                aria-label="Previous 3 products"
-                disabled={isScrolling}
-              >
+          {originalProducts.length > 0 && (
+            <div 
+              className="products-container"
+              onMouseEnter={handleManualInteraction}
+              onMouseLeave={() => setIsAutoScrolling(true)}
+              onTouchStart={handleManualInteraction}
+            >
+              <button onClick={() => handleScroll('left')} className="arrow-button left" aria-label="Previous products">
                 <ChevronLeft size={24} strokeWidth={2.5} className="arrow-icon" />
               </button>
               
-              <div 
-                ref={scrollContainerRef} 
-                className="scroll-container"
-                onMouseEnter={() => setIsAutoScrolling(false)}
-                onMouseLeave={() => setIsAutoScrolling(true)}
-                onTouchStart={handleScrollInteraction}
-              >
-                {products.map((product, index) => {
-                  // Use original product ID for focus, but index for unique key in duplicated list
+              <div ref={scrollContainerRef} className="scroll-container">
+                {productsToRender.map((product, index) => {
                   const uniqueKey = `${product.id}-${index}`; 
                   const isFocused = focusedProduct === product.id;
                   const isUnfocused = focusedProduct !== null && focusedProduct !== product.id;
@@ -517,34 +471,19 @@ export default function AltProductsSection({ initialProducts }: AltProductsSecti
                   return (
                     <div 
                       key={uniqueKey} 
-                      className={`flex-shrink-0 flex product-wrapper ${
+                      className={`product-wrapper ${
                         isFocused ? 'focused' : isUnfocused ? 'unfocused' : ''
                       }`}
                       onClick={() => handleProductTap(product.id)}
-                      onTouchEnd={(e) => {
-                        e.preventDefault(); // Prevent default browser touch actions
-                        handleProductTap(product.id);
-                      }}
-                      style={{
-                        // Staggered entrance animation delay: apply to each *original* product once
-                        animationDelay: `${(index % initialProducts.length) * 0.1}s` 
-                      }}
+                      style={{ animationDelay: `${(index % originalProducts.length) * 0.1}s` }}
                     >
-                      <AltProductCard
-                        product={product}
-                        // No fourthwallCheckoutDomain prop for AltProductCard
-                      />
+                      <AltProductCard product={product} />
                     </div>
                   );
                 })}
               </div>
               
-              <button 
-                onClick={() => handleScroll('right')} 
-                className="arrow-button right"
-                aria-label="Next 3 products"
-                disabled={isScrolling}
-              >
+              <button onClick={() => handleScroll('right')} className="arrow-button right" aria-label="Next products">
                 <ChevronRight size={24} strokeWidth={2.5} className="arrow-icon" />
               </button>
             </div>

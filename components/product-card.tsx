@@ -3,9 +3,6 @@
 import React, { useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { ExternalLink } from 'lucide-react';
 import {
   FourthwallProduct,
@@ -62,16 +59,14 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
   return (
     <>
       <style jsx>{`
-        /* 1. Layout Wrapper: Consistent fixed dimensions */
-        .card-layout-wrapper {
+        .card-wrapper {
           width: 18rem;
           height: 32rem;
           perspective: 1000px;
           flex-shrink: 0;
         }
 
-        /* 2. Transform Wrapper: Handles ONLY 3D rotation */
-        .card-transform-wrapper {
+        .card-transform {
           --tx: 0deg; --ty: 0deg;
           width: 100%;
           height: 100%;
@@ -80,55 +75,40 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           transition: transform 0.1s ease;
         }
 
-        /* 3. Visual Wrapper: Handles scaling and visual effects */
-        .card-visual-wrapper {
+        .card-visual {
           position: relative;
           width: 100%;
           height: 100%;
           transform: scale(1);
           transition: transform 0.2s ease-out;
-          will-change: transform;
           border-radius: 0.75rem;
           overflow: hidden;
         }
 
-        .card-layout-wrapper:hover .card-visual-wrapper {
+        .card-wrapper:hover .card-visual {
           transform: scale(1.05);
           transition: transform 0.1s ease-in;
         }
-        
-        .card-visual-wrapper::after {
-          content: "";
+
+        .sparkles-layer {
           position: absolute;
           inset: 0;
-          z-index: 0;
+          z-index: 2;
+          filter: contrast:(1.5)
           pointer-events: none;
-          mix-blend-mode: color-dodge;
-          transition: opacity .4s ease-in-out, filter .4s ease-in-out;
-          
           background-image: url("https://assets.codepen.io/13471/sparkles.gif");
           background-position: 50% 50%;
           background-size: 180%;
-
-          opacity: 0.2;
-          filter: brightness(0.9) contrast(1.3);
+          border-radius: 0.75rem;
+          opacity: 0.4;
+          transition: opacity 0.4s ease-in-out;
         }
 
-        /* 
-          MODIFICATION: Reduced the glow effect on hover.
-          - Lowered opacity from 1 to 0.6
-          - Reduced brightness from 2.5 to 1.6
-          - Reduced contrast from 3 to 1.8
-          This creates a more subtle and less overwhelming "glow".
-        */
-        .card-layout-wrapper:hover .card-visual-wrapper::after {
-          opacity: 0.6;
-          filter: brightness(1.6) contrast(1.8);
+        .card-wrapper:hover .sparkles-layer {
+          opacity: 1;
         }
 
-        /* Gradient overlay for better text readability */
-        .card-visual-wrapper::before {
-          content: "";
+        .gradient-overlay {
           position: absolute;
           inset: 0;
           z-index: 1;
@@ -137,19 +117,19 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
             135deg,
             rgba(147, 51, 234, 0.1) 0%,
             rgba(79, 70, 229, 0.05) 25%,
-            transparent 50%,
-            rgba(147, 51, 234, 0.15) 100%
+            transparent 30%,
+            rgba(147, 51, 234, 0.15) 30%
           );
           border-radius: 0.75rem;
           opacity: 0;
           transition: opacity 0.3s ease;
         }
 
-        .card-layout-wrapper:hover .card-visual-wrapper::before {
+        .card-wrapper:hover .gradient-overlay {
           opacity: 1;
         }
 
-        .card-ui-content {
+        .card-content {
           position: relative;
           z-index: 3;
           width: 100%;
@@ -169,7 +149,6 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
-        /* Fixed image container */
         .image-container {
           position: relative;
           width: 100%;
@@ -177,24 +156,24 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           flex-shrink: 0;
           overflow: hidden;
           background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+          z-index: 4;
         }
 
-        /* Content area with consistent spacing */
         .content-area {
           flex: 1;
           display: flex;
           flex-direction: column;
           padding: 1rem;
           min-height: 0;
+          z-index: 4;
         }
 
-        /* Title with consistent height */
         .product-title {
-          font-size: 1.25rem; /* 20px */
+          font-size: 1.25rem;
           font-weight: 700;
           margin-bottom: 0.25rem;
           color: white;
-          height: 3.2rem; 
+          height: 3.2rem;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
@@ -202,20 +181,65 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           line-height: 1.25;
         }
 
-        /* Description with flexible height */
         .product-description {
           font-size: 0.875rem;
           color: rgb(209, 213, 219);
           flex: 1;
+          line-height: 1.4;
+          margin-bottom: 1rem;
+          position: relative;
+          max-height: 4.2rem;
+          overflow: hidden;
+          cursor: default;
+          transition: max-height 0.3s ease;
+          -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+          mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+        }
+
+        .product-description:hover {
+          max-height: 8rem;
+          overflow-y: auto;
+          -webkit-mask-image: none;
+          mask-image: none;
+        }
+
+        .description-content {
+          transition: all 0.3s ease;
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
-          line-height: 1.4;
-          margin-bottom: 1rem;
         }
 
-        /* Footer with consistent height */
+        .product-description:hover .description-content {
+          display: block;
+          -webkit-line-clamp: none;
+          overflow: visible;
+        }
+
+        .product-description::-webkit-scrollbar {
+          width: 0px;
+          background: transparent;
+        }
+
+        .product-description:hover::-webkit-scrollbar {
+          width: 4px;
+        }
+
+        .product-description:hover::-webkit-scrollbar-track {
+          background: rgba(147, 51, 234, 0.1);
+          border-radius: 2px;
+        }
+
+        .product-description:hover::-webkit-scrollbar-thumb {
+          background: rgba(147, 51, 234, 0.5);
+          border-radius: 2px;
+        }
+
+        .product-description:hover::-webkit-scrollbar-thumb:hover {
+          background: rgba(147, 51, 234, 0.7);
+        }
+
         .card-footer {
           flex-shrink: 0;
           display: flex;
@@ -223,9 +247,9 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           align-items: end;
           padding: 0 1rem 1rem;
           min-height: 5rem;
+          z-index: 4;
         }
 
-        /* Price section */
         .price-section {
           display: flex;
           flex-direction: column;
@@ -262,7 +286,6 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           font-weight: 500;
         }
 
-        /* Button styling */
         .button-group {
           display: flex;
           flex-direction: column;
@@ -299,6 +322,9 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           cursor: pointer;
           transition: all 0.2s ease;
           backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          gap: 0.25rem;
         }
 
         .quick-buy-btn:hover {
@@ -307,28 +333,42 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           transform: translateY(-1px);
         }
 
-        /* Responsive adjustments */
         @media (max-width: 768px) {
-          .card-layout-wrapper {
+          .card-wrapper {
             width: 16rem;
-            height: 28rem;
+            height: 24rem; /* Reduced height for mobile */
           }
           
           .image-container {
-            height: 12rem;
+            height: 10rem; /* Reduced image container height for mobile */
+          }
+
+          .product-description {
+            display: none; /* Hide the description for mobile view */
+          }
+
+          .content-area {
+            padding-bottom: 0.5rem; /* Adjust padding after removing description */
+          }
+
+          .card-footer {
+            padding-top: 0; /* Remove top padding for footer as description is gone */
+            min-height: auto; /* Allow footer to shrink */
           }
         }
       `}</style>
       
       <div
-        className="card-layout-wrapper"
+        className="card-wrapper"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
       >
-        <div ref={transformRef} className="card-transform-wrapper">
-          <div className="card-visual-wrapper">
-            <div className="card-ui-content">
-              {/* Fixed height image container */}
+        <div ref={transformRef} className="card-transform">
+          <div className="card-visual">
+            <div className="sparkles-layer" />
+            <div className="gradient-overlay" />
+            
+            <div className="card-content">
               <div className="image-container">
                 <Image 
                   src={imageUrl} 
@@ -340,19 +380,20 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
                 />
               </div>
 
-              {/* Content area with consistent layout */}
               <div className="content-area">
                 <h3 className="product-title">
                   {product.name}
                 </h3>
                 
-                <div 
-                  className="product-description" 
-                  dangerouslySetInnerHTML={{ __html: description }}
-                />
+                {/* The product-description div will be hidden by CSS on mobile */}
+                <div className="product-description">
+                  <div 
+                    className="description-content"
+                    dangerouslySetInnerHTML={{ __html: description }}
+                  />
+                </div>
               </div>
 
-              {/* Fixed footer */}
               <div className="card-footer">
                 <div className="price-section">
                   <span className="price-display">{priceDisplay}</span>
@@ -378,7 +419,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
                       className="quick-buy-btn"
                       onClick={() => window.open(`https://${fourthwallCheckoutDomain}/products/${productSlug}`, '_blank')}
                     >
-                      <ExternalLink className="inline w-3 h-3 mr-1" /> 
+                      <ExternalLink className="w-3 h-3" /> 
                       Quick Buy
                     </button>
                   )}
