@@ -116,7 +116,7 @@
     h6 {
         font-family: "Bitcount Prop Double", system-ui;
         font-optical-sizing: auto;
-        font-weight: 100;
+        font-weight: 700;
         font-style: normal;
         font-variation-settings:
             "slnt" 0,
@@ -127,6 +127,22 @@
 }
 
 @layer utilities {
+    /* Navigation text with proper visibility */
+    .nav-text {
+        color: hsl(var(--foreground)) !important;
+        font-weight: 600 !important;
+    }
+
+    .dark .nav-text {
+        color: #e7e7e7 !important;
+    }
+
+    /* Button text with proper visibility */
+    .btn-text {
+        color: hsl(var(--primary-foreground)) !important;
+        font-weight: 600 !important;
+    }
+
     .text-balance {
         text-wrap: balance;
     }

@@ -95,13 +95,15 @@ export default function ReleaseSection({
             <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-4 drop-shadow-2xl font-title">
               {releaseTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/80 drop-shadow-lg font-body">Out Now</p>
+            <p className="text-xl md:text-2xl text-primary-foreground/80 drop-shadow-lg font-body">
+              Out Now
+            </p>
           </div>
 
           <Button
             asChild
             size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-title text-lg tracking-wide px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 group"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground font-title text-lg tracking-wide px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 group"
           >
             <a
               href={streamLink}

@@ -4,6 +4,9 @@
   "private": true,
   "scripts": {
     "build": "next build",
+    "build:cloudflare": "@cloudflare/next-on-pages",
+    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --compatibility-date=2024-01-01 --compatibility-flags=nodejs_compat",
+    "deploy": "npm run build:cloudflare && wrangler pages deploy .vercel/output/static",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
@@ -75,6 +78,7 @@
     "@types/react-dom": "^19",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^3.78.12"
   }
 }

@@ -3,6 +3,9 @@ import type { Metadata } from "next";
 import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 
+// Enable Edge Runtime for Cloudflare Pages
+export const runtime = "edge";
+
 export const metadata: Metadata = {
   title: "Derpcat",
   description:

@@ -33,7 +33,7 @@ export default function Navigation() {
   const closeMenu = () => setIsOpen(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-primary/30">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-primary/30">
       <div className="container mx-auto px-4 max-w-full">
         <div className="flex justify-between items-center h-28 md:grid md:grid-cols-3">
           {/* Desktop Social Media Icons - Left Side */}
@@ -91,33 +91,16 @@ export default function Navigation() {
           {/* Desktop Navigation Links - Right Side */}
           <div className="hidden md:flex items-center justify-end space-x-6">
             <div className="flex items-center space-x-6">
-              <Link
-                href="#tours"
-                className="font-title text-xl tracking-wide text-foreground hover:text-primary transition-colors duration-200 uppercase"
-              >
-                TOURS
-              </Link>
-              <Link
-                href="#about"
-                className="font-title text-xl tracking-wide text-foreground hover:text-primary transition-colors duration-200 uppercase"
-              >
-                ABOUT
-              </Link>
-              <Link
-                href="https://shop.derpcatmusic.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-title text-xl tracking-wide text-foreground hover:text-primary transition-colors duration-200 uppercase"
-              >
-                SHOP
-              </Link>
+              <FlipLink href="#tours">TOURS</FlipLink>
+              <FlipLink href="#about">ABOUT</FlipLink>
+              <FlipLink href="#shop">SHOP</FlipLink>
             </div>
 
             <ThemeToggleButton variant="circle-blur" start="top-left" />
 
             {/* Desktop Beautiful Book Me Button */}
             <div className="relative group">
-              <button className="bg-primary hover:bg-primary/90 text-primary-foreground font-title text-lg tracking-wide px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+              <button className="bg-primary hover:bg-primary/90 btn-text font-title text-lg tracking-wide px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
                 <div className="flex items-center">
                   Book Me
                   <ChevronDown className="ml-2 h-5 w-5 animate-bounce" />
@@ -131,7 +114,7 @@ export default function Navigation() {
                     href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center w-full cursor-pointer font-body hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
+                    className="flex items-center w-full cursor-pointer font-body nav-text hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
                   >
                     <span className="text-2xl mr-3 group-hover/item:scale-110 transition-transform duration-200">
                       🎵
@@ -143,7 +126,7 @@ export default function Navigation() {
                 <div>
                   <Link
                     href="#book"
-                    className="flex items-center w-full cursor-pointer font-body hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
+                    className="flex items-center w-full cursor-pointer font-body nav-text hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
                   >
                     <span className="text-2xl mr-3 group-hover/item:scale-110 transition-transform duration-200">
                       📚
@@ -211,23 +194,21 @@ export default function Navigation() {
                   {/* Mobile Navigation Links */}
                   <Link
                     href="#tours"
-                    className="text-foreground hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
                     onClick={closeMenu}
                   >
                     TOURS
                   </Link>
                   <Link
                     href="#about"
-                    className="text-foreground hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
                     onClick={closeMenu}
                   >
                     ABOUT
                   </Link>
                   <Link
-                    href="https://shop.derpcatmusic.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-foreground hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    href="#shop"
+                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
                     onClick={closeMenu}
                   >
                     SHOP
@@ -235,14 +216,14 @@ export default function Navigation() {
 
                   {/* Mobile Book Me Options */}
                   <div className="flex flex-col space-y-4">
-                    <div className="text-foreground font-title text-xl tracking-wide mb-2">
+                    <div className="nav-text font-title text-xl tracking-wide mb-2">
                       BOOK ME
                     </div>
                     <Link
                       href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 text-foreground font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
+                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 nav-text font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
                       onClick={closeMenu}
                     >
                       <span className="text-primary mr-2">🎵</span>
@@ -250,7 +231,7 @@ export default function Navigation() {
                     </Link>
                     <Link
                       href="#book"
-                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 text-foreground font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
+                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 nav-text font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
                       onClick={closeMenu}
                     >
                       <span className="text-primary mr-2">📚</span>
@@ -269,7 +250,7 @@ export default function Navigation() {
                       <Link
                         key={index}
                         href={social.href}
-                        className="p-2 transition-all duration-150 text-foreground group"
+                        className="p-2 transition-all duration-150 nav-text group"
                         aria-label={social.label}
                         target={
                           social.href.startsWith("http") ? "_blank" : "_self"

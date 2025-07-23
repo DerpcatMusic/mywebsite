@@ -1,4 +1,4 @@
-import React, { ReactNode } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 
 const DURATION = 0.25;
@@ -14,24 +14,36 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href }) => {
     <motion.a
       initial="initial"
       whileHover="hovered"
-      target="_blank"
+      {...(href.startsWith("http") && {
+        target: "_blank",
+        rel: "noopener noreferrer",
+      })}
       href={href}
-      className="relative inline-block overflow-hidden whitespace-nowrap text-xl font-title uppercase text-foreground hover:text-primary tracking-wide"
+      className="relative inline-flex font-title text-2xl uppercase nav-text hover:text-primary tracking-wide transition-colors duration-200"
       style={{
-        lineHeight: 1.4,
-        height: "2em",
+        lineHeight: 1,
         padding: "0.5rem 0.75rem",
       }}
     >
-      <div>
-        {children.split("").map((l, i) => (
+      {children.split("").map((letter, i) => (
+        <div
+          key={i}
+          className="relative inline-block"
+          style={{
+            height: "1.2em",
+            overflow: "hidden",
+            width: letter === " " ? "0.5em" : "auto",
+            minWidth: letter === " " ? "0.5em" : "0.6em",
+          }}
+        >
+          {/* First instance - visible initially, moves up on hover */}
           <motion.span
             variants={{
               initial: {
                 y: 0,
               },
               hovered: {
-                y: "-100%",
+                y: "-120%",
               },
             }}
             transition={{
@@ -39,19 +51,19 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href }) => {
               ease: "easeInOut",
               delay: STAGGER * i,
             }}
-            className="inline-block"
-            key={i}
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              height: "1.2em",
+            }}
           >
-            {l}
+            {letter === " " ? "\u00A0" : letter}
           </motion.span>
-        ))}
-      </div>
-      <div className="absolute inset-0">
-        {children.split("").map((l, i) => (
+
+          {/* Second instance - starts below, moves to center on hover */}
           <motion.span
             variants={{
               initial: {
-                y: "100%",
+                y: "120%",
               },
               hovered: {
                 y: 0,
@@ -62,13 +74,15 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href }) => {
               ease: "easeInOut",
               delay: STAGGER * i,
             }}
-            className="inline-block"
-            key={i}
+            className="absolute inset-0 flex items-center justify-center"
+            style={{
+              height: "1.2em",
+            }}
           >
-            {l}
+            {letter === " " ? "\u00A0" : letter}
           </motion.span>
-        ))}
-      </div>
+        </div>
+      ))}
     </motion.a>
   );
 };

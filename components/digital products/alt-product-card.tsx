@@ -138,6 +138,14 @@ export default function AltProductCard({
           height: 32rem;
           perspective: 1000px;
           flex-shrink: 0;
+          opacity: 1;
+          padding: 2px;
+          border-radius: 14px;
+          background: linear-gradient(
+            135deg,
+            rgba(249, 115, 22, 0.2) 0%,
+            rgba(234, 88, 12, 0.1) 100%
+          );
         }
 
         /* 2. Transform Wrapper: Handles ONLY 3D rotation */
@@ -159,7 +167,7 @@ export default function AltProductCard({
           transform: scale(1);
           transition: transform 0.2s ease-out;
           will-change: transform;
-          border-radius: 0.75rem;
+          border-radius: 12px;
           overflow: hidden;
         }
 
@@ -320,9 +328,12 @@ export default function AltProductCard({
 
         .price-display {
           font-size: 1.5rem;
-          font-weight: 800;
+          font-weight: 700;
           color: white;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          font-family: inherit;
+          letter-spacing: -0.025em;
+          font-feature-settings: "kern" 1;
         }
 
         .price-label {
@@ -364,7 +375,7 @@ export default function AltProductCard({
             #ea580c 100%
           ); /* Orange 500 to Orange 600 */
           color: white;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 0.5rem;
           padding: 0.5rem 1rem;
           font-size: 0.875rem;
@@ -372,6 +383,8 @@ export default function AltProductCard({
           cursor: pointer;
           transition: all 0.2s ease;
           box-shadow: 0 4px 14px 0 rgba(249, 115, 22, 0.3); /* Orange 500 shadow */
+          font-family: inherit;
+          letter-spacing: -0.025em;
         }
 
         .view-details-btn:hover {
@@ -399,11 +412,14 @@ export default function AltProductCard({
             138
           ); /* Yellow 200 for text, provides good contrast */
           font-size: 0.75rem;
+          font-weight: 700;
           padding: 0.375rem 0.75rem;
           border-radius: 0.375rem;
           cursor: pointer;
           transition: all 0.2s ease;
           backdrop-filter: blur(4px);
+          font-family: inherit;
+          letter-spacing: -0.025em;
         }
 
         .quick-buy-btn:hover {

@@ -1,28 +1,35 @@
 // components/product-card.tsx
-'use client';
-import React, { useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ExternalLink } from 'lucide-react';
+"use client";
+import React, { useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import {
   FourthwallProduct,
   getProductImage,
   getProductPrice,
-  getProductDescription
-} from '../lib/fourthwall';
+  getProductDescription,
+} from "../lib/fourthwall";
 
 interface ProductCardProps {
   product: FourthwallProduct;
   fourthwallCheckoutDomain: string | undefined;
 }
 
-const PLACEHOLDER_IMAGE_URL = 'https://via.placeholder.com/288x288/1a1a1a/6b46c1?text=No+Image';
+const PLACEHOLDER_IMAGE_URL =
+  "https://via.placeholder.com/288x288/1a1a1a/6b46c1?text=No+Image";
 
 function createSlugFromName(name: string): string {
-  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
 }
 
-export default function ProductCard({ product, fourthwallCheckoutDomain }: ProductCardProps) {
+export default function ProductCard({
+  product,
+  fourthwallCheckoutDomain,
+}: ProductCardProps) {
   const transformRef = useRef<HTMLDivElement>(null);
 
   const imageUrl = getProductImage(product) || PLACEHOLDER_IMAGE_URL;
@@ -31,7 +38,8 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
   const productSlug = product.slug || createSlugFromName(product.name);
   const productUrl = `/products/${productSlug}`;
   const hasVariants = product.variants && product.variants.length > 0;
-  const isAvailable = hasVariants && product.variants.some(variant => variant.unitPrice);
+  const isAvailable =
+    hasVariants && product.variants.some((variant) => variant.unitPrice);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = transformRef.current;
@@ -42,18 +50,18 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
     const w = rect.width;
     const h = rect.height;
 
-    const ty = (y - h / 2) / 25 * -1;
+    const ty = ((y - h / 2) / 25) * -1;
     const tx = (x - w / 2) / 20;
 
-    el.style.setProperty('--tx', `${tx}deg`);
-    el.style.setProperty('--ty', `${ty}deg`);
+    el.style.setProperty("--tx", `${tx}deg`);
+    el.style.setProperty("--ty", `${ty}deg`);
   };
 
   const handleMouseLeave = () => {
     const el = transformRef.current;
     if (!el) return;
-    el.style.setProperty('--tx', '0deg');
-    el.style.setProperty('--ty', '0deg');
+    el.style.setProperty("--tx", "0deg");
+    el.style.setProperty("--ty", "0deg");
   };
 
   return (
@@ -64,6 +72,10 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           height: 32rem;
           perspective: 1000px;
           flex-shrink: 0;
+          opacity: 1;
+          padding: 2px;
+          border-radius: 14px;
+          background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(79, 70, 229, 0.1) 100%);
         }
 
         .card-transform {
@@ -82,7 +94,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           height: 100%;
           transform: scale(1);
           transition: transform 0.2s ease-out;
-          border-radius: 0.75rem;
+          border-radius: 12px;
           overflow: hidden;
         }
 
@@ -139,12 +151,12 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(135deg, 
-            rgba(88, 28, 135, 0.15) 0%, 
+          background: linear-gradient(135deg,
+            rgba(88, 28, 135, 0.15) 0%,
             rgba(17, 24, 39, 0.8) 100%
           );
           border: 2px solid rgba(147, 51, 234, 0.3);
-          box-shadow: 
+          box-shadow:
             0 4px 6px -1px rgba(0, 0, 0, 0.1),
             0 2px 4px -1px rgba(0, 0, 0, 0.06),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -262,9 +274,12 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
 
         .price-display {
           font-size: 1.5rem;
-          font-weight: 800;
+          font-weight: 700;
           color: white;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+          font-family: inherit;
+          letter-spacing: -0.025em;
+          font-feature-settings: "kern" 1;
         }
 
         .price-label {
@@ -301,7 +316,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
         .view-details-btn {
           background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
           color: white;
-          font-weight: 600;
+          font-weight: 700;
           border-radius: 0.5rem;
           padding: 0.5rem 1rem;
           font-size: 0.875rem;
@@ -309,6 +324,8 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           cursor: pointer;
           transition: all 0.2s ease;
           box-shadow: 0 4px 14px 0 rgba(147, 51, 234, 0.3);
+          font-family: inherit;
+          letter-spacing: -0.025em;
         }
 
         .view-details-btn:hover {
@@ -322,6 +339,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           border: 1px solid rgba(147, 51, 234, 0.3);
           color: rgb(196, 181, 253);
           font-size: 0.75rem;
+          font-weight: 700;
           padding: 0.375rem 0.75rem;
           border-radius: 0.375rem;
           cursor: pointer;
@@ -330,6 +348,8 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           display: flex;
           align-items: center;
           gap: 0.25rem;
+          font-family: inherit;
+          letter-spacing: -0.025em;
         }
 
         .quick-buy-btn:hover {
@@ -375,24 +395,22 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
 
             <div className="card-content">
               <div className="image-container">
-                <Image 
-                  src={imageUrl} 
-                  alt={product.name} 
+                <Image
+                  src={imageUrl}
+                  alt={product.name}
                   sizes="(max-width: 768px) 16rem, 18rem"
-                  fill 
-                  style={{ objectFit: 'cover' }} 
-                  priority 
+                  fill
+                  style={{ objectFit: "cover" }}
+                  priority
                 />
               </div>
 
               <div className="content-area">
-                <h3 className="product-title">
-                  {product.name}
-                </h3>
-                
+                <h3 className="product-title">{product.name}</h3>
+
                 {/* The product-description div will be hidden by CSS on mobile */}
                 <div className="product-description">
-                  <div 
+                  <div
                     className="description-content"
                     dangerouslySetInnerHTML={{ __html: description }}
                   />
@@ -406,23 +424,32 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
                     <span className="price-label">Starting from</span>
                   )}
                   <div className="stock-indicator">
-                    <span className={`stock-dot ${isAvailable ? 'bg-green-400' : 'bg-gray-500'}`} />
-                    <span className={`stock-text ${isAvailable ? 'text-green-300' : 'text-gray-400'}`}>
-                      {isAvailable ? 'In Stock' : 'Out of Stock'}
+                    <span
+                      className={`stock-dot ${isAvailable ? "bg-green-400" : "bg-gray-500"}`}
+                    />
+                    <span
+                      className={`stock-text ${isAvailable ? "text-green-300" : "text-gray-400"}`}
+                    >
+                      {isAvailable ? "In Stock" : "Out of Stock"}
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="button-group">
                   <Link href={productUrl} passHref>
                     <button className="view-details-btn">View Details</button>
                   </Link>
                   {fourthwallCheckoutDomain && (
-                    <button 
+                    <button
                       className="quick-buy-btn"
-                      onClick={() => window.open(`https://${fourthwallCheckoutDomain}/products/${productSlug}`, '_blank')}
+                      onClick={() =>
+                        window.open(
+                          `https://${fourthwallCheckoutDomain}/products/${productSlug}`,
+                          "_blank",
+                        )
+                      }
                     >
-                      <ExternalLink className="w-3 h-3" /> 
+                      <ExternalLink className="w-3 h-3" />
                       Quick Buy
                     </button>
                   )}
