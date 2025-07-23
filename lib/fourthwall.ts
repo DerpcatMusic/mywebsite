@@ -1,5 +1,5 @@
 // lib/fourthwall.ts
-import { z } from 'zod';
+import { z } from "zod";
 
 // Environment variables validation
 const envSchema = z.object({
@@ -11,12 +11,15 @@ const envSchema = z.object({
 function getEnvVars() {
   const result = envSchema.safeParse({
     NEXT_PUBLIC_FOURTHWALL_API_URL: process.env.NEXT_PUBLIC_FOURTHWALL_API_URL,
-    NEXT_PUBLIC_FW_STOREFRONT_TOKEN: process.env.NEXT_PUBLIC_FW_STOREFRONT_TOKEN,
+    NEXT_PUBLIC_FW_STOREFRONT_TOKEN:
+      process.env.NEXT_PUBLIC_FW_STOREFRONT_TOKEN,
     NEXT_PUBLIC_FW_COLLECTION: process.env.NEXT_PUBLIC_FW_COLLECTION,
   });
 
   if (!result.success) {
-    throw new Error(`Invalid environment variables: ${result.error.flatten().fieldErrors}`);
+    throw new Error(
+      `Invalid environment variables: ${result.error.flatten().fieldErrors}`,
+    );
   }
 
   return result.data;
@@ -33,16 +36,19 @@ const imageSchema = z.object({
 
 const moneySchema = z.object({
   value: z.number(),
-  currency: z.string().default('USD'),
+  currency: z.string().default("USD"),
 });
 
 const productVariantSchema = z.object({
   id: z.string(),
   name: z.string(),
   unitPrice: moneySchema.optional().nullable(),
-  attributes: z.object({
-    description: z.string().optional().nullable(),
-  }).optional().nullable(),
+  attributes: z
+    .object({
+      description: z.string().optional().nullable(),
+    })
+    .optional()
+    .nullable(),
 });
 
 const productSchema = z.object({
@@ -51,8 +57,12 @@ const productSchema = z.object({
   slug: z.string().optional(),
   description: z.string().optional().nullable(),
   // --- FIX APPLIED HERE ---
-  // Replaced z.preprocess with optional().nullable().default([]) for cleaner type inference
-  images: z.array(imageSchema).optional().nullable().default([]),
+  // Add transform to handle undefined values and ensure proper type
+  images: z
+    .array(imageSchema)
+    .nullable()
+    .default(null)
+    .transform((val) => val ?? null),
   // --- END FIX ---
   thumbnailImage: imageSchema.optional().nullable(),
   variants: z.array(productVariantSchema).default([]),
@@ -84,10 +94,10 @@ class FourthwallAPIError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public response?: string
+    public response?: string,
   ) {
     super(message);
-    this.name = 'FourthwallAPIError';
+    this.name = "FourthwallAPIError";
   }
 }
 
@@ -104,18 +114,18 @@ class FourthwallClient {
 
   private async makeRequest<T>(
     endpoint: string,
-    schema: z.ZodSchema<T>
+    schema: z.ZodSchema<T>,
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    const fullUrl = url.includes('?') 
+    const fullUrl = url.includes("?")
       ? `${url}&storefront_token=${this.token}`
       : `${url}?storefront_token=${this.token}`;
 
     try {
       const response = await fetch(fullUrl, {
-        method: 'GET',
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         next: { revalidate: 300 },
       });
@@ -125,7 +135,7 @@ class FourthwallClient {
         throw new FourthwallAPIError(
           `API request failed: ${response.status} ${response.statusText}`,
           response.status,
-          errorText
+          errorText,
         );
       }
 
@@ -134,31 +144,33 @@ class FourthwallClient {
 
       if (!result.success) {
         throw new FourthwallAPIError(
-          `Invalid API response format: ${result.error.message}`
+          `Invalid API response format: ${result.error.message}`,
         );
       }
-      
-      return result.data;
 
+      return result.data;
     } catch (error) {
       if (error instanceof FourthwallAPIError) {
         throw error;
       }
       throw new FourthwallAPIError(
-        `Network error: ${error instanceof Error ? error.message : 'Unknown error'}`
+        `Network error: ${error instanceof Error ? error.message : "Unknown error"}`,
       );
     }
   }
 
   async getCollections(): Promise<FourthwallCollection[]> {
-    const response = await this.makeRequest('/collections', collectionsResponseSchema);
+    const response = await this.makeRequest(
+      "/collections",
+      collectionsResponseSchema,
+    );
     return response.results;
   }
 
   async getProductsFromCollection(slug: string): Promise<FourthwallProduct[]> {
     const response = await this.makeRequest(
       `/collections/${slug}/products`,
-      apiResponseSchema
+      apiResponseSchema,
     );
     return response.results;
   }
@@ -167,7 +179,7 @@ class FourthwallClient {
     try {
       const response = await this.makeRequest(
         `/products?slug=${slug}`,
-        apiResponseSchema
+        apiResponseSchema,
       );
       // The API might return an array even for a single slug, so return the first item
       return response.results.length > 0 ? response.results[0] : null;
@@ -179,12 +191,17 @@ class FourthwallClient {
   }
 }
 
-export async function getFourthwallProductBySlug(slug: string): Promise<FourthwallProduct | null> {
+export async function getFourthwallProductBySlug(
+  slug: string,
+): Promise<FourthwallProduct | null> {
   try {
     const client = new FourthwallClient();
     return await client.getProductBySlug(slug);
   } catch (error) {
-    console.error(`Error in getFourthwallProductBySlug for slug ${slug}:`, error);
+    console.error(
+      `Error in getFourthwallProductBySlug for slug ${slug}:`,
+      error,
+    );
     return null;
   }
 }
@@ -195,23 +212,24 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
     const env = getEnvVars();
 
     const collectionSlug = env.NEXT_PUBLIC_FW_COLLECTION;
-    if (!collectionSlug || collectionSlug === 'all-products') {
-      
+    if (!collectionSlug || collectionSlug === "all-products") {
       console.log("Fetching products from ALL collections...");
       const collections = await client.getCollections();
-      
+
       if (collections.length === 0) {
-        console.warn('No collections found in the store.');
+        console.warn("No collections found in the store.");
         return [];
       }
 
       let allProducts: FourthwallProduct[] = [];
       const results = await Promise.allSettled(
-        collections.map(collection => client.getProductsFromCollection(collection.slug))
+        collections.map((collection) =>
+          client.getProductsFromCollection(collection.slug),
+        ),
       );
 
       results.forEach((result) => {
-        if (result.status === 'fulfilled') {
+        if (result.status === "fulfilled") {
           // Temporarily gather all products, including potential duplicates
           allProducts.push(...result.value);
         }
@@ -219,25 +237,28 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
 
       // Use a Map to ensure each product ID is represented only once.
       const uniqueProductsMap = new Map<string, FourthwallProduct>();
-      allProducts.forEach(product => {
+      allProducts.forEach((product) => {
         uniqueProductsMap.set(product.id, product);
       });
 
       // Convert the Map's values back into an array of unique products.
       const uniqueProducts = Array.from(uniqueProductsMap.values());
-      console.log(`Fetched ${allProducts.length} products, returning ${uniqueProducts.length} unique products.`);
-      
-      return uniqueProducts;
+      console.log(
+        `Fetched ${allProducts.length} products, returning ${uniqueProducts.length} unique products.`,
+      );
 
+      return uniqueProducts;
     } else {
-      console.log(`Fetching products from specific collection: "${collectionSlug}"`);
+      console.log(
+        `Fetching products from specific collection: "${collectionSlug}"`,
+      );
       return await client.getProductsFromCollection(collectionSlug);
     }
   } catch (error) {
     if (error instanceof FourthwallAPIError) {
-      console.error('Fourthwall API Error:', error.message);
+      console.error("Fourthwall API Error:", error.message);
     } else {
-      console.error('Unexpected error:', error);
+      console.error("Unexpected error:", error);
     }
     return [];
   }
@@ -247,23 +268,29 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
 export function getProductPrice(product: FourthwallProduct): string {
   const firstVariant = product.variants?.[0];
   if (!firstVariant?.unitPrice?.value) {
-    return 'Price not available';
+    return "Price not available";
   }
-  const currency = firstVariant.unitPrice.currency || 'USD';
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
+  const currency = firstVariant.unitPrice.currency || "USD";
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
     currency,
   });
   return formatter.format(firstVariant.unitPrice.value);
 }
 
 export function getProductImage(product: FourthwallProduct): string | null {
-  return product.thumbnailImage?.url || product.images[0]?.url || null;
+  return (
+    product.thumbnailImage?.url ||
+    (product.images && product.images.length > 0
+      ? product.images[0]?.url
+      : null) ||
+    null
+  );
 }
 
 export function getProductDescription(product: FourthwallProduct): string {
   const firstVariant = product.variants?.[0];
   const mainDescription = product.description;
   const variantDescription = firstVariant?.attributes?.description;
-  return mainDescription || variantDescription || 'No description available';
+  return mainDescription || variantDescription || "No description available";
 }

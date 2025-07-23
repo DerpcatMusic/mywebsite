@@ -41,7 +41,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
     const y = e.clientY - rect.top;
     const w = rect.width;
     const h = rect.height;
-    
+
     const ty = (y - h / 2) / 25 * -1;
     const tx = (x - w / 2) / 20;
 
@@ -67,7 +67,8 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
         }
 
         .card-transform {
-          --tx: 0deg; --ty: 0deg;
+          --tx: 0deg;
+          --ty: 0deg;
           width: 100%;
           height: 100%;
           transform-style: preserve-3d;
@@ -192,7 +193,11 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           overflow: hidden;
           cursor: default;
           transition: max-height 0.3s ease;
-          -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+          -webkit-mask-image: linear-gradient(
+            to bottom,
+            black 60%,
+            transparent 100%
+          );
           mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
         }
 
@@ -338,7 +343,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
             width: 16rem;
             height: 24rem; /* Reduced height for mobile */
           }
-          
+
           .image-container {
             height: 10rem; /* Reduced image container height for mobile */
           }
@@ -357,7 +362,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           }
         }
       `}</style>
-      
+
       <div
         className="card-wrapper"
         onMouseMove={handleMouseMove}
@@ -367,7 +372,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
           <div className="card-visual">
             <div className="sparkles-layer" />
             <div className="gradient-overlay" />
-            
+
             <div className="card-content">
               <div className="image-container">
                 <Image 
@@ -410,9 +415,7 @@ export default function ProductCard({ product, fourthwallCheckoutDomain }: Produ
                 
                 <div className="button-group">
                   <Link href={productUrl} passHref>
-                    <button className="view-details-btn">
-                      View Details
-                    </button>
+                    <button className="view-details-btn">View Details</button>
                   </Link>
                   {fourthwallCheckoutDomain && (
                     <button 
