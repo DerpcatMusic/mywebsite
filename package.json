@@ -4,9 +4,6 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "build:cloudflare": "@cloudflare/next-on-pages",
-    "preview": "npm run build:cloudflare && wrangler pages dev .vercel/output/static --compatibility-date=2024-01-01 --compatibility-flags=nodejs_compat",
-    "deploy": "npm run build:cloudflare && wrangler pages deploy .vercel/output/static",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
@@ -72,13 +69,11 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
-    "@cloudflare/next-on-pages": "^1.13.12",
     "@types/node": "^22",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
-    "typescript": "^5",
-    "wrangler": "^3.78.12"
+    "typescript": "^5"
   }
 }
