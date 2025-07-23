@@ -1,12 +1,25 @@
 // components/fourthwall-products-section.tsx
-'use client';
+"use client";
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { getAllFourthwallProducts, FourthwallProduct } from '@/lib/fourthwall';
-import ProductCard from './product-card';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { RefreshCw, AlertCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { getAllFourthwallProducts, FourthwallProduct } from "@/lib/fourthwall";
+import ProductCard from "./product-card";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, AlertCircle, SparklesIcon } from "lucide-react";
+
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/pagination";
+import "swiper/css/navigation";
+import {
+  Autoplay,
+  EffectCoverflow,
+  Navigation,
+  Pagination,
+} from "swiper/modules";
 
 // --- Helper Components ---
 function ProductSkeleton() {
@@ -26,13 +39,27 @@ function ProductSkeleton() {
   );
 }
 
-function ErrorDisplay({ error, onRetry }: { error: string; onRetry: () => void }) {
+function ErrorDisplay({
+  error,
+  onRetry,
+}: {
+  error: string;
+  onRetry: () => void;
+}) {
   return (
-    <Alert variant="destructive" className="mx-auto max-w-md border-red-800 bg-red-950/50">
+    <Alert
+      variant="destructive"
+      className="mx-auto max-w-md border-red-800 bg-red-950/50"
+    >
       <AlertCircle className="h-4 w-4" />
       <AlertDescription className="flex items-center justify-between">
         <span className="text-red-200">{error}</span>
-        <Button variant="outline" size="sm" onClick={onRetry} className="ml-4 border-red-700 text-red-200 hover:bg-red-800">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onRetry}
+          className="ml-4 border-red-700 text-red-200 hover:bg-red-800"
+        >
           <RefreshCw className="mr-2 h-4 w-4" />
           Retry
         </Button>
@@ -45,11 +72,18 @@ function EmptyState({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="py-12 text-center">
       <div className="mb-4 text-6xl">📦</div>
-      <h3 className="mb-2 text-2xl font-semibold text-gray-300">No products found</h3>
+      <h3 className="mb-2 text-2xl font-semibold text-gray-300">
+        No products found
+      </h3>
       <p className="mx-auto mb-6 max-w-md text-gray-400">
-        We couldn't find any products. Please check your Fourthwall configuration and API token.
+        We couldn't find any products. Please check your Fourthwall
+        configuration and API token.
       </p>
-      <Button onClick={onRetry} variant="outline" className="border-purple-600 text-purple-400 hover:bg-purple-800">
+      <Button
+        onClick={onRetry}
+        variant="outline"
+        className="border-purple-600 text-purple-400 hover:bg-purple-800"
+      >
         <RefreshCw className="mr-2 h-4 w-4" />
         Refresh Products
       </Button>
@@ -62,25 +96,16 @@ export default function FourthwallProductsSection() {
   const [products, setProducts] = useState<FourthwallProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isAutoScrolling, setIsAutoScrolling] = useState(true);
-  const [focusedProduct, setFocusedProduct] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
 
   const checkoutDomain = process.env.NEXT_PUBLIC_FW_CHECKOUT;
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const resumeScrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const animationFrameRef = useRef<number | null>(null);
-
-  const CARD_WIDTH = 304; // 18rem (288px) card + 1rem (16px) gap
-  const CARDS_PER_SCROLL = 3; 
-  const SCROLL_ANIMATION_DURATION = 500; 
 
   // --- Device Detection ---
   useEffect(() => {
     const checkIsMobile = () => setIsMobile(window.innerWidth <= 768);
     checkIsMobile();
-    window.addEventListener('resize', checkIsMobile);
-    return () => window.removeEventListener('resize', checkIsMobile);
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
   }, []);
 
   // --- Data Fetching ---
@@ -91,7 +116,7 @@ export default function FourthwallProductsSection() {
       const fetchedProducts = await getAllFourthwallProducts();
       setProducts(fetchedProducts || []);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load products');
+      setError(err instanceof Error ? err.message : "Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -101,269 +126,234 @@ export default function FourthwallProductsSection() {
     fetchProducts();
   }, [fetchProducts]);
 
-  const getOneSetWidth = useCallback(() => {
-    if (!products || products.length === 0) return 0;
-    return products.length * CARD_WIDTH;
-  }, [products]);
+  const css = `
+  .swiper {
+    width: 100%;
+    padding-bottom: 50px;
+  }
 
-  const setupInitialScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const oneSetWidth = getOneSetWidth();
-      scrollContainerRef.current.scrollTo({ left: oneSetWidth, behavior: 'instant' });
+  .swiper-slide {
+    background-position: center;
+    background-size: cover;
+    width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .swiper-3d .swiper-slide-shadow-left {
+    background-image: none;
+  }
+  .swiper-3d .swiper-slide-shadow-right{
+    background: none;
+  }
+
+  .swiper-pagination {
+    position: relative;
+    margin-top: 2rem;
+  }
+
+  .swiper-pagination-bullet {
+    background: rgba(156, 163, 175, 0.6);
+    width: 14px;
+    height: 14px;
+    opacity: 1;
+    border: 2px solid rgba(156, 163, 175, 0.3);
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .dark .swiper-pagination-bullet {
+    background: rgba(229, 231, 235, 0.6);
+    border: 2px solid rgba(229, 231, 235, 0.3);
+  }
+
+  .swiper-pagination-bullet-active {
+    background: rgba(107, 114, 128, 0.8);
+    box-shadow: 0 0 15px rgba(107, 114, 128, 0.4);
+    border-color: rgba(107, 114, 128, 0.6);
+    transform: scaleX(2.5) scaleY(1.2);
+    border-radius: 10px;
+    width: 28px;
+  }
+
+  .dark .swiper-pagination-bullet-active {
+    background: rgba(243, 244, 246, 0.9);
+    box-shadow: 0 0 15px rgba(243, 244, 246, 0.4);
+    border-color: rgba(243, 244, 246, 0.6);
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    color: #e5e7eb;
+    background: rgba(75, 85, 99, 0.15);
+    backdrop-filter: blur(15px);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    margin-top: -27px;
+    border: 2px solid rgba(75, 85, 99, 0.4);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .dark .swiper-button-next,
+  .dark .swiper-button-prev {
+    color: #f3f4f6;
+    background: rgba(55, 65, 81, 0.2);
+    border: 2px solid rgba(75, 85, 99, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+  }
+
+  .swiper-button-next:hover,
+  .swiper-button-prev:hover {
+    background: rgba(147, 51, 234, 0.25);
+    border-color: rgba(147, 51, 234, 0.7);
+    transform: scale(1.15);
+    box-shadow: 0 6px 25px rgba(147, 51, 234, 0.5);
+    color: #a855f7;
+  }
+
+  .dark .swiper-button-next:hover,
+  .dark .swiper-button-prev:hover {
+    background: rgba(75, 85, 99, 0.3);
+    border-color: rgba(107, 114, 128, 0.6);
+    transform: scale(1.15);
+    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+    color: #f9fafb;
+  }
+
+  .swiper-button-next::after,
+  .swiper-button-prev::after {
+    font-size: 20px;
+    font-weight: 900;
+  }
+
+  @media (max-width: 768px) {
+    .swiper-slide {
+      width: 280px;
     }
-  }, [getOneSetWidth]);
 
-  useEffect(() => {
-    if (!loading && products.length > 0 && !isMobile) {
-      const timer = setTimeout(() => setupInitialScroll(), 50);
-      return () => clearTimeout(timer);
+    .swiper-button-next,
+    .swiper-button-prev {
+      display: none;
     }
-  }, [loading, products.length, isMobile, setupInitialScroll]);
 
-  const smoothScrollTo = useCallback((target, duration) => {
-    if (!scrollContainerRef.current) return;
-    const container = scrollContainerRef.current;
-    const startPosition = container.scrollLeft;
-    const distance = target - startPosition;
-    let startTime: number | null = null;
-    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    const easeInOutCubic = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-    const animation = (currentTime: number) => {
-      if (startTime === null) startTime = currentTime;
-      const timeElapsed = currentTime - startTime;
-      const progress = Math.min(timeElapsed / duration, 1);
-      container.scrollLeft = startPosition + distance * easeInOutCubic(progress);
-      if (timeElapsed < duration) {
-        animationFrameRef.current = requestAnimationFrame(animation);
-      }
-    };
-    animationFrameRef.current = requestAnimationFrame(animation);
-  }, []);
-  
-  const handleManualInteraction = useCallback(() => {
-    setIsAutoScrolling(false);
-    if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
-    if (resumeScrollTimeoutRef.current) clearTimeout(resumeScrollTimeoutRef.current);
-    resumeScrollTimeoutRef.current = setTimeout(() => {
-      setIsAutoScrolling(true);
-    }, 6000);
-  }, []);
-
-  const handleScroll = (direction: 'left' | 'right') => {
-    if (!scrollContainerRef.current || products.length === 0) return;
-    handleManualInteraction();
-    const container = scrollContainerRef.current;
-    const scrollAmount = CARD_WIDTH * CARDS_PER_SCROLL;
-    const oneSetWidth = getOneSetWidth();
-    let currentScroll = container.scrollLeft;
-    if (direction === 'right' && currentScroll >= (oneSetWidth * 2) - scrollAmount) {
-      container.scrollLeft = currentScroll - oneSetWidth;
-    } else if (direction === 'left' && currentScroll <= oneSetWidth) {
-      container.scrollLeft = currentScroll + oneSetWidth;
+    .swiper-pagination-bullet {
+      width: 12px;
+      height: 12px;
     }
-    currentScroll = container.scrollLeft;
-    const targetScroll = currentScroll + (direction === 'right' ? scrollAmount : -scrollAmount);
-    smoothScrollTo(targetScroll, SCROLL_ANIMATION_DURATION);
-  };
-  
-  const animateAutoScroll = useCallback(() => {
-    if (!scrollContainerRef.current || !isAutoScrolling) return;
-    const container = scrollContainerRef.current;
-    const oneSetWidth = getOneSetWidth();
-    if (container.scrollLeft >= oneSetWidth * 2) {
-      container.scrollLeft -= oneSetWidth;
-    }
-    const target = container.scrollLeft + 1;
-    smoothScrollTo(target, 50);
-  }, [isAutoScrolling, getOneSetWidth, smoothScrollTo]);
-
-  useEffect(() => {
-    if (isAutoScrolling && !loading && !error && products.length > 0 && !isMobile) {
-      const autoScrollInterval = setInterval(animateAutoScroll, 50);
-      return () => clearInterval(autoScrollInterval);
-    }
-  }, [isAutoScrolling, loading, error, products.length, isMobile, animateAutoScroll]);
-
-  const handleProductTap = (productId: string) => {
-    setFocusedProduct(prev => (prev === productId ? null : productId));
-    if (!isMobile) handleManualInteraction();
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, productId: string) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      handleProductTap(productId);
-    }
-  };
+  }
+  `;
 
   const isScrollable = !loading && !error && products.length > 0;
-  const productsToRender = isMobile ? products : (isScrollable ? [...products, ...products, ...products] : []);
-  
+
   return (
     <>
-      <style jsx>{`
-        .products-container {
-          position: relative;
-          display: flex;
-          align-items: center;
-          min-height: 38rem;
-          perspective: 1000px;
-          padding: 0 4rem; 
-          transform-style: preserve-3d; /* FIX: Added to respect child 3D transforms */
-        }
-        
-        .scroll-container {
-          display: flex;
-          gap: 1rem;
-          overflow-x: auto;
-          overflow-y: visible; /* Allow vertical overflow for focused card */
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-          padding: 4rem 2rem; 
-          scroll-behavior: auto;
-          -webkit-overflow-scrolling: touch;
-          mask: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-          -webkit-mask: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
-          width: 100%;
-        }
-        
-        .scroll-container::-webkit-scrollbar { display: none; }
-        
-        .arrow-button {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          z-index: 50;
-          height: 4rem;
-          width: 4rem;
-          border: none;
-          outline: none;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0;
-          background: rgba(168, 85, 247, 0.15);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          border: 1px solid rgba(168, 85, 247, 0.3);
-          border-radius: 50%;
-          background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.4) 0%, rgba(126, 34, 206, 0.6) 50%, rgba(147, 51, 234, 0.4) 100%);
-          box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-          color: rgba(255, 255, 255, 0.9);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          animation: pulse-glow 2s ease-in-out infinite;
-        }
-        
-        @keyframes pulse-glow {
-          0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.2), 0 4px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1); }
-          50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.5), 0 0 60px rgba(168, 85, 247, 0.3), 0 4px 12px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2); }
-        }
-        
-        .arrow-button:hover {
-          transform: translateY(-50%) scale(1.1);
-          background-image: linear-gradient(135deg, rgba(168, 85, 247, 0.6) 0%, rgba(126, 34, 206, 0.8) 50%, rgba(147, 51, 234, 0.6) 100%);
-          box-shadow: 0 0 30px rgba(168, 85, 247, 0.6), 0 0 60px rgba(168, 85, 247, 0.4), 0 0 100px rgba(168, 85, 247, 0.2), 0 8px 16px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-          color: white;
-          animation: none;
-        }
-        
-        .arrow-button:active {
-          transform: translateY(-50%) scale(1.05);
-          transition-duration: 0.1s;
-          box-shadow: 0 0 20px rgba(168, 85, 247, 0.8), 0 0 40px rgba(168, 85, 247, 0.6), 0 2px 4px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .arrow-button.left { left: 1rem; }
-        .arrow-button.right { right: 1rem; }
+      <style>{css}</style>
 
-        .product-wrapper {
-          transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-          transform-origin: center;
-          flex-shrink: 0;
-          will-change: transform, opacity;
-          cursor: pointer;
-          -webkit-tap-highlight-color: transparent;
-          position: relative;
-        }
-
-        .product-wrapper.focused {
-          transform: scale(1.08) translateZ(30px);
-          z-index: 20;
-          /* FIX: Removed the filter property that caused the glow */
-        }
-
-        .product-wrapper.unfocused {
-          opacity: 0.7;
-          transform: scale(0.96);
-          filter: blur(1px);
-        }
-
-        @media (max-width: 768px) {
-          .products-container { position: static; min-height: auto; align-items: flex-start; padding: 0; }
-          .scroll-container { display: flex; flex-wrap: wrap; overflow-x: hidden; overflow-y: visible; justify-content: center; padding: 1rem 0.5rem; mask: none; -webkit-mask: none; height: auto; }
-          .product-wrapper { width: calc(50% - 0.5rem); max-width: 288px; margin-bottom: 1rem; flex-grow: 1; }
-          .arrow-button { display: none; }
-          .pb-4.gap-8 { flex-wrap: wrap; justify-content: center; gap: 1rem; }
-          .pb-4.gap-8 > div { width: calc(50% - 0.5rem); max-width: 288px; }
-        }
-      `}</style>
-      
-      {/* FIX: Removed overflow-hidden from the main section */}
-      <section className="bg-[#0a0a0a] py-16">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-8 bg-gradient-to-r from-purple-400 via-purple-500 to-purple-600 bg-clip-text text-center text-5xl font-extrabold text-transparent">
-            Official Merchandise
-          </h2>
-
+      <section className="bg-background py-4">
+        <div className="w-full max-w-none px-2">
+          {/* Loading State */}
           {loading && (
             <div className="flex justify-center gap-8 pb-4">
-              {[...Array(isMobile ? 4 : 3)].map((_, i) => <ProductSkeleton key={i} />)}
+              {[...Array(isMobile ? 2 : 3)].map((_, i) => (
+                <ProductSkeleton key={i} />
+              ))}
             </div>
           )}
-          {error && <ErrorDisplay error={error} onRetry={fetchProducts} />}
-          {!loading && !error && products.length === 0 && <EmptyState onRetry={fetchProducts} />}
 
+          {/* Error State */}
+          {error && <ErrorDisplay error={error} onRetry={fetchProducts} />}
+
+          {/* Empty State */}
+          {!loading && !error && products.length === 0 && (
+            <EmptyState onRetry={fetchProducts} />
+          )}
+
+          {/* Products Carousel */}
           {isScrollable && (
-            <div 
-              className="products-container"
-              onMouseEnter={!isMobile ? handleManualInteraction : undefined}
-              onMouseLeave={!isMobile ? () => setIsAutoScrolling(true) : undefined}
-            >
-              {!isMobile && (
-                <>
-                  <button onClick={() => handleScroll('left')} className="arrow-button left" aria-label="Previous products">
-                    <ChevronLeft size={20} strokeWidth={2.5} />
-                  </button>
-                  <button onClick={() => handleScroll('right')} className="arrow-button right" aria-label="Next products">
-                    <ChevronRight size={20} strokeWidth={2.5} />
-                  </button>
-                </>
-              )}
-              
-              <div ref={scrollContainerRef} className="scroll-container">
-                {productsToRender.map((product, index) => {
-                  const uniqueKey = `${product.id}-${index}`;
-                  const isFocused = focusedProduct === product.id;
-                  const isUnfocused = focusedProduct !== null && !isFocused;
-                  
-                  return (
-                    <div 
-                      key={uniqueKey} 
-                      className={`product-wrapper ${isFocused ? 'focused' : ''} ${isUnfocused ? 'unfocused' : ''}`}
-                      onClick={() => handleProductTap(product.id)}
-                      onKeyDown={(e) => handleKeyDown(e, product.id)}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`View details for ${product.name}`}
-                    >
-                      <ProductCard
-                        product={product}
-                        fourthwallCheckoutDomain={checkoutDomain}
-                      />
+            <div className="w-full space-y-4">
+              <div className="mx-auto w-full rounded-[24px] border-2 border-gray-300/40 dark:border-gray-600/40 bg-gradient-to-br from-white/80 via-gray-50/90 to-white/80 dark:from-gray-800/80 dark:via-gray-700/90 dark:to-gray-800/80 p-3 shadow-lg shadow-gray-300/20 dark:shadow-gray-800/20 backdrop-blur-sm md:rounded-t-[44px]">
+                <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 dark:from-gray-900/30 dark:via-gray-800/20 dark:to-gray-900/30 p-2 shadow-lg backdrop-blur-md md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-4">
+                  <div className="flex flex-col justify-center pb-2 pl-4 pt-6 md:items-center">
+                    <div className="text-center">
+                      <h3 className="text-4xl font-bold tracking-tight text-purple-500 mb-2">
+                        OFFICIAL MERCH
+                      </h3>
+                      <p className="text-muted-foreground">
+                        Fresh drip, fits all!
+                      </p>
                     </div>
-                  );
-                })}
+                  </div>
+
+                  <div className="flex w-full items-center justify-center gap-4">
+                    <div className="w-full">
+                      <Swiper
+                        spaceBetween={30}
+                        autoplay={{
+                          delay: 3000,
+                          disableOnInteraction: false,
+                          pauseOnMouseEnter: true,
+                        }}
+                        effect={"coverflow"}
+                        grabCursor={true}
+                        centeredSlides={true}
+                        loop={products.length > 1}
+                        slidesPerView={"auto"}
+                        coverflowEffect={{
+                          rotate: 0,
+                          stretch: 0,
+                          depth: 100,
+                          modifier: 2.5,
+                        }}
+                        pagination={{
+                          clickable: true,
+                          dynamicBullets: true,
+                        }}
+                        navigation={
+                          !isMobile
+                            ? {
+                                nextEl: ".swiper-button-next",
+                                prevEl: ".swiper-button-prev",
+                              }
+                            : false
+                        }
+                        modules={[
+                          EffectCoverflow,
+                          Autoplay,
+                          Pagination,
+                          Navigation,
+                        ]}
+                        breakpoints={{
+                          320: {
+                            slidesPerView: 1,
+                            spaceBetween: 20,
+                          },
+                          640: {
+                            slidesPerView: "auto",
+                            spaceBetween: 30,
+                          },
+                          768: {
+                            slidesPerView: "auto",
+                            spaceBetween: 40,
+                          },
+                        }}
+                      >
+                        {products.map((product, index) => (
+                          <SwiperSlide key={`${product.id}-${index}`}>
+                            <div className="flex justify-center">
+                              <ProductCard
+                                product={product}
+                                fourthwallCheckoutDomain={checkoutDomain}
+                              />
+                            </div>
+                          </SwiperSlide>
+                        ))}
+                      </Swiper>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           )}

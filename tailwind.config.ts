@@ -1,3 +1,5 @@
+import type { Config } from "tailwindcss";
+
 /** @type {import('tailwindcss').Config} */
 const config: Config = {
   darkMode: ["class"],
@@ -18,39 +20,43 @@ const config: Config = {
       },
     },
     extend: {
+      fontFamily: {
+        title: ['"Bitcount Prop Double"', "system-ui"],
+        body: ['"Quicksand"', "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#2a2a2a",
-        foreground: "#ffffff",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#FF2400", // Pure red
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#1a1a1a",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#1a1a1a",
-          foreground: "#a3a3a3",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#FF2400",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
-          DEFAULT: "#000000",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "#2a2a2a",
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         blue: {
           50: "#e6f3ff",
@@ -66,9 +72,9 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: "0px", // Remove all rounding
-        md: "0px",
-        sm: "0px",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
@@ -100,6 +106,6 @@ const config: Config = {
     require("tailwindcss-animate"),
     require("tailwind-scrollbar-hide"), // <--- This line was missing or misplaced
   ],
-}
+};
 
-export default config
+export default config;

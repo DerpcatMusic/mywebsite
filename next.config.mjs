@@ -7,14 +7,14 @@ const nextConfig = {
     ignoreBuildErrors: true,
   },
   images: {
-    // Combine all image settings into one object
     unoptimized: true,
-    domains: [
-      'cdn.fourthwall.com', // Your actual Fourthwall image CDN
-      'via.placeholder.com', // <--- IMPORTANT: Add this for the placeholder image
-      // Add any other specific image domains you found by inspecting your Fourthwall product images
-    ],
+    domains: ["cdn.fourthwall.com", "via.placeholder.com"],
   },
-}
+  experimental: {
+    missingSuspenseWithCSRBailout: false,
+  },
+  // Use default output for Cloudflare Pages compatibility
+  swcMinify: true,
+};
 
-export default nextConfig
+export default nextConfig;

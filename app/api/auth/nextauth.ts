@@ -1,14 +1,17 @@
-import NextAuth from 'next-auth';
-import PatreonProvider from 'next-auth/providers/patreon';
+import NextAuth from "next-auth";
+import PatreonProvider from "next-auth/providers/patreon";
+
+// Enable Edge Runtime for Cloudflare Pages
+export const runtime = "edge";
 
 const patreonClientId = process.env.PATREON_CLIENT_ID;
 const patreonClientSecret = process.env.PATREON_CLIENT_SECRET;
 
 if (!patreonClientId || !patreonClientSecret) {
-  throw new Error('Missing required Patreon environment variables');
+  throw new Error("Missing required Patreon environment variables");
 }
 
-export default NextAuth({
+const handler = NextAuth({
   providers: [
     PatreonProvider({
       clientId: patreonClientId,
@@ -16,10 +19,12 @@ export default NextAuth({
       // It's recommended to request the necessary scopes
       authorization: {
         params: {
-          scope: 'identity campaigns identity.memberships',
+          scope: "identity campaigns identity.memberships",
         },
       },
     }),
   ],
   // Add other NextAuth.js configurations as needed
 });
+
+export { handler as GET, handler as POST };
