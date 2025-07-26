@@ -1,0 +1,67 @@
+{
+  "brands": {
+    "fourthwall": {
+      "brandType": "fourthwall",
+      "domain": "fourthwall.com",
+      "title": "Fourthwall",
+      "colors": {
+        "primary": "#6366f1",
+        "secondary": "#8b5cf6",
+        "accent": "#06b6d4"
+      },
+      "logo": null,
+      "lastUpdated": "2025-07-26T21:53:54.566Z",
+      "fallback": true
+    },
+    "gumroad": {
+      "brandType": "gumroad",
+      "domain": "gumroad.com",
+      "title": "Gumroad",
+      "colors": {
+        "primary": "#ff90e8",
+        "secondary": "#ffa8cc",
+        "accent": "#ffb3d9"
+      },
+      "logo": null,
+      "lastUpdated": "2025-07-26T21:53:55.640Z",
+      "fallback": true
+    },
+    "lemonsqueezy": {
+      "brandType": "lemonsqueezy",
+      "domain": "lemonsqueezy.com",
+      "title": "Lemonsqueezy",
+      "colors": {
+        "primary": "#ffd23f",
+        "secondary": "#fccc02",
+        "accent": "#f5c842"
+      },
+      "logo": null,
+      "lastUpdated": "2025-07-26T21:53:56.617Z",
+      "fallback": true
+    },
+    "patreon": {
+      "brandType": "patreon",
+      "domain": "patreon.com",
+      "title": "Patreon",
+      "colors": {
+        "primary": "#ff424d",
+        "secondary": "#ff5a5a",
+        "accent": "#ff7b7b"
+      },
+      "logo": null,
+      "lastUpdated": "2025-07-26T21:53:57.391Z",
+      "fallback": true
+    }
+  },
+  "metadata": {
+    "generatedAt": "2025-07-26T21:53:57.905Z",
+    "version": "1.0.0",
+    "totalBrands": 4,
+    "errors": [
+      "fourthwall: API request failed",
+      "gumroad: API request failed",
+      "lemonsqueezy: API request failed",
+      "patreon: API request failed"
+    ]
+  }
+}

@@ -18,7 +18,7 @@ function getEnvVars() {
 
   if (!result.success) {
     throw new Error(
-      `Invalid environment variables: ${result.error.flatten().fieldErrors}`,
+      `Invalid environment variables: ${result.error.flatten().fieldErrors}`
     );
   }
 
@@ -62,7 +62,7 @@ const productSchema = z.object({
     .array(imageSchema)
     .nullable()
     .default(null)
-    .transform((val) => val ?? null),
+    .transform(val => val ?? null),
   // --- END FIX ---
   thumbnailImage: imageSchema.optional().nullable(),
   variants: z.array(productVariantSchema).default([]),
@@ -94,7 +94,7 @@ class FourthwallAPIError extends Error {
   constructor(
     message: string,
     public status?: number,
-    public response?: string,
+    public response?: string
   ) {
     super(message);
     this.name = "FourthwallAPIError";
@@ -114,7 +114,7 @@ class FourthwallClient {
 
   private async makeRequest<T>(
     endpoint: string,
-    schema: z.ZodSchema<T>,
+    schema: z.ZodSchema<T>
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
     const fullUrl = url.includes("?")
@@ -135,7 +135,7 @@ class FourthwallClient {
         throw new FourthwallAPIError(
           `API request failed: ${response.status} ${response.statusText}`,
           response.status,
-          errorText,
+          errorText
         );
       }
 
@@ -144,7 +144,7 @@ class FourthwallClient {
 
       if (!result.success) {
         throw new FourthwallAPIError(
-          `Invalid API response format: ${result.error.message}`,
+          `Invalid API response format: ${result.error.message}`
         );
       }
 
@@ -154,7 +154,7 @@ class FourthwallClient {
         throw error;
       }
       throw new FourthwallAPIError(
-        `Network error: ${error instanceof Error ? error.message : "Unknown error"}`,
+        `Network error: ${error instanceof Error ? error.message : "Unknown error"}`
       );
     }
   }
@@ -162,7 +162,7 @@ class FourthwallClient {
   async getCollections(): Promise<FourthwallCollection[]> {
     const response = await this.makeRequest(
       "/collections",
-      collectionsResponseSchema,
+      collectionsResponseSchema
     );
     return response.results;
   }
@@ -170,7 +170,7 @@ class FourthwallClient {
   async getProductsFromCollection(slug: string): Promise<FourthwallProduct[]> {
     const response = await this.makeRequest(
       `/collections/${slug}/products`,
-      apiResponseSchema,
+      apiResponseSchema
     );
     return response.results;
   }
@@ -179,29 +179,25 @@ class FourthwallClient {
     try {
       const response = await this.makeRequest(
         `/products?slug=${slug}`,
-        apiResponseSchema,
+        apiResponseSchema
       );
       // The API might return an array even for a single slug, so return the first item
       return response.results.length > 0 ? response.results[0] : null;
-    } catch (error) {
-      // Log the error but return null if a specific product isn't found
-      console.error(`Error fetching product by slug ${slug}:`, error);
+    } catch (_error) {
+      // Error fetching product by slug
       return null;
     }
   }
 }
 
 export async function getFourthwallProductBySlug(
-  slug: string,
+  slug: string
 ): Promise<FourthwallProduct | null> {
   try {
     const client = new FourthwallClient();
     return await client.getProductBySlug(slug);
-  } catch (error) {
-    console.error(
-      `Error in getFourthwallProductBySlug for slug ${slug}:`,
-      error,
-    );
+  } catch (_error) {
+    // Error in getFourthwallProductBySlug
     return null;
   }
 }
@@ -213,22 +209,22 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
 
     const collectionSlug = env.NEXT_PUBLIC_FW_COLLECTION;
     if (!collectionSlug || collectionSlug === "all-products") {
-      console.log("Fetching products from ALL collections...");
+      // Fetching products from ALL collections
       const collections = await client.getCollections();
 
       if (collections.length === 0) {
-        console.warn("No collections found in the store.");
+        // No collections found in the store
         return [];
       }
 
-      let allProducts: FourthwallProduct[] = [];
+      const allProducts: FourthwallProduct[] = [];
       const results = await Promise.allSettled(
-        collections.map((collection) =>
-          client.getProductsFromCollection(collection.slug),
-        ),
+        collections.map(collection =>
+          client.getProductsFromCollection(collection.slug)
+        )
       );
 
-      results.forEach((result) => {
+      results.forEach(result => {
         if (result.status === "fulfilled") {
           // Temporarily gather all products, including potential duplicates
           allProducts.push(...result.value);
@@ -237,28 +233,24 @@ export async function getAllFourthwallProducts(): Promise<FourthwallProduct[]> {
 
       // Use a Map to ensure each product ID is represented only once.
       const uniqueProductsMap = new Map<string, FourthwallProduct>();
-      allProducts.forEach((product) => {
+      allProducts.forEach(product => {
         uniqueProductsMap.set(product.id, product);
       });
 
       // Convert the Map's values back into an array of unique products.
       const uniqueProducts = Array.from(uniqueProductsMap.values());
-      console.log(
-        `Fetched ${allProducts.length} products, returning ${uniqueProducts.length} unique products.`,
-      );
+      // Fetched products from all collections
 
       return uniqueProducts;
     } else {
-      console.log(
-        `Fetching products from specific collection: "${collectionSlug}"`,
-      );
+      // Fetching products from specific collection
       return await client.getProductsFromCollection(collectionSlug);
     }
   } catch (error) {
     if (error instanceof FourthwallAPIError) {
-      console.error("Fourthwall API Error:", error.message);
+      // Fourthwall API Error
     } else {
-      console.error("Unexpected error:", error);
+      // Unexpected error
     }
     return [];
   }

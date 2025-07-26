@@ -1,14 +1,16 @@
 // components/product-card.tsx
 "use client";
-import React, { useRef } from "react";
+import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { ExternalLink } from "lucide-react";
+import React, { useRef } from "react";
+import { useBrand } from "../hooks/use-brand";
+import { generateBrandCSS } from "../lib/brand";
 import {
-  FourthwallProduct,
-  getProductImage,
-  getProductPrice,
-  getProductDescription,
+    FourthwallProduct,
+    getProductDescription,
+    getProductImage,
+    getProductPrice,
 } from "../lib/fourthwall";
 
 interface ProductCardProps {
@@ -31,6 +33,7 @@ export default function ProductCard({
   fourthwallCheckoutDomain,
 }: ProductCardProps) {
   const transformRef = useRef<HTMLDivElement>(null);
+  const { brandData } = useBrand("fourthwall");
 
   const imageUrl = getProductImage(product) || PLACEHOLDER_IMAGE_URL;
   const priceDisplay = getProductPrice(product);
@@ -39,11 +42,26 @@ export default function ProductCard({
   const productUrl = `/products/${productSlug}`;
   const hasVariants = product.variants && product.variants.length > 0;
   const isAvailable =
-    hasVariants && product.variants.some((variant) => variant.unitPrice);
+    hasVariants && product.variants.some(variant => variant.unitPrice);
+
+  // Use fallback colors if brand data is not available
+  const fallbackColors = {
+    primary: "#9333ea",
+    secondary: "#7c3aed",
+    accent: "#8b5cf6",
+  };
+
+  const useBrandData = brandData || {
+    colors: fallbackColors,
+    logo: null,
+    title: "Fourthwall",
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = transformRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -59,7 +77,9 @@ export default function ProductCard({
 
   const handleMouseLeave = () => {
     const el = transformRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     el.style.setProperty("--tx", "0deg");
     el.style.setProperty("--ty", "0deg");
   };
@@ -73,9 +93,10 @@ export default function ProductCard({
           perspective: 1000px;
           flex-shrink: 0;
           opacity: 1;
-          padding: 2px;
+          padding: 4px;
           border-radius: 14px;
-          background: linear-gradient(135deg, rgba(147, 51, 234, 0.2) 0%, rgba(79, 70, 229, 0.1) 100%);
+          ${generateBrandCSS(useBrandData)}
+          background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
         }
 
         .card-transform {
@@ -128,10 +149,9 @@ export default function ProductCard({
           pointer-events: none;
           background: linear-gradient(
             135deg,
-            rgba(147, 51, 234, 0.1) 0%,
-            rgba(79, 70, 229, 0.05) 25%,
-            transparent 30%,
-            rgba(147, 51, 234, 0.15) 30%
+            rgba(var(--brand-accent-rgb), 0.05) 0%,
+            transparent 50%,
+            rgba(var(--brand-primary-rgb), 0.08) 100%
           );
           border-radius: 0.75rem;
           opacity: 0;
@@ -151,14 +171,11 @@ export default function ProductCard({
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(135deg,
-            rgba(88, 28, 135, 0.15) 0%,
-            rgba(17, 24, 39, 0.8) 100%
-          );
-          border: 2px solid rgba(147, 51, 234, 0.3);
+          background: color-mix(in srgb, var(--brand-primary) 8%, #1a1a1a 92%);
+          border: none;
           box-shadow:
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            0 4px 16px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
@@ -168,8 +185,32 @@ export default function ProductCard({
           height: 14rem;
           flex-shrink: 0;
           overflow: hidden;
-          background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+          background: color-mix(in srgb, var(--brand-primary) 12%, #0f0f0f 88%);
           z-index: 4;
+        }
+
+        .brand-logo {
+          position: absolute;
+          top: 0.75rem;
+          left: 0.75rem;
+          width: 2.5rem;
+          height: 2.5rem;
+          z-index: 5;
+          background: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(8px);
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid var(--brand-primary);
+        }
+
+        .brand-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          filter: brightness(1.1);
         }
 
         .content-area {
@@ -277,7 +318,6 @@ export default function ProductCard({
           font-weight: 700;
           color: white;
           text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-          font-family: inherit;
           letter-spacing: -0.025em;
           font-feature-settings: "kern" 1;
         }
@@ -314,7 +354,7 @@ export default function ProductCard({
         }
 
         .view-details-btn {
-          background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+          background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
           color: white;
           font-weight: 700;
           border-radius: 0.5rem;
@@ -323,21 +363,20 @@ export default function ProductCard({
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 14px 0 rgba(147, 51, 234, 0.3);
-          font-family: inherit;
+          box-shadow: 0 4px 14px 0 rgba(var(--brand-primary-rgb), 0.4);
           letter-spacing: -0.025em;
         }
 
         .view-details-btn:hover {
-          background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+          background: linear-gradient(135deg, var(--brand-secondary) 0%, var(--brand-accent) 100%);
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px 0 rgba(147, 51, 234, 0.4);
+          box-shadow: 0 6px 20px 0 rgba(var(--brand-primary-rgb), 0.6);
         }
 
         .quick-buy-btn {
-          background: rgba(147, 51, 234, 0.1);
-          border: 1px solid rgba(147, 51, 234, 0.3);
-          color: rgb(196, 181, 253);
+          background: rgba(var(--brand-primary-rgb), 0.15);
+          border: 2px solid var(--brand-secondary);
+          color: white;
           font-size: 0.75rem;
           font-weight: 700;
           padding: 0.375rem 0.75rem;
@@ -348,13 +387,12 @@ export default function ProductCard({
           display: flex;
           align-items: center;
           gap: 0.25rem;
-          font-family: inherit;
           letter-spacing: -0.025em;
         }
 
         .quick-buy-btn:hover {
-          background: rgba(147, 51, 234, 0.2);
-          border-color: rgba(147, 51, 234, 0.5);
+          background: rgba(var(--brand-primary-rgb), 0.25);
+          border-color: var(--brand-primary);
           transform: translateY(-1px);
         }
 
@@ -403,10 +441,21 @@ export default function ProductCard({
                   style={{ objectFit: "cover" }}
                   priority
                 />
+                {useBrandData.logo && (
+                  <div className="brand-logo">
+                    <Image
+                      src={useBrandData.logo}
+                      alt="Fourthwall"
+                      width={24}
+                      height={24}
+                      className="h-6 w-6"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="content-area">
-                <h3 className="product-title">{product.name}</h3>
+                <h3 className="product-title font-title">{product.name}</h3>
 
                 {/* The product-description div will be hidden by CSS on mobile */}
                 <div className="product-description">
@@ -419,16 +468,16 @@ export default function ProductCard({
 
               <div className="card-footer">
                 <div className="price-section">
-                  <span className="price-display">{priceDisplay}</span>
+                  <span className="price-display font-title">{priceDisplay}</span>
                   {hasVariants && product.variants.length > 1 && (
-                    <span className="price-label">Starting from</span>
+                    <span className="price-label font-body">Starting from</span>
                   )}
                   <div className="stock-indicator">
                     <span
                       className={`stock-dot ${isAvailable ? "bg-green-400" : "bg-gray-500"}`}
                     />
                     <span
-                      className={`stock-text ${isAvailable ? "text-green-300" : "text-gray-400"}`}
+                      className={`stock-text font-body ${isAvailable ? "text-green-300" : "text-gray-400"}`}
                     >
                       {isAvailable ? "In Stock" : "Out of Stock"}
                     </span>
@@ -437,11 +486,11 @@ export default function ProductCard({
 
                 <div className="button-group">
                   <Link href={productUrl} passHref>
-                    <button className="view-details-btn">View Details</button>
+                    <button className="view-details-btn font-body">View Details</button>
                   </Link>
                   {fourthwallCheckoutDomain && (
                     <button
-                      className="quick-buy-btn"
+                      className="quick-buy-btn font-body"
                       onClick={() =>
                         window.open(
                           `https://${fourthwallCheckoutDomain}/products/${productSlug}`,
@@ -449,7 +498,7 @@ export default function ProductCard({
                         )
                       }
                     >
-                      <ExternalLink className="w-3 h-3" />
+                      <ExternalLink className="h-3 w-3" />
                       Quick Buy
                     </button>
                   )}

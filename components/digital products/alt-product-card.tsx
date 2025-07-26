@@ -1,33 +1,26 @@
 // components/digital-products/alt-product-card.tsx
 "use client";
 
-import React, { useRef } from "react";
+import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ExternalLink } from "lucide-react";
+import React, { useRef } from "react";
 
+import { useBrand } from "../../hooks/use-brand";
+import { generateBrandCSS, type BrandType } from "../../lib/brand";
 import { GumroadProduct } from "../../lib/gumroad";
 import {
-  LemonSqueezyProduct,
-  getLemonSqueezyProductImage,
-  getLemonSqueezyProductPrice,
-  getLemonSqueezyProductDescription,
+    LemonSqueezyProduct,
+    getLemonSqueezyProductDescription,
+    getLemonSqueezyProductImage,
+    getLemonSqueezyProductPrice,
 } from "../../lib/lemonsqueezy";
 import {
-  PatreonTier,
-  getPatreonTierImage,
-  getPatreonTierPrice,
-  getPatreonTierDescription,
-  getPatreonTierUrl,
+    PatreonTier,
+    getPatreonTierDescription,
+    getPatreonTierImage,
+    getPatreonTierPrice,
+    getPatreonTierUrl,
 } from "../../lib/patreon";
 
 type AltProduct = GumroadProduct | LemonSqueezyProduct | PatreonTier;
@@ -39,13 +32,6 @@ interface AltProductCardProps {
 
 const PLACEHOLDER_IMAGE_URL =
   "https://via.placeholder.com/288x288/1a1a1a/f97316?text=No+Image"; // Orange background
-
-function createSlugFromName(name: string): string {
-  return name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 export default function AltProductCard({
   product,
@@ -59,8 +45,9 @@ export default function AltProductCard({
     "buy_now_url" in p && "price_formatted" in p;
   const isPatreonTier = (p: AltProduct): p is PatreonTier =>
     "attributes" in p &&
-    typeof (p as any).attributes === "object" &&
-    "amount_cents" in (p as any).attributes;
+    typeof p.attributes === "object" &&
+    p.attributes !== null &&
+    "amount_cents" in p.attributes;
 
   let name: string;
   let description: string;
@@ -70,8 +57,10 @@ export default function AltProductCard({
   let buttonText: string;
   let hasVariants: boolean = false;
   let isAvailable: boolean = true;
+  let brandType: BrandType;
 
   if (isGumroadProduct(product)) {
+    brandType = "gumroad";
     name = product.name;
     description = product.description;
     price = product.formatted_price;
@@ -79,6 +68,7 @@ export default function AltProductCard({
     imageUrl = product.preview_url || null;
     buttonText = "View Product";
   } else if (isLemonSqueezyProduct(product)) {
+    brandType = "lemonsqueezy";
     name = product.name;
     description = getLemonSqueezyProductDescription(product);
     price = getLemonSqueezyProductPrice(product);
@@ -88,6 +78,7 @@ export default function AltProductCard({
     hasVariants = false; // Simplified since flattened interface doesn't have variants info
     isAvailable = true; // Simplified since flattened interface doesn't have status info
   } else if (isPatreonTier(product)) {
+    brandType = "patreon";
     name = product.attributes.title;
     description = getPatreonTierDescription(product);
     price = getPatreonTierPrice(product);
@@ -95,6 +86,7 @@ export default function AltProductCard({
     imageUrl = getPatreonTierImage(product);
     buttonText = "View Tier";
   } else {
+    brandType = "gumroad"; // Default fallback
     name = "Unknown Product";
     description = "No description available.";
     price = "N/A";
@@ -104,11 +96,34 @@ export default function AltProductCard({
     isAvailable = false;
   }
 
+  const { brandData } = useBrand(brandType);
   const finalImageUrl = imageUrl || PLACEHOLDER_IMAGE_URL;
+
+  // Use fallback colors if brand data is not available
+  const getFallbackColors = (type: BrandType) => {
+    switch (type) {
+      case "gumroad":
+        return { primary: "#ff90e8", secondary: "#ff6dd7", accent: "#ff4dc6" };
+      case "lemonsqueezy":
+        return { primary: "#fbbf24", secondary: "#f59e0b", accent: "#d97706" };
+      case "patreon":
+        return { primary: "#ff424d", secondary: "#e11d48", accent: "#be123c" };
+      default:
+        return { primary: "#f97316", secondary: "#ea580c", accent: "#d97706" };
+    }
+  };
+
+  const useBrandData = brandData || {
+    colors: getFallbackColors(brandType),
+    logo: null,
+    title: brandType,
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = transformRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
@@ -124,7 +139,9 @@ export default function AltProductCard({
 
   const handleMouseLeave = () => {
     const el = transformRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     el.style.setProperty("--tx", "0deg");
     el.style.setProperty("--ty", "0deg");
   };
@@ -139,13 +156,10 @@ export default function AltProductCard({
           perspective: 1000px;
           flex-shrink: 0;
           opacity: 1;
-          padding: 2px;
+          padding: 4px;
           border-radius: 14px;
-          background: linear-gradient(
-            135deg,
-            rgba(249, 115, 22, 0.2) 0%,
-            rgba(234, 88, 12, 0.1) 100%
-          );
+          ${generateBrandCSS(useBrandData)}
+          background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
         }
 
         /* 2. Transform Wrapper: Handles ONLY 3D rotation */
@@ -215,11 +229,11 @@ export default function AltProductCard({
 
         /* Enhanced glow and visibility for lines on hover */
         .card-layout-wrapper:hover .card-visual-wrapper::after {
-          opacity: 0.8; /* Make lines much more visible on hover */
-          filter: brightness(2.2) contrast(2.8); /* Enhanced glow on hover */
+          opacity: 0.6; /* Make lines more visible on hover */
+          filter: brightness(1.8) contrast(2); /* Enhanced glow on hover */
         }
 
-        /* Gradient overlay for better text readability - Orange theme */
+        /* Gradient overlay for better text readability - Brand theme */
         .card-visual-wrapper::before {
           content: "";
           position: absolute;
@@ -228,10 +242,9 @@ export default function AltProductCard({
           pointer-events: none;
           background: linear-gradient(
             135deg,
-            rgba(249, 115, 22, 0.1) 0%,
-            /* Orange 500 */ rgba(251, 191, 36, 0.05) 25%,
-            /* Amber 300 for a slightly different tone */ transparent 50%,
-            rgba(249, 115, 22, 0.15) 100% /* Orange 500 */
+            rgba(var(--brand-accent-rgb), 0.05) 0%,
+            transparent 50%,
+            rgba(var(--brand-primary-rgb), 0.08) 100%
           );
           border-radius: 0.75rem;
           opacity: 0;
@@ -242,7 +255,7 @@ export default function AltProductCard({
           opacity: 1;
         }
 
-        /* Card background and border - Orange theme */
+        /* Card background and border - Brand theme */
         .card-ui-content {
           position: relative;
           z-index: 3;
@@ -252,15 +265,11 @@ export default function AltProductCard({
           overflow: hidden;
           display: flex;
           flex-direction: column;
-          background: linear-gradient(
-            135deg,
-            rgba(194, 65, 12, 0.15) 0%,
-            /* Darker Orange (Orange 700) */ rgba(17, 24, 39, 0.8) 100%
-          );
-          border: 2px solid rgba(249, 115, 22, 0.3); /* Orange 500 border */
+          background: color-mix(in srgb, var(--brand-primary) 8%, #1a1a1a 92%);
+          border: none;
           box-shadow:
-            0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06),
+            0 8px 32px rgba(0, 0, 0, 0.3),
+            0 4px 16px rgba(0, 0, 0, 0.2),
             inset 0 1px 0 rgba(255, 255, 255, 0.1);
         }
 
@@ -271,7 +280,31 @@ export default function AltProductCard({
           height: 14rem;
           flex-shrink: 0;
           overflow: hidden;
-          background: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 100%);
+          background: color-mix(in srgb, var(--brand-primary) 12%, #0f0f0f 88%);
+        }
+
+        .brand-logo {
+          position: absolute;
+          top: 0.75rem;
+          left: 0.75rem;
+          width: 2.5rem;
+          height: 2.5rem;
+          z-index: 5;
+          background: rgba(0, 0, 0, 0.9);
+          backdrop-filter: blur(8px);
+          border-radius: 0.5rem;
+          padding: 0.5rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid var(--brand-primary);
+        }
+
+        .brand-logo img {
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          filter: brightness(1.1);
         }
 
         /* Content area with consistent spacing */
@@ -360,7 +393,7 @@ export default function AltProductCard({
           font-weight: 500;
         }
 
-        /* Button styling - Orange theme */
+        /* Button styling - Brand theme */
         .button-group {
           display: flex;
           flex-direction: column;
@@ -371,9 +404,9 @@ export default function AltProductCard({
         .view-details-btn {
           background: linear-gradient(
             135deg,
-            #f97316 0%,
-            #ea580c 100%
-          ); /* Orange 500 to Orange 600 */
+            var(--brand-primary) 0%,
+            var(--brand-secondary) 100%
+          );
           color: white;
           font-weight: 700;
           border-radius: 0.5rem;
@@ -382,35 +415,25 @@ export default function AltProductCard({
           border: none;
           cursor: pointer;
           transition: all 0.2s ease;
-          box-shadow: 0 4px 14px 0 rgba(249, 115, 22, 0.3); /* Orange 500 shadow */
-          font-family: inherit;
+          box-shadow: 0 4px 14px 0 rgba(var(--brand-primary-rgb), 0.4);
           letter-spacing: -0.025em;
         }
 
         .view-details-btn:hover {
           background: linear-gradient(
             135deg,
-            #ea580c 0%,
-            #c2410c 100%
-          ); /* Orange 600 to Orange 700 */
+            var(--brand-secondary) 0%,
+            var(--brand-accent) 100%
+          );
           transform: translateY(-1px);
-          box-shadow: 0 6px 20px 0 rgba(249, 115, 22, 0.4); /* Orange 500 shadow */
+          box-shadow: 0 6px 20px 0 rgba(var(--brand-primary-rgb), 0.6);
         }
 
         /* Quick Buy style button (optional, kept for flexibility if you want a second button) */
         .quick-buy-btn {
-          background: rgba(
-            249,
-            115,
-            22,
-            0.1
-          ); /* Orange 500 subtle background */
-          border: 1px solid rgba(249, 115, 22, 0.3); /* Orange 500 border */
-          color: rgb(
-            253,
-            230,
-            138
-          ); /* Yellow 200 for text, provides good contrast */
+          background: rgba(var(--brand-primary-rgb), 0.15);
+          border: 2px solid var(--brand-secondary);
+          color: white;
           font-size: 0.75rem;
           font-weight: 700;
           padding: 0.375rem 0.75rem;
@@ -418,18 +441,12 @@ export default function AltProductCard({
           cursor: pointer;
           transition: all 0.2s ease;
           backdrop-filter: blur(4px);
-          font-family: inherit;
           letter-spacing: -0.025em;
         }
 
         .quick-buy-btn:hover {
-          background: rgba(
-            249,
-            115,
-            22,
-            0.2
-          ); /* Orange 500 slightly more opaque */
-          border-color: rgba(249, 115, 22, 0.5); /* Orange 500 border */
+          background: rgba(var(--brand-primary-rgb), 0.25);
+          border-color: var(--brand-primary);
           transform: translateY(-1px);
         }
 
@@ -464,14 +481,25 @@ export default function AltProductCard({
                   style={{ objectFit: "cover" }}
                   priority
                 />
+                {useBrandData.logo && (
+                  <div className="brand-logo">
+                    <Image
+                      src={useBrandData.logo}
+                      alt={`${brandType} logo`}
+                      width={24}
+                      height={24}
+                      className="h-6 w-6"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Content area with consistent layout */}
               <div className="content-area">
-                <h3 className="product-title">{name}</h3>
+                <h3 className="product-title font-title">{name}</h3>
 
                 <div
-                  className="product-description"
+                  className="product-description font-body"
                   dangerouslySetInnerHTML={{ __html: description }}
                 />
               </div>
@@ -479,16 +507,16 @@ export default function AltProductCard({
               {/* Fixed footer */}
               <div className="card-footer">
                 <div className="price-section">
-                  <span className="price-display">{price}</span>
+                  <span className="price-display font-title">{price}</span>
                   {hasVariants && (
-                    <span className="price-label">Starting from</span>
+                    <span className="price-label font-body">Starting from</span>
                   )}
                   <div className="stock-indicator">
                     <span
                       className={`stock-dot ${isAvailable ? "bg-green-400" : "bg-gray-500"}`}
                     />
                     <span
-                      className={`stock-text ${isAvailable ? "text-green-300" : "text-gray-400"}`}
+                      className={`stock-text font-body ${isAvailable ? "text-green-300" : "text-gray-400"}`}
                     >
                       {isAvailable ? "In Stock" : "Out of Stock"}
                     </span>
@@ -504,7 +532,7 @@ export default function AltProductCard({
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <button className="view-details-btn">
+                        <button className="view-details-btn font-body">
                           {buttonText}
                         </button>
                       </Link>
@@ -520,7 +548,7 @@ export default function AltProductCard({
                       )} */}
                     </>
                   ) : (
-                    <Button disabled className="bg-gray-500 cursor-not-allowed">
+                    <Button disabled className="cursor-not-allowed bg-gray-500">
                       Link Missing
                     </Button>
                   )}

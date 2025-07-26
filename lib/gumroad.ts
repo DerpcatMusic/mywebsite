@@ -1,5 +1,4 @@
 // lib/gumroad.ts
-import { notFound } from 'next/navigation';
 
 export interface GumroadProduct {
   id: string;
@@ -14,17 +13,17 @@ export interface GumroadProduct {
 }
 
 export async function getAllGumroadProducts(): Promise<GumroadProduct[]> {
-  console.log("Attempting to fetch Gumroad products...");
+  // Attempting to fetch Gumroad products
 
   const GUMROAD_API_TOKEN = process.env.GUMROAD_API_TOKEN;
 
   if (!GUMROAD_API_TOKEN) {
-    console.error("ERROR: GUMROAD_API_TOKEN is not set in environment variables. Please check your .env.local file and restart the server.");
+    // ERROR: GUMROAD_API_TOKEN is not set in environment variables
     return [];
   }
 
   const GUMROAD_API_URL = `https://api.gumroad.com/v2/products?access_token=${GUMROAD_API_TOKEN}`;
-  console.log(`Fetching from: ${GUMROAD_API_URL.replace(GUMROAD_API_TOKEN, '***TOKEN_HIDDEN***')}`); // Log URL but hide token
+  // Fetching from Gumroad API
 
   try {
     const response = await fetch(GUMROAD_API_URL, {
@@ -34,51 +33,59 @@ export async function getAllGumroadProducts(): Promise<GumroadProduct[]> {
     });
 
     if (!response.ok) {
-      const errorText = await response.text(); // Get response body for more context
-      console.error(`ERROR: Failed to fetch Gumroad products. Status: ${response.status} ${response.statusText}. Response Body: ${errorText}`);
+      const _errorText = await response.text(); // Get response body for more context
+      // ERROR: Failed to fetch Gumroad products
       if (response.status === 401 || response.status === 403) {
-        console.error("HINT: This usually means your GUMROAD_API_TOKEN is invalid or lacks necessary permissions.");
+        // HINT: This usually means your GUMROAD_API_TOKEN is invalid or lacks necessary permissions
       }
       return [];
     }
 
-    let data: any;
+    let data: { products?: unknown[] };
     try {
       data = await response.json();
-      console.log("SUCCESS: Raw Gumroad API response data:", JSON.stringify(data, null, 2)); // Log raw data for inspection
-    } catch (jsonError) {
-      console.error("ERROR: Failed to parse Gumroad API response as JSON.", jsonError);
+      // SUCCESS: Raw Gumroad API response data received
+    } catch (_jsonError) {
+      // ERROR: Failed to parse Gumroad API response as JSON
       return [];
     }
 
     if (!data || !Array.isArray(data.products)) {
-      console.error("ERROR: Gumroad API response did not contain a 'products' array or was empty.", data);
-      console.error("HINT: Ensure your Gumroad API token is correct and you have published products.");
+      // ERROR: Gumroad API response did not contain a 'products' array or was empty
+      // HINT: Ensure your Gumroad API token is correct and you have published products
       return [];
     }
 
-    const gumroadProducts: GumroadProduct[] = data.products.map((product: any) => {
-      // Add more specific logging for each product if needed, during mapping
-      // console.log("Mapping Gumroad product:", product.id, product.name);
+    const gumroadProducts: GumroadProduct[] = data.products.map(
+      (product: Record<string, unknown>) => {
+        // Add more specific logging for each product if needed, during mapping
+        // console.log("Mapping Gumroad product:", product.id, product.name);
 
-      return {
-        id: product.id,
-        name: product.name,
-        description: product.description || 'No description available.',
-        price: product.price,
-        currency: product.currency,
-        url: product.url,
-        preview_url: product.thumbnail_url || product.preview_url || product.featured_product_thumbnail_url || null, // Common image fields
-        formatted_price: product.formatted_price || `${(product.price / 100).toFixed(2)} ${product.currency}`,
-        short_url: product.short_url || product.url,
-      };
-    });
+        return {
+          id: String(product.id),
+          name: String(product.name),
+          description:
+            String(product.description) || "No description available.",
+          price: Number(product.price),
+          currency: String(product.currency),
+          url: String(product.url),
+          preview_url:
+            String(product.thumbnail_url) ||
+            String(product.preview_url) ||
+            String(product.featured_product_thumbnail_url) ||
+            null, // Common image fields
+          formatted_price:
+            String(product.formatted_price) ||
+            `${(Number(product.price) / 100).toFixed(2)} ${String(product.currency)}`,
+          short_url: String(product.short_url) || String(product.url),
+        };
+      }
+    );
 
-    console.log(`SUCCESS: Fetched ${gumroadProducts.length} Gumroad products.`);
+    // SUCCESS: Fetched Gumroad products
     return gumroadProducts;
-
-  } catch (error) {
-    console.error("CRITICAL ERROR: Unexpected error during Gumroad product fetch.", error);
+  } catch (_error) {
+    // CRITICAL ERROR: Unexpected error during Gumroad product fetch
     return [];
   }
 }

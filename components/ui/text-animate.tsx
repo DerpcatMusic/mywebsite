@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { FC, useEffect, useRef } from "react"
-import { HTMLMotionProps, motion, useAnimation, useInView } from "motion/react"
+import { HTMLMotionProps, motion, useAnimation, useInView } from "motion/react";
+import { FC, useRef } from "react";
 
 type AnimationType =
   | "fadeIn"
@@ -11,13 +11,13 @@ type AnimationType =
   | "rollIn"
   | "whipIn"
   | "whipInUp"
-  | "calmInUp"
+  | "calmInUp";
 
 interface Props extends HTMLMotionProps<"div"> {
-  text: string
-  type?: AnimationType
-  delay?: number
-  duration?: number
+  text: string;
+  type?: AnimationType;
+  delay?: number;
+  duration?: number;
 }
 
 const animationVariants = {
@@ -151,11 +151,11 @@ const animationVariants = {
     child: {
       hidden: {
         opacity: 0,
-        y: `0.25em`,
+        y: "0.25em",
       },
       visible: {
         opacity: 1,
-        y: `0em`,
+        y: "0em",
         transition: {
           duration: 0.65,
           ease: [0.65, 0, 0.75, 1], // Great! Swift Beginning, Prolonged Ease, Quick Finish
@@ -174,11 +174,11 @@ const animationVariants = {
     child: {
       hidden: {
         opacity: 0,
-        y: `0.35em`,
+        y: "0.35em",
       },
       visible: {
         opacity: 1,
-        y: `0em`,
+        y: "0em",
         transition: {
           duration: 0.45,
           //   ease: [0.75, 0.05, 0.85, 1], // Quick Start, Smooth Middle, Sharp End
@@ -189,7 +189,7 @@ const animationVariants = {
       },
     },
   },
-}
+};
 
 const TextAnimate: FC<Props> = ({
   text,
@@ -201,13 +201,13 @@ const TextAnimate: FC<Props> = ({
   //     triggerOnce: true,
   //   });
 
-  const ref = useRef(null)
-  const isInView = useInView(ref, { once: true })
+  const ref = useRef(null);
+  const _isInView = useInView(ref, { once: true });
 
-  const letters = Array.from(text)
-  const { container, child } = animationVariants[type]
+  const letters = Array.from(text);
+  const { container, child } = animationVariants[type];
 
-  const ctrls = useAnimation()
+  const _ctrls = useAnimation();
 
   //   useEffect(() => {
   //     if (isInView) {
@@ -220,12 +220,12 @@ const TextAnimate: FC<Props> = ({
 
   if (type === "rollIn" || type === "whipIn") {
     return (
-      <h2 className="mt-10 text-3xl font-black text-black dark:text-neutral-100 py-5 pb-8 px-8 md:text-5xl">
+      <h2 className="mt-10 px-8 py-5 pb-8 text-3xl font-black text-black dark:text-neutral-100 md:text-5xl">
         {text.split(" ").map((word, index) => {
           return (
             <motion.span
               ref={ref}
-              className="inline-block mr-[0.25em] whitespace-nowrap"
+              className="mr-[0.25em] inline-block whitespace-nowrap"
               aria-hidden="true"
               key={index}
               initial="hidden"
@@ -244,17 +244,17 @@ const TextAnimate: FC<Props> = ({
                     aria-hidden="true"
                     key={index}
                     variants={child}
-                    className="inline-block -mr-[0.01em]"
+                    className="-mr-[0.01em] inline-block"
                   >
                     {character}
                   </motion.span>
-                )
+                );
               })}
             </motion.span>
-          )
+          );
         })}
       </h2>
-    )
+    );
   }
 
   return (
@@ -264,7 +264,7 @@ const TextAnimate: FC<Props> = ({
       variants={container}
       initial="hidden"
       animate="visible"
-      className="mt-10 text-4xl font-black text-black dark:text-neutral-100 py-5 pb-8 px-8 md:text-5xl"
+      className="mt-10 px-8 py-5 pb-8 text-4xl font-black text-black dark:text-neutral-100 md:text-5xl"
       {...props}
     >
       {letters.map((letter, index) => (
@@ -273,8 +273,8 @@ const TextAnimate: FC<Props> = ({
         </motion.span>
       ))}
     </motion.h2>
-  )
-}
+  );
+};
 
-export { TextAnimate }
-export default TextAnimate
+export { TextAnimate };
+export default TextAnimate;

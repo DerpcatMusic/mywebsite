@@ -1,25 +1,27 @@
 // components/fourthwall-products-section.tsx
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { getAllFourthwallProducts, FourthwallProduct } from "@/lib/fourthwall";
-import ProductCard from "./product-card";
-import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { RefreshCw, AlertCircle, SparklesIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { BrandData, useBrand } from "@/hooks/use-brand";
+import { generateBrandCSS } from "@/lib/brand-provider";
+import { FourthwallProduct, getAllFourthwallProducts } from "@/lib/fourthwall";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import ProductCard from "./product-card";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 import {
-  Autoplay,
-  EffectCoverflow,
-  Navigation,
-  Pagination,
+    Autoplay,
+    EffectCoverflow,
+    Navigation,
+    Pagination,
 } from "swiper/modules";
+
 
 // --- Helper Components ---
 function ProductSkeleton() {
@@ -32,7 +34,7 @@ function ProductSkeleton() {
         <div className="h-3 w-1/2 rounded bg-secondary/30"></div>
         <div className="flex items-center justify-between pt-4">
           <div className="h-8 w-1/3 rounded bg-secondary/30"></div>
-          <div className="h-10 w-1/2 rounded-lg bg-purple-900/50"></div>
+          <div className="h-10 w-1/2 rounded-lg bg-secondary/50"></div>
         </div>
       </div>
     </div>
@@ -46,6 +48,7 @@ function ErrorDisplay({
   error: string;
   onRetry: () => void;
 }) {
+
   return (
     <Alert
       variant="destructive"
@@ -69,6 +72,7 @@ function ErrorDisplay({
 }
 
 function EmptyState({ onRetry }: { onRetry: () => void }) {
+
   return (
     <div className="py-12 text-center">
       <div className="mb-4 text-6xl">📦</div>
@@ -82,7 +86,7 @@ function EmptyState({ onRetry }: { onRetry: () => void }) {
       <Button
         onClick={onRetry}
         variant="outline"
-        className="border-purple-600 text-purple-400 hover:bg-purple-800"
+        className="border-gray-600 text-gray-400 hover:bg-gray-800"
       >
         <RefreshCw className="mr-2 h-4 w-4" />
         Refresh Products
@@ -97,6 +101,9 @@ export default function FourthwallProductsSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+  const [activeBrandData, setActiveBrandData] = useState<BrandData | null>(null);
+
+  const { brandData: fourthwallBrandData } = useBrand('fourthwall');
 
   const checkoutDomain = process.env.NEXT_PUBLIC_FW_CHECKOUT;
 
@@ -125,6 +132,24 @@ export default function FourthwallProductsSection() {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+
+  useEffect(() => {
+    if (fourthwallBrandData && !activeBrandData) {
+      setActiveBrandData(fourthwallBrandData);
+    }
+  }, [fourthwallBrandData, activeBrandData]);
+
+  const dynamicCarouselCssVariables = useMemo(() => {
+    return activeBrandData ? generateBrandCSS(activeBrandData, 'carousel-brand') : '';
+  }, [activeBrandData]);
+
+  const handleSlideChange = () => {
+    // Since this section only shows Fourthwall products, the active brand is always Fourthwall
+    if (fourthwallBrandData) {
+      setActiveBrandData(fourthwallBrandData);
+    }
+  };
 
   const css = `
   .swiper {
@@ -205,52 +230,18 @@ export default function FourthwallProductsSection() {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
   }
 
-  .swiper-button-next:hover,
-  .swiper-button-prev:hover {
-    background: rgba(147, 51, 234, 0.25);
-    border-color: rgba(147, 51, 234, 0.7);
-    transform: scale(1.15);
-    box-shadow: 0 6px 25px rgba(147, 51, 234, 0.5);
-    color: #a855f7;
-  }
-
-  .dark .swiper-button-next:hover,
-  .dark .swiper-button-prev:hover {
-    background: rgba(75, 85, 99, 0.3);
-    border-color: rgba(107, 114, 128, 0.6);
-    transform: scale(1.15);
-    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
-    color: #f9fafb;
-  }
-
-  .swiper-button-next::after,
-  .swiper-button-prev::after {
-    font-size: 20px;
-    font-weight: 900;
-  }
-
-  @media (max-width: 768px) {
-    .swiper-slide {
-      width: 280px;
-    }
-
-    .swiper-button-next,
-    .swiper-button-prev {
-      display: none;
-    }
-
-    .swiper-pagination-bullet {
-      width: 12px;
-      height: 12px;
-    }
-  }
-  `;
+  .swiper-button-next:hover,\n  .swiper-button-prev:hover {\n    background: rgba(147, 51, 234, 0.25);\n    border-color: rgba(147, 51, 234, 0.7);\n    transform: scale(1.15);\n    box-shadow: 0 6px 25px rgba(147, 51, 234, 0.5);\n    color: #a855f7;\n  }\n\n  .dark .swiper-button-next:hover,\n  .dark .swiper-button-prev:hover {\n    background: rgba(75, 85, 99, 0.3);\n    border-color: rgba(107, 114, 128, 0.6);\n    transform: scale(1.15);\n    box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);\n    color: #f9fafb;\n  }\n\n  .swiper-button-next::after,\n  .swiper-button-prev::after {\n    font-size: 20px;\n    font-weight: 900;\n  }\n\n  @media (max-width: 768px) {\n    .swiper-slide {\n      width: 280px;\n    }\n\n    .swiper-button-next,\n    .swiper-button-prev {\n      display: none;\n    }\n\n    .swiper-pagination-bullet {\n      width: 12px;\n      height: 12px;\n    }\n  }\n  `;
 
   const isScrollable = !loading && !error && products.length > 0;
 
   return (
     <>
-      <style>{css}</style>
+      <style>{css}</style> {/* Existing global Swiper CSS */}
+      <style jsx>{`
+        .carousel-wrapper {
+          ${dynamicCarouselCssVariables}
+        }
+      `}</style>
 
       <section className="bg-background py-4">
         <div className="w-full max-w-none px-2">
@@ -274,12 +265,12 @@ export default function FourthwallProductsSection() {
           {/* Products Carousel */}
           {isScrollable && (
             <div className="w-full space-y-4">
-              <div className="mx-auto w-full rounded-[24px] border-2 border-gray-300/40 dark:border-gray-600/40 bg-gradient-to-br from-white/80 via-gray-50/90 to-white/80 dark:from-gray-800/80 dark:via-gray-700/90 dark:to-gray-800/80 p-3 shadow-lg shadow-gray-300/20 dark:shadow-gray-800/20 backdrop-blur-sm md:rounded-t-[44px]">
-                <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 dark:from-gray-900/30 dark:via-gray-800/20 dark:to-gray-900/30 p-2 shadow-lg backdrop-blur-md md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-4">
-                  <div className="flex flex-col justify-center pb-2 pl-4 pt-6 md:items-center">
-                    <div className="text-center">
-                      <h3 className="text-4xl font-bold tracking-tight text-purple-500 mb-2">
-                        OFFICIAL MERCH
+              <div className="carousel-wrapper mx-auto w-full rounded-[24px] border-2 border-gray-300/40 bg-gradient-to-br from-white/80 via-gray-50/90 to-white/80 p-3 shadow-lg shadow-gray-300/20 backdrop-blur-sm dark:border-[rgba(var(--carousel-brand-secondary-rgb),0.4)] dark:from-[rgba(var(--carousel-brand-primary-rgb),0.8)] dark:via-[rgba(var(--carousel-brand-secondary-rgb),0.9)] dark:to-[rgba(var(--carousel-brand-primary-rgb),0.8)] dark:shadow-[rgba(var(--carousel-brand-primary-rgb),0.2)] md:rounded-t-[44px]">
+                <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-gray-200/60 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 p-2 shadow-lg backdrop-blur-md dark:border-[rgba(var(--carousel-brand-accent-rgb),0.6)] dark:from-[rgba(var(--carousel-brand-primary-rgb),0.3)] dark:via-[rgba(var(--carousel-brand-secondary-rgb),0.2)] dark:to-[rgba(var(--carousel-brand-primary-rgb),0.3)] md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-4">
+                   <div className="flex flex-col justify-center pb-2 pl-4 pt-6 md:items-center">
+                     <div className="text-center">
+                       <h3 className="mb-2 text-4xl font-bold tracking-tight text-purple-500">
+                         OFFICIAL MERCH
                       </h3>
                       <p className="text-muted-foreground">
                         Fresh drip, fits all!
@@ -292,10 +283,10 @@ export default function FourthwallProductsSection() {
                       <Swiper
                         spaceBetween={30}
                         autoplay={{
-                          delay: 3000,
-                          disableOnInteraction: false,
-                          pauseOnMouseEnter: true,
-                        }}
+                           delay: 3000,
+                           disableOnInteraction: false,
+                           pauseOnMouseEnter: true,
+                         }}
                         effect={"coverflow"}
                         grabCursor={true}
                         centeredSlides={true}
@@ -339,6 +330,7 @@ export default function FourthwallProductsSection() {
                             spaceBetween: 40,
                           },
                         }}
+                        onSlideChange={handleSlideChange}
                       >
                         {products.map((product, index) => (
                           <SwiperSlide key={`${product.id}-${index}`}>

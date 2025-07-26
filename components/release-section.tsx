@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react"; // Import useState, useEffect, useRef
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react"; // Import useState, useEffect, useRef
 
 interface ReleaseSectionProps {
   releaseImage?: string;
@@ -23,7 +23,9 @@ export default function ReleaseSection({
 
   // 3. Define the scroll event handler
   const handleScroll = () => {
-    if (!scrollIndicatorRef.current) return; // Ensure ref is attached
+    if (!scrollIndicatorRef.current) {
+      return;
+    } // Ensure ref is attached
 
     const indicatorRect = scrollIndicatorRef.current.getBoundingClientRect();
     // `indicatorTop` is the distance from the viewport's top to the indicator's top
@@ -89,13 +91,13 @@ export default function ReleaseSection({
       </div>
 
       {/* Content */}
-      <div className="relative z-10 h-full flex items-center justify-center">
-        <div className="text-center px-4">
+      <div className="relative z-10 flex h-full items-center justify-center">
+        <div className="px-4 text-center">
           <div className="mb-8">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-primary-foreground mb-4 drop-shadow-2xl font-title">
+            <h1 className="mb-4 font-title text-4xl font-bold text-primary-foreground drop-shadow-2xl md:text-6xl lg:text-7xl">
               {releaseTitle}
             </h1>
-            <p className="text-xl md:text-2xl text-primary-foreground/80 drop-shadow-lg font-body">
+            <p className="font-body text-xl text-primary-foreground/80 drop-shadow-lg md:text-2xl">
               Out Now
             </p>
           </div>
@@ -103,7 +105,7 @@ export default function ReleaseSection({
           <Button
             asChild
             size="lg"
-            className="bg-primary hover:bg-primary/90 text-primary-foreground font-title text-lg tracking-wide px-8 py-6 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 group"
+            className="group rounded-xl bg-primary px-8 py-6 font-title text-lg tracking-wide text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl"
           >
             <a
               href={streamLink}
@@ -111,7 +113,7 @@ export default function ReleaseSection({
               rel="noopener noreferrer"
               className="flex items-center justify-center"
             >
-              <Play className="w-6 h-6 mr-3 transition-transform duration-150 group-hover:scale-110" />
+              <Play className="mr-3 h-6 w-6 transition-transform duration-150 group-hover:scale-110" />
               Stream Now
             </a>
           </Button>
@@ -121,11 +123,11 @@ export default function ReleaseSection({
       {/* Scroll indicator */}
       <div
         ref={scrollIndicatorRef} // 5. Attach the ref to the scroll indicator div
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce"
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 transform animate-bounce"
         style={{ opacity: opacity }} // 6. Apply the dynamic opacity
       >
-        <div className="w-6 h-10 border-2 border-foreground/50 flex justify-center rounded-full">
-          <div className="w-1 h-3 bg-foreground/50 mt-2 animate-pulse rounded-full" />
+        <div className="flex h-10 w-6 justify-center rounded-full border-2 border-foreground/50">
+          <div className="mt-2 h-3 w-1 animate-pulse rounded-full bg-foreground/50" />
         </div>
       </div>
     </section>

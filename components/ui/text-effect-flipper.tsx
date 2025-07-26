@@ -1,5 +1,5 @@
-import React from "react";
 import { motion } from "framer-motion";
+import React from "react";
 
 const DURATION = 0.25;
 const STAGGER = 0.025;
@@ -19,7 +19,7 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href }) => {
         rel: "noopener noreferrer",
       })}
       href={href}
-      className="relative inline-flex font-title text-2xl uppercase nav-text hover:text-primary tracking-wide transition-colors duration-200"
+      className="nav-text relative inline-flex font-title text-2xl uppercase tracking-wide transition-colors duration-200 hover:text-primary"
       style={{
         lineHeight: 1,
         padding: "0.5rem 0.75rem",

@@ -1,0 +1,13 @@
+{
+  "brandType": "gumroad",
+  "domain": "gumroad.com",
+  "title": "Gumroad",
+  "colors": {
+    "primary": "#ff90e8",
+    "secondary": "#ffa8cc",
+    "accent": "#ffb3d9"
+  },
+  "logo": null,
+  "lastUpdated": "2025-07-26T21:53:55.640Z",
+  "fallback": true
+}

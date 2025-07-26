@@ -3,18 +3,18 @@
 "use client"; // This directive marks the component to be rendered on the client-side
 
 // Import necessary UI components and icons
-import { Card, CardContent } from "@/components/ui/card"; // Assuming these are correctly set up via shadcn/ui
 import { Button } from "@/components/ui/button"; // Assuming these are correctly set up via shadcn/ui
+import { Card, CardContent } from "@/components/ui/card"; // Assuming these are correctly set up via shadcn/ui
 import {
   Calendar,
-  MapPin,
   Clock,
   ExternalLink,
+  MapPin,
   RefreshCw,
   XCircle,
 } from "lucide-react"; // Icons from lucide-react
 // Import React hooks for managing state and side effects
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 // Define the interface for the tour date data, matching what your API route returns
 interface TourDate {
@@ -71,19 +71,20 @@ export default function AboutToursSection() {
           const errorData = await response.json(); // Get the error message from your API route
           throw new Error(
             errorData.error ||
-              `Failed to fetch tour dates (Status: ${response.status})`,
+              `Failed to fetch tour dates (Status: ${response.status})`
           );
         }
 
         // Parse the JSON data received from your API route
         const data: TourDate[] = await response.json();
         setTourDates(data); // Update the component's state with the fetched dates
-      } catch (err: any) {
+      } catch (err: unknown) {
         // Catch and handle any errors that occur during the fetch operation
-        setError(
-          err.message || "An unknown error occurred while fetching tour dates.",
-        );
-        console.error("Client-side tour dates fetch error:", err);
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : "An unknown error occurred while fetching tour dates.";
+        setError(errorMessage);
       } finally {
         setIsLoading(false); // Set loading state to false, regardless of success or failure
       }
@@ -93,17 +94,17 @@ export default function AboutToursSection() {
   }, []); // The empty dependency array ensures this effect runs only once after the initial render
 
   return (
-    <section id="about" className="py-20 bg-background">
+    <section id="about" className="bg-background py-20">
       <div className="container mx-auto px-4">
-        <div className="grid lg:grid-cols-3 gap-12">
+        <div className="grid gap-12 lg:grid-cols-3">
           {/* About Section - 2/3 width (This section remains unchanged from your original code) */}
           <div className="lg:col-span-2">
-            <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8">
+            <h2 className="mb-8 text-4xl font-bold text-foreground md:text-5xl">
               About <span className="text-primary">Derpcat</span>
             </h2>
 
             <div className="space-y-8">
-              <p className="text-xl md:text-2xl text-muted-foreground leading-relaxed">
+              <p className="text-xl leading-relaxed text-muted-foreground md:text-2xl">
                 Born in 03', Been producing music since the age of 13. (u do the
                 math) Got on various big labels such as NCS, Monstercat,
                 Ophelia, Most Addictive and more. I write, compose and produce
@@ -121,84 +122,84 @@ export default function AboutToursSection() {
               </p>
               </p>*/}
 
-              <div className="inline-block p-8 bg-gradient-to-r from-primary/10 to-primary/5 border border-primary/20 mt-12">
-                <p className="text-lg text-muted-foreground mb-4 italic">
+              <div className="mt-12 inline-block border border-primary/20 bg-gradient-to-r from-primary/10 to-primary/5 p-8">
+                <p className="mb-4 text-lg italic text-muted-foreground">
                   "My name isn't typical but so is my music, and for that I
                   always say: Expect the Unexpected"
                 </p>
-                <p className="text-primary font-semibold">- Derpcat</p>
+                <p className="font-semibold text-primary">- Derpcat</p>
               </div>
             </div>
           </div>
 
           {/* Tours Section - 1/3 width (This section dynamically displays tour dates) */}
-          <div id="tours" className="lg:col-span-1 flex flex-col justify-end">
-            <h3 className="text-3xl md:text-4xl font-bold text-foreground mb-8">
+          <div id="tours" className="flex flex-col justify-end lg:col-span-1">
+            <h3 className="mb-8 text-3xl font-bold text-foreground md:text-4xl">
               Upcoming <span className="text-primary">Shows</span>
             </h3>
 
             {/* Conditional rendering based on the loading and error states */}
             {isLoading ? (
               // Display a loading indicator while data is being fetched
-              <div className="text-center py-8 flex-grow">
-                <RefreshCw className="w-12 h-12 text-primary/50 mx-auto mb-4 animate-spin" />
-                <h4 className="text-lg font-semibold text-foreground mb-2">
+              <div className="flex-grow py-8 text-center">
+                <RefreshCw className="mx-auto mb-4 h-12 w-12 animate-spin text-primary/50" />
+                <h4 className="mb-2 text-lg font-semibold text-foreground">
                   Loading Shows...
                 </h4>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Fetching latest tour dates.
                 </p>
               </div>
             ) : error ? (
               // Display an error message if fetching failed
-              <div className="text-center py-8 flex-grow">
-                <XCircle className="w-12 h-12 text-red-500/70 mx-auto mb-4" />
-                <h4 className="text-lg font-semibold text-destructive mb-2">
+              <div className="flex-grow py-8 text-center">
+                <XCircle className="mx-auto mb-4 h-12 w-12 text-red-500/70" />
+                <h4 className="mb-2 text-lg font-semibold text-destructive">
                   Error Loading Shows
                 </h4>
-                <p className="text-muted-foreground text-sm">{error}</p>
-                <p className="text-muted-foreground text-xs mt-2">
+                <p className="text-sm text-muted-foreground">{error}</p>
+                <p className="mt-2 text-xs text-muted-foreground">
                   Please ensure your artist name and app ID are correct in
                   .env.local and check your server logs.
                 </p>
               </div>
             ) : (
               // If data is loaded successfully and there are no errors, display the tour dates
-              <div className="space-y-4 flex-grow">
-                {tourDates.map((show) => {
+              <div className="flex-grow space-y-4">
+                {tourDates.map(show => {
                   // Map over the dynamically fetched tourDates
                   const dateInfo = formatDate(show.date); // Format the date for display
                   return (
                     <Card
                       key={show.id} // Unique key for React list rendering
-                      className="bg-card border-primary/20 hover:border-primary/40 transition-all duration-150 group"
+                      className="group border-primary/20 bg-card transition-all duration-150 hover:border-primary/40"
                       style={{ borderRadius: "0px" }} // Maintain original styling
                     >
                       <CardContent className="p-4">
                         <div className="space-y-3">
                           {/* Date and Venue Information */}
                           <div className="flex items-center space-x-4">
-                            <div className="text-center min-w-[60px]">
-                              <div className="text-primary font-bold text-sm">
+                            <div className="min-w-[60px] text-center">
+                              <div className="text-sm font-bold text-primary">
                                 {dateInfo.month}
                               </div>
-                              <div className="text-white font-bold text-xl">
+                              <div className="text-xl font-bold text-white">
                                 {dateInfo.day}
                               </div>
                             </div>
 
-                            <div className="flex-1 min-w-0">
-                              <h4 className="text-foreground font-semibold text-sm mb-1 truncate">
+                            <div className="min-w-0 flex-1">
+                              <h4 className="mb-1 truncate text-sm font-semibold text-foreground">
                                 {show.venue}
                               </h4>
-                              <div className="flex items-center text-muted-foreground text-xs mb-1">
-                                <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                              <div className="mb-1 flex items-center text-xs text-muted-foreground">
+                                <MapPin className="mr-1 h-3 w-3 flex-shrink-0" />
                                 <span className="truncate">
                                   {show.city}, {show.state}
                                 </span>
                               </div>
-                              <div className="flex items-center text-muted-foreground text-xs">
-                                <Clock className="w-3 h-3 mr-1 flex-shrink-0" />
+                              <div className="flex items-center text-xs text-muted-foreground">
+                                <Clock className="mr-1 h-3 w-3 flex-shrink-0" />
                                 <span>{show.time}</span>
                               </div>
                             </div>
@@ -209,7 +210,7 @@ export default function AboutToursSection() {
                             {show.soldOut ? (
                               // Display "Sold Out" if the show is marked as such
                               <div
-                                className="w-full px-4 py-2 bg-muted text-muted-foreground text-center font-bold text-sm"
+                                className="w-full bg-muted px-4 py-2 text-center text-sm font-bold text-muted-foreground"
                                 style={{ borderRadius: "0px" }}
                               >
                                 Sold Out
@@ -218,7 +219,7 @@ export default function AboutToursSection() {
                               // Display "Get Tickets" button if not sold out
                               <Button
                                 asChild // Renders as an <a> tag
-                                className="w-full bg-primary hover:bg-transparent hover:border-2 hover:border-primary text-primary-foreground font-bold px-4 py-2 text-sm transition-all duration-150 group"
+                                className="group w-full bg-primary px-4 py-2 text-sm font-bold text-primary-foreground transition-all duration-150 hover:border-2 hover:border-primary hover:bg-transparent"
                                 style={{ borderRadius: "0px" }}
                               >
                                 <a
@@ -227,7 +228,7 @@ export default function AboutToursSection() {
                                   rel="noopener noreferrer"
                                 >
                                   Get Tickets
-                                  <ExternalLink className="w-3 h-3 ml-2 transition-transform duration-150" />
+                                  <ExternalLink className="ml-2 h-3 w-3 transition-transform duration-150" />
                                 </a>
                               </Button>
                             )}
@@ -242,22 +243,22 @@ export default function AboutToursSection() {
 
             {/* Display message if no shows are scheduled after loading completes and no errors */}
             {!isLoading && !error && tourDates.length === 0 && (
-              <div className="text-center py-8 flex-grow">
-                <Calendar className="w-12 h-12 text-primary/50 mx-auto mb-4" />
-                <h4 className="text-lg font-semibold text-foreground mb-2">
+              <div className="flex-grow py-8 text-center">
+                <Calendar className="mx-auto mb-4 h-12 w-12 text-primary/50" />
+                <h4 className="mb-2 text-lg font-semibold text-foreground">
                   No Shows Scheduled
                 </h4>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Check back soon for upcoming tour dates!
                 </p>
               </div>
             )}
 
             {/* Bandsintown Buttons */}
-            <div className="flex flex-row space-x-4 lg:flex-col lg:space-y-4 lg:space-x-0">
+            <div className="flex flex-row space-x-4 lg:flex-col lg:space-x-0 lg:space-y-4">
               <Button
                 asChild
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 py-2 text-base transition-all duration-150"
+                className="w-full bg-primary px-4 py-2 text-base font-bold text-primary-foreground transition-all duration-150 hover:bg-primary/90"
               >
                 <a
                   href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
@@ -269,7 +270,7 @@ export default function AboutToursSection() {
               </Button>
               <Button
                 asChild
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold px-4 py-2 text-base transition-all duration-150"
+                className="w-full bg-primary px-4 py-2 text-base font-bold text-primary-foreground transition-all duration-150 hover:bg-primary/90"
               >
                 <a
                   href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat?affil_code=js_&app_id=js_&bg-color=rgba%28255%2C255%2C255%2C1%29&border-color=rgba%2874%2C74%2C74%2C1%29&came_from=700&cta-bg-color=rgba%2874%2C74%2C74%2C1%29&cta-border-color=rgba%2874%2C74%2C74%2C1%29&cta-border-radius=2px&cta-border-width=0px&cta-text-color=rgba%28255%2C255%2C255%2C1%29&font=Helvetica&play-my-city=true&signature=ZZ7a6c5a954bfa5ccf256789d33d35925c0a4085d514f28cc54384a917b1c25a73&spn=0&text-color=rgba%2866%2C66%2C66%2C1%29&utm_campaign=play_my_city&utm_medium=web&utm_source=widget"
