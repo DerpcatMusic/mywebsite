@@ -1,27 +1,28 @@
 // components/digital-products/alt-products-section.tsx
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
-import { Swiper, SwiperSlide } from "swiper/react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+
 import { GumroadProduct } from "@/lib/gumroad";
 import { LemonSqueezyProduct } from "@/lib/lemonsqueezy";
 import { PatreonTier } from "@/lib/patreon";
-import AltProductCard from "./alt-product-card";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { RefreshCw, AlertCircle, SparklesIcon } from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-import "swiper/css/pagination";
 import "swiper/css/navigation";
+import "swiper/css/pagination";
 import {
-  Autoplay,
-  EffectCoverflow,
-  Navigation,
-  Pagination,
+    Autoplay,
+    EffectCoverflow,
+    Navigation,
+    Pagination,
 } from "swiper/modules";
+
+import AltProductCard from "./alt-product-card";
 
 type AltProduct = GumroadProduct | LemonSqueezyProduct | PatreonTier;
 
@@ -103,10 +104,11 @@ interface AltProductsSectionProps {
 export default function AltProductsSection({
   initialProducts,
 }: AltProductsSectionProps) {
-  const [products, setProducts] = useState<AltProduct[]>(initialProducts || []);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [products] = useState<AltProduct[]>(initialProducts || []);
+  const [loading] = useState(false);
+  const [error] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
+
 
   // --- Device Detection ---
   useEffect(() => {
@@ -268,11 +270,11 @@ export default function AltProductsSection({
           {/* Products Carousel */}
           {isScrollable && (
             <div className="w-full space-y-4">
-              <div className="mx-auto w-full rounded-[24px] border-2 border-gray-300/40 dark:border-gray-600/40 bg-gradient-to-br from-white/80 via-gray-50/90 to-white/80 dark:from-gray-800/80 dark:via-gray-700/90 dark:to-gray-800/80 p-3 shadow-lg shadow-gray-300/20 dark:shadow-gray-800/20 backdrop-blur-sm md:rounded-t-[44px]">
-                <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-gray-200/60 dark:border-gray-700/60 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 dark:from-gray-900/30 dark:via-gray-800/20 dark:to-gray-900/30 p-2 shadow-lg backdrop-blur-md md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-4">
+              <div className="mx-auto w-full rounded-[24px] border-2 border-gray-300/40 bg-gradient-to-br from-white/80 via-gray-50/90 to-white/80 p-3 shadow-lg shadow-gray-300/20 backdrop-blur-sm dark:border-gray-600/40 dark:from-gray-800/80 dark:via-gray-700/90 dark:to-gray-800/80 dark:shadow-gray-800/20 md:rounded-t-[44px]">
+                <div className="relative mx-auto flex w-full flex-col rounded-[24px] border border-gray-200/60 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 p-2 shadow-lg backdrop-blur-md dark:border-gray-700/60 dark:from-gray-900/30 dark:via-gray-800/20 dark:to-gray-900/30 md:items-start md:gap-8 md:rounded-b-[20px] md:rounded-t-[40px] md:p-4">
                   <div className="flex flex-col justify-center pb-2 pl-4 pt-6 md:items-center">
                     <div className="text-center">
-                      <h3 className="text-4xl font-bold tracking-tight text-orange-500 mb-2">
+                      <h3 className="mb-2 text-4xl font-bold tracking-tight text-orange-500">
                         DIGITAL GOODS
                       </h3>
                       <p className="text-muted-foreground">

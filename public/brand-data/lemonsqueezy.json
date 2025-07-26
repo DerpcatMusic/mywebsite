@@ -1,0 +1,13 @@
+{
+  "brandType": "lemonsqueezy",
+  "domain": "lemonsqueezy.com",
+  "title": "Lemonsqueezy",
+  "colors": {
+    "primary": "#ffd23f",
+    "secondary": "#fccc02",
+    "accent": "#f5c842"
+  },
+  "logo": null,
+  "lastUpdated": "2025-07-26T21:53:56.617Z",
+  "fallback": true
+}

@@ -1,193 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double:wght,CRSV@100..900,1&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* --- Your Theme Variables (Light & Dark Mode) --- */
 @layer base {
-    :root {
-        --background: 0 0% 90.6%;
-        --foreground: 0 0% 9.4%;
-        --card: 0 0% 90.6%;
-        --card-foreground: 0 0% 9.4%;
-        --popover: 0 0% 90.6%;
-        --popover-foreground: 0 0% 9.4%;
-        --primary: 16 100% 50%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 240 5% 96.1%;
-        --secondary-foreground: 0 0% 9.4%;
-        --muted: 240 5% 96.1%;
-        --muted-foreground: 240 3.8% 46.1%;
-        --accent: 240 5% 96.1%;
-        --accent-foreground: 0 0% 9.4%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 5.9% 90%;
-        --input: 240 5.9% 90%;
-        --ring: 16 100% 50%;
-        --chart-1: 16 100% 50%;
-        --chart-2: 0 0% 9.4%;
-        --chart-3: 240 3.8% 46.1%;
-        --chart-4: 240 4.8% 64.9%;
-        --chart-5: 240 5.9% 83.9%;
-        --sidebar: 240 5% 96.1%;
-        --sidebar-foreground: 0 0% 9.4%;
-        --sidebar-primary: 16 100% 50%;
-        --sidebar-primary-foreground: 0 0% 98%;
-        --sidebar-accent: 0 0% 90.6%;
-        --sidebar-accent-foreground: 0 0% 9.4%;
-        --sidebar-border: 240 5.9% 90%;
-        --sidebar-ring: 16 100% 50%;
-        --font-sans: Geist;
-        --font-serif: Lora;
-        --font-mono: Geist Mono;
-        --radius: 0.5rem;
-    }
+  :root {
+    --background: 0 0% 90.6%;
+    --foreground: 0 0% 9.4%;
+    --card: 0 0% 90.6%;
+    --card-foreground: 0 0% 9.4%;
+    --popover: 0 0% 90.6%;
+    --popover-foreground: 0 0% 9.4%;
+    --primary: 16 100% 50%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 5% 96.1%;
+    --secondary-foreground: 0 0% 9.4%;
+    --muted: 240 5% 96.1%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 5% 96.1%;
+    --accent-foreground: 0 0% 9.4%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 16 100% 50%;
+    --chart-1: 16 100% 50%;
+    --chart-2: 0 0% 9.4%;
+    --chart-3: 240 3.8% 46.1%;
+    --chart-4: 240 4.8% 64.9%;
+    --chart-5: 240 5.9% 83.9%;
+    --sidebar: 240 5% 96.1%;
+    --sidebar-foreground: 0 0% 9.4%;
+    --sidebar-primary: 16 100% 50%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 0 0% 90.6%;
+    --sidebar-accent-foreground: 0 0% 9.4%;
+    --sidebar-border: 240 5.9% 90%;
+    --sidebar-ring: 16 100% 50%;
+    --font-sans: Geist;
+    --font-serif: Lora;
+    --font-mono: Geist Mono;
+    --radius: 0.5rem;
+  }
 
-    .dark {
-        --background: 0 0% 4.3%;
-        --foreground: 0 0% 90.6%;
-        --card: 0 0% 8.2%;
-        --card-foreground: 0 0% 90.6%;
-        --popover: 0 0% 8.6%;
-        --popover-foreground: 0 0% 90.6%;
-        --primary: 10 100% 49.6%;
-        --primary-foreground: 0 0% 90.6%;
-        --secondary: 240 4.9% 15.9%;
-        --secondary-foreground: 0 0% 90.6%;
-        --muted: 240 4.9% 15.9%;
-        --muted-foreground: 240 4.8% 64.9%;
-        --accent: 240 4.9% 15.9%;
-        --accent-foreground: 0 0% 90.6%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 240 4.9% 15.9%;
-        --input: 240 4.9% 15.9%;
-        --ring: 16 100% 50%;
-        --chart-1: 16 100% 50%;
-        --chart-2: 0 0% 90.6%;
-        --chart-3: 240 4.8% 64.9%;
-        --chart-4: 240 3.8% 46.1%;
-        --chart-5: 240 5.9% 34.1%;
-        --sidebar: 0 0% 4.3%;
-        --sidebar-foreground: 0 0% 90.6%;
-        --sidebar-primary: 16 100% 50%;
-        --sidebar-primary-foreground: 0 0% 90.6%;
-        --sidebar-accent: 240 4.9% 15.9%;
-        --sidebar-accent-foreground: 0 0% 90.6%;
-        --sidebar-border: 240 4.9% 15.9%;
-        --sidebar-ring: 16 100% 50%;
-        --font-sans: Geist;
-        --font-serif: Lora;
-        --font-mono: Geist Mono;
-        --radius: 0.5rem;
-    }
+  .dark {
+    --background: 0 0% 4.3%;
+    --foreground: 0 0% 90.6%;
+    --card: 0 0% 8.2%;
+    --card-foreground: 0 0% 90.6%;
+    --popover: 0 0% 8.6%;
+    --popover-foreground: 0 0% 90.6%;
+    --primary: 10 100% 49.6%;
+    --primary-foreground: 0 0% 90.6%;
+    --secondary: 240 4.9% 15.9%;
+    --secondary-foreground: 0 0% 90.6%;
+    --muted: 240 4.9% 15.9%;
+    --muted-foreground: 240 4.8% 64.9%;
+    --accent: 240 4.9% 15.9%;
+    --accent-foreground: 0 0% 90.6%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4.9% 15.9%;
+    --input: 240 4.9% 15.9%;
+    --ring: 16 100% 50%;
+    --chart-1: 16 100% 50%;
+    --chart-2: 0 0% 90.6%;
+    --chart-3: 240 4.8% 64.9%;
+    --chart-4: 240 3.8% 46.1%;
+    --chart-5: 240 5.9% 34.1%;
+    --sidebar: 0 0% 4.3%;
+    --sidebar-foreground: 0 0% 90.6%;
+    --sidebar-primary: 16 100% 50%;
+    --sidebar-primary-foreground: 0 0% 90.6%;
+    --sidebar-accent: 240 4.9% 15.9%;
+    --sidebar-accent-foreground: 0 0% 90.6%;
+    --sidebar-border: 240 4.9% 15.9%;
+    --sidebar-ring: 16 100% 50%;
+    --font-sans: Geist;
+    --font-serif: Lora;
+    --font-mono: Geist Mono;
+    --radius: 0.5rem;
+  }
 
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    body {
-        font-family: "Quicksand", sans-serif;
-        @apply bg-background text-foreground;
-    }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    @apply bg-background text-foreground;
+  }
 
-    /* --- Global Font Classes --- */
-    .font-title {
-        font-family: "Bitcount Prop Double", system-ui;
-        font-optical-sizing: auto;
-        font-weight: 100;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "CRSV" 5,
-            "ELSH" 0,
-            "ELXP" 0;
-    }
+  /* Performance Mode Variables */
+  :root {
+    --animation-duration: 0.3s;
+  }
 
-    .font-body {
-        font-family: "Quicksand", sans-serif;
-    }
-
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-family: "Bitcount Prop Double", system-ui;
-        font-optical-sizing: auto;
-        font-weight: 700;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "CRSV" 1,
-            "ELSH" 0,
-            "ELXP" 0;
-    }
+  [data-performance-mode="performance"] {
+    --animation-duration: 0.15s;
+  }
 }
 
+  /* --- Global Font Classes --- */
+  .font-title {
+    font-family: 'Bitcount Prop Double', system-ui;
+    font-optical-sizing: auto;
+    font-weight: 100;
+    font-style: normal;
+    font-variation-settings:
+      'slnt' 0,
+      'CRSV' 5,
+      'ELSH' 0,
+      'ELXP' 0;
+  }
+
+  .font-body {
+    font-family: 'Quicksand', sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Bitcount Prop Double', system-ui;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+    font-variation-settings:
+      'slnt' 0,
+      'CRSV' 1,
+      'ELSH' 0,
+      'ELXP' 0;
+  }
+
 @layer utilities {
-    /* Navigation text with proper visibility */
-    .nav-text {
-        color: hsl(var(--foreground)) !important;
-        font-weight: 600 !important;
-    }
+  /* Navigation text with proper visibility */
+  .nav-text {
+    color: hsl(var(--foreground)) !important;
+    font-weight: 600 !important;
+  }
 
-    .dark .nav-text {
-        color: #e7e7e7 !important;
-    }
+  .dark .nav-text {
+    color: #e7e7e7 !important;
+  }
 
-    /* Button text with proper visibility */
-    .btn-text {
-        color: hsl(var(--primary-foreground)) !important;
-        font-weight: 600 !important;
-    }
+  /* Button text with proper visibility */
+  .btn-text {
+    color: hsl(var(--primary-foreground)) !important;
+    font-weight: 600 !important;
+  }
 
-    .text-balance {
-        text-wrap: balance;
-    }
+  .text-balance {
+    text-wrap: balance;
+  }
 
-    /* --- Carousel Animation --- */
-    @keyframes scroll {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            /* This moves the carousel left by the width of the first set of items */
-            transform: translateX(
-                calc(-100% - 2rem)
-            ); /* 2rem is your gap (gap-8) */
-        }
+  /* --- Carousel Animation --- */
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
     }
+    to {
+      /* This moves the carousel left by the width of the first set of items */
+      transform: translateX(calc(-100% - 2rem)); /* 2rem is your gap (gap-8) */
+    }
+  }
 
-    .animate-scroll {
-        /* Adjust duration to control speed. Higher value = slower. */
-        animation: scroll 60s linear infinite;
-    }
+  .animate-scroll {
+    /* Adjust duration to control speed. Higher value = slower. */
+    animation: scroll 60s linear infinite;
+  }
 
-    /* Utility class to pause animation on hover */
-    .pause {
-        animation-play-state: paused;
-    }
+  /* Utility class to pause animation on hover */
+  .pause {
+    animation-play-state: paused;
+  }
 }
 
 /* Custom social icon hover fills */
 .instagram-hover:hover {
-    fill: #dc2743; /* Instagram color */
+  fill: #dc2743; /* Instagram color */
 }
 
 .tiktok-hover:hover {
-    fill: #69c9d0; /* TikTok color */
+  fill: #69c9d0; /* TikTok color */
 }
 
 .youtube-hover:hover {
-    fill: #ff0000; /* YouTube color */
+  fill: #ff0000; /* YouTube color */
 }
 
 .spotify-hover:hover {
-    fill: #1db954; /* Spotify color */
+  fill: #1db954; /* Spotify color */
 }
 
 .apple-music-hover:hover {
-    fill: #fc3a55; /* Apple Music color */
+  fill: #fc3a55; /* Apple Music color */
 }

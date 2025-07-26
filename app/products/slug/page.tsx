@@ -1,21 +1,21 @@
 // app/products/[slug]/page.tsx
-import React, { Suspense } from "react";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, ExternalLink, ShoppingCart } from "lucide-react";
 import {
-  getFourthwallProductBySlug,
-  getAllFourthwallProducts,
-  getProductPrice,
-  getProductImage,
-  getProductDescription,
   FourthwallProduct,
+  getAllFourthwallProducts,
+  getFourthwallProductBySlug,
+  getProductDescription,
+  getProductImage,
+  getProductPrice,
 } from "@/lib/fourthwall";
+import { ArrowLeft, ExternalLink, ShoppingCart } from "lucide-react";
+import type { Metadata } from "next";
+import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import { Suspense } from "react";
 
 export const runtime = "edge";
 
@@ -27,13 +27,17 @@ function createSlugFromName(name: string): string {
 }
 
 async function findProductBySlug(
-  slug: string,
+  slug: string
 ): Promise<FourthwallProduct | null> {
-  let product = await getFourthwallProductBySlug(slug).catch(() => null);
-  if (product) return product;
+  const product = await getFourthwallProductBySlug(slug).catch(() => null);
+  if (product) {
+    return product;
+  }
 
   const allProducts = await getAllFourthwallProducts();
-  if (allProducts.length === 0) return null;
+  if (allProducts.length === 0) {
+    return null;
+  }
 
   const strategies = [
     (p: FourthwallProduct) => p.slug === slug,
@@ -43,7 +47,9 @@ async function findProductBySlug(
 
   for (const strategy of strategies) {
     const found = allProducts.find(strategy);
-    if (found) return found;
+    if (found) {
+      return found;
+    }
   }
   return null;
 }
@@ -54,7 +60,9 @@ export async function generateMetadata({
   params: { slug: string };
 }): Promise<Metadata> {
   const product = await findProductBySlug(params.slug);
-  if (!product) return { title: "Product Not Found" };
+  if (!product) {
+    return { title: "Product Not Found" };
+  }
 
   const imageUrl = getProductImage(product);
   const description = getProductDescription(product).replace(/<[^>]*>?/gm, ""); // Plain text for meta
@@ -97,7 +105,7 @@ export default async function ProductPage({
       "@type": "Offer",
       priceCurrency: product.variants?.[0]?.unitPrice?.currency || "USD",
       price: product.variants?.[0]?.unitPrice?.value || 0,
-      availability: product.variants?.some((v) => v.unitPrice)
+      availability: product.variants?.some(v => v.unitPrice)
         ? "https://schema.org/InStock"
         : "https://schema.org/OutOfStock",
     },
@@ -121,17 +129,17 @@ export default async function ProductPage({
             </Button>
           </Link>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-12 lg:grid-cols-2">
           <Suspense
             fallback={
-              <div className="aspect-square w-full bg-secondary/20 rounded-lg animate-pulse" />
+              <div className="aspect-square w-full animate-pulse rounded-lg bg-secondary/20" />
             }
           >
             <ProductGallery product={product} mainImage={mainImage} />
           </Suspense>
           <Suspense
             fallback={
-              <div className="h-96 bg-secondary/20 rounded-lg animate-pulse" />
+              <div className="h-96 animate-pulse rounded-lg bg-secondary/20" />
             }
           >
             <ProductDetails
@@ -158,18 +166,18 @@ function ProductGallery({
   const additionalImages = product.images?.slice(1) || [];
   return (
     <div className="space-y-4">
-      <div className="aspect-square w-full relative overflow-hidden rounded-lg bg-secondary/20 border border-secondary/30">
+      <div className="relative aspect-square w-full overflow-hidden rounded-lg border border-secondary/30 bg-secondary/20">
         {mainImage ? (
           <Image
             src={mainImage}
             alt={product.name}
             fill
-            className="object-cover hover:scale-105 transition-transform duration-300"
+            className="object-cover transition-transform duration-300 hover:scale-105"
             sizes="(max-width: 1024px) 100vw, 50vw"
             priority
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
             No Image Available
           </div>
         )}
@@ -179,13 +187,13 @@ function ProductGallery({
           {additionalImages.map((image, index) => (
             <div
               key={image.id || index}
-              className="aspect-square relative overflow-hidden rounded-lg bg-secondary/20 border border-secondary/30"
+              className="relative aspect-square overflow-hidden rounded-lg border border-secondary/30 bg-secondary/20"
             >
               <Image
                 src={image.url}
                 alt={`${product.name} ${index + 2}`}
                 fill
-                className="object-cover hover:scale-105 transition-transform duration-200"
+                className="object-cover transition-transform duration-200 hover:scale-105"
                 sizes="(max-width: 768px) 25vw, 12vw"
               />
             </div>
@@ -206,27 +214,27 @@ function ProductDetails({
   description: string;
 }) {
   const isAvailable =
-    product.variants && product.variants.some((variant) => variant.unitPrice);
+    product.variants && product.variants.some(variant => variant.unitPrice);
   const handleBuyNow = () => {
     // This client-side function requires this component to be marked with 'use client' if it were in a separate file.
     // Here it works because the parent `ProductPage` is a Server Component, but this function will only run on the client.
     const slug = product.slug || createSlugFromName(product.name);
     window.open(
       `https://[your-fourthwall-domain].com/products/${slug}`,
-      "_blank",
+      "_blank"
     );
   };
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-4xl font-bold text-foreground mb-4">
+        <h1 className="mb-4 text-4xl font-bold text-foreground">
           {product.name}
         </h1>
-        <div className="text-3xl font-bold text-primary mb-2">{price}</div>
-        <div className="flex items-center space-x-2 mb-6">
+        <div className="mb-2 text-3xl font-bold text-primary">{price}</div>
+        <div className="mb-6 flex items-center space-x-2">
           <div
-            className={`w-2 h-2 rounded-full ${isAvailable ? "bg-green-500" : "bg-destructive"}`}
+            className={`h-2 w-2 rounded-full ${isAvailable ? "bg-green-500" : "bg-destructive"}`}
           />
           <span
             className={`text-sm ${isAvailable ? "text-green-400" : "text-destructive"}`}
@@ -235,28 +243,28 @@ function ProductDetails({
           </span>
         </div>
       </div>
-      <Card className="bg-secondary/20 border-secondary/30">
+      <Card className="border-secondary/30 bg-secondary/20">
         <CardHeader>
           <CardTitle className="text-foreground">Description</CardTitle>
         </CardHeader>
         <CardContent>
           <div
-            className="prose prose-invert max-w-none text-muted-foreground leading-relaxed"
+            className="prose prose-invert max-w-none leading-relaxed text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: description }}
           />
         </CardContent>
       </Card>
       {product.variants && product.variants.length > 1 && (
-        <Card className="bg-card border-border">
+        <Card className="border-border bg-card">
           <CardHeader>
             <CardTitle className="text-foreground">Available Options</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            {product.variants.map((variant) => (
+            {product.variants.map(variant => (
               <Badge
                 key={variant.id}
                 variant="secondary"
-                className="bg-primary/20 text-primary border-primary/30 px-3 py-1"
+                className="border-primary/30 bg-primary/20 px-3 py-1 text-primary"
               >
                 {variant.name}
               </Badge>
@@ -268,7 +276,7 @@ function ProductDetails({
         <Button
           onClick={handleBuyNow}
           disabled={!isAvailable}
-          className="w-full bg-primary hover:bg-primary/90 text-primary-foreground py-6 text-lg font-semibold"
+          className="w-full bg-primary py-6 text-lg font-semibold text-primary-foreground hover:bg-primary/90"
           size="lg"
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
@@ -278,7 +286,7 @@ function ProductDetails({
         <Link href="/" passHref>
           <Button
             variant="outline"
-            className="w-full border-primary text-primary hover:bg-primary/10 py-6 text-lg"
+            className="w-full border-primary py-6 text-lg text-primary hover:bg-primary/10"
             size="lg"
           >
             Continue Shopping

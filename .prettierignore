@@ -1,0 +1,59 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+.yarn/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Cache directories
+.cache/
+.vercel/
+.turbo/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+bun-debug.log*
+
+# Environment files
+.env*
+
+# TypeScript build info
+*.tsbuildinfo
+next-env.d.ts
+
+# Generated files
+.eslintcache
+*.min.js
+*.min.css
+
+# Lockfiles
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lock
+
+# Config files (optional - uncomment if you don't want them formatted)
+# *.config.js
+# *.config.mjs
+# *.config.ts
+
+# Documentation that shouldn't be auto-formatted
+CHANGELOG.md
+LICENSE
+*.generated.*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db

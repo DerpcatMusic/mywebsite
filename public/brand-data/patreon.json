@@ -1,0 +1,13 @@
+{
+  "brandType": "patreon",
+  "domain": "patreon.com",
+  "title": "Patreon",
+  "colors": {
+    "primary": "#ff424d",
+    "secondary": "#ff5a5a",
+    "accent": "#ff7b7b"
+  },
+  "logo": null,
+  "lastUpdated": "2025-07-26T21:53:57.391Z",
+  "fallback": true
+}

@@ -1,18 +1,21 @@
-import React from 'react';
 // Testing edit functionality
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 // Add this line to export the runtime configuration
-export const runtime = 'edge';
+export const runtime = "edge";
 
 // Assuming you have a function to fetch a single product by slug
-// import { getFourthwallProductBySlug } from '@/lib/fourthwall'; 
+// import { getFourthwallProductBySlug } from '@/lib/fourthwall';
 
 interface ProductPageProps {
-  params: { 
+  params: {
     slug: string;
   };
 }
@@ -22,7 +25,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   if (!slug) {
     // Handle the case where the slug is not provided in the URL
-    return <div className="container mx-auto py-12 text-center text-red-400">Error: Product slug is missing from the URL.</div>;
+    return (
+      <div className="container mx-auto py-12 text-center text-red-400">
+        Error: Product slug is missing from the URL.
+      </div>
+    );
   }
 
   // Placeholder for fetching product data
@@ -32,7 +39,11 @@ export default async function ProductPage({ params }: ProductPageProps) {
   if (!product) {
     // You might want to handle different cases like product not found
     // notFound(); // Example using Next.js notFound helper
-    return <div className="container mx-auto py-12 text-center text-yellow-400">Product not found for slug: {slug} (Placeholder)</div>;
+    return (
+      <div className="container mx-auto py-12 text-center text-yellow-400">
+        Product not found for slug: {slug} (Placeholder)
+      </div>
+    );
   }
 
   return (

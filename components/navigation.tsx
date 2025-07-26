@@ -1,48 +1,43 @@
 "use client";
 
-import { useState } from "react";
-import FlipLink from "./ui/text-effect-flipper";
-import Link from "next/link";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { BgAnimateButton } from "@/components/ui/bg-animate-button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { HamburgerIcon } from "@/components/ui/hamburger-icon";
-import { socialLinks, SocialLink } from "@/lib/social-links";
-import { ChevronDown } from "lucide-react";
+import {
+    Sheet,
+    SheetContent,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet";
 import ThemeToggleButton from "@/components/ui/theme-toggle-button";
+import { SocialLink, socialLinks } from "@/lib/social-links";
+import { ChevronDown } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useState, useCallback } from "react";
+import FlipLink from "./ui/text-effect-flipper";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
 
-  const scrollToTop = () => {
+  const scrollToTop = useCallback(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+  }, []);
 
-  const closeMenu = () => setIsOpen(false);
+  const closeMenu = useCallback(() => setIsOpen(false), []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-primary/30">
-      <div className="container mx-auto px-4 max-w-full">
-        <div className="flex justify-between items-center h-28 md:grid md:grid-cols-3">
+    <nav className="fixed left-0 right-0 top-0 z-50 bg-background/90 backdrop-blur-xl">
+      {/* Global transparency mask - fully transparent at bottom, no border */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 via-background/60 to-transparent pointer-events-none" />
+      <div className="container mx-auto max-w-full px-4 relative">
+        <div className="flex h-28 items-center justify-between md:grid md:grid-cols-3">
           {/* Desktop Social Media Icons - Left Side */}
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden items-center space-x-4 md:flex">
             {socialLinks.map((social: SocialLink, index) => (
               <div key={index}>
                 <Link
                   href={social.href}
-                  className="p-3 transition-all duration-200 text-foreground hover:text-current group hover:scale-110"
+                  className="group p-3 text-foreground transition-all duration-300 hover:scale-110 hover:text-current"
                   aria-label={social.label}
                   target={social.href.startsWith("http") ? "_blank" : "_self"}
                   rel={
@@ -55,16 +50,16 @@ export default function Navigation() {
                       "--hover-color": social.hoverColor,
                     } as React.CSSProperties
                   }
-                  onMouseEnter={(e) => {
+                  onMouseEnter={e => {
                     if (social.hoverColor) {
                       e.currentTarget.style.color = social.hoverColor;
                     }
                   }}
-                  onMouseLeave={(e) => {
+                  onMouseLeave={e => {
                     e.currentTarget.style.color = "";
                   }}
                 >
-                  <social.icon className="w-8 h-8 transition-all duration-200" />
+                  <social.icon className="h-8 w-8 transition-all duration-200" />
                 </Link>
               </div>
             ))}
@@ -72,10 +67,10 @@ export default function Navigation() {
 
           {/* Logo - Center */}
           <div className="flex justify-center">
-            <button
-              onClick={scrollToTop}
-              className="relative transition-all duration-200 group focus:outline-none focus:ring-0 focus:ring-primary/20 hover:scale-110"
-              aria-label="Scroll to top"
+            <Link
+              href="/"
+              className="group relative transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-0 focus:ring-primary/20"
+              aria-label="Go to home page"
             >
               <Image
                 src="/Derpcat.svg"
@@ -83,24 +78,25 @@ export default function Navigation() {
                 width={70}
                 height={70}
                 priority
-                className="object-contain dark:filter dark:invert transition-all duration-200 group-hover:scale-110"
+                className="object-contain transition-all duration-200 group-hover:scale-110 dark:invert dark:filter"
               />
-            </button>
+            </Link>
           </div>
 
           {/* Desktop Navigation Links - Right Side */}
-          <div className="hidden md:flex items-center justify-end space-x-6">
+          <div className="hidden items-center justify-end space-x-6 md:flex">
             <div className="flex items-center space-x-6">
-              <FlipLink href="#tours">TOURS</FlipLink>
-              <FlipLink href="#about">ABOUT</FlipLink>
-              <FlipLink href="#shop">SHOP</FlipLink>
+              <FlipLink href="/#tours">TOURS</FlipLink>
+              <FlipLink href="/#about">ABOUT</FlipLink>
+              <FlipLink href="/#shop">SHOP</FlipLink>
+              <FlipLink href="/live">LIVE</FlipLink>
             </div>
 
             <ThemeToggleButton variant="circle-blur" start="top-left" />
 
             {/* Desktop Beautiful Book Me Button */}
-            <div className="relative group">
-              <button className="bg-primary hover:bg-primary/90 btn-text font-title text-lg tracking-wide px-8 py-4 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+            <div className="group relative">
+              <button className="btn-text rounded-xl bg-primary px-8 py-4 font-title text-lg tracking-wide shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl">
                 <div className="flex items-center">
                   Book Me
                   <ChevronDown className="ml-2 h-5 w-5 animate-bounce" />
@@ -108,15 +104,15 @@ export default function Navigation() {
               </button>
 
               {/* Enhanced Dropdown Content */}
-              <div className="absolute top-full left-0 mt-2 bg-card/95 backdrop-blur-xl shadow-2xl border border-primary/20 text-card-foreground w-[200px] p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 rounded-xl">
+              <div className="invisible absolute left-0 top-full z-50 mt-2 w-[200px] rounded-xl border border-primary/20 bg-card/95 p-3 text-card-foreground opacity-0 shadow-2xl backdrop-blur-xl transition-all duration-300 group-hover:visible group-hover:opacity-100">
                 <div>
                   <Link
                     href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center w-full cursor-pointer font-body nav-text hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
+                    className="nav-text group/item flex w-full cursor-pointer items-center rounded-lg px-4 py-3 text-left font-body transition-all duration-200 hover:bg-primary/20 hover:text-primary"
                   >
-                    <span className="text-2xl mr-3 group-hover/item:scale-110 transition-transform duration-200">
+                    <span className="mr-3 text-2xl transition-transform duration-200 group-hover/item:scale-110">
                       🎵
                     </span>
                     <span className="text-base">Book a Show</span>
@@ -126,9 +122,9 @@ export default function Navigation() {
                 <div>
                   <Link
                     href="#book"
-                    className="flex items-center w-full cursor-pointer font-body nav-text hover:bg-primary/20 hover:text-primary transition-all duration-200 px-4 py-3 rounded-lg text-left group/item"
+                    className="nav-text group/item flex w-full cursor-pointer items-center rounded-lg px-4 py-3 text-left font-body transition-all duration-200 hover:bg-primary/20 hover:text-primary"
                   >
-                    <span className="text-2xl mr-3 group-hover/item:scale-110 transition-transform duration-200">
+                    <span className="mr-3 text-2xl transition-transform duration-200 group-hover/item:scale-110">
                       📚
                     </span>
                     <span className="text-base">Book a Lesson</span>
@@ -139,7 +135,7 @@ export default function Navigation() {
           </div>
 
           {/* Mobile Menu Button - Right Side */}
-          <div className="md:hidden flex items-center justify-end space-x-3">
+          <div className="flex items-center justify-end space-x-3 md:hidden">
             <div>
               <ThemeToggleButton variant="circle-blur" start="top-left" />
             </div>
@@ -149,7 +145,7 @@ export default function Navigation() {
                 <div>
                   <Button
                     variant="ghost"
-                    className="text-foreground hover:text-foreground/80 focus:text-foreground/80 hover:bg-transparent h-14 w-14 flex items-center justify-center focus:outline-none focus:ring-0"
+                    className="flex h-14 w-14 items-center justify-center text-foreground hover:bg-transparent hover:text-foreground/80 focus:text-foreground/80 focus:outline-none focus:ring-0"
                   >
                     <HamburgerIcon
                       isOpen={isOpen}
@@ -162,7 +158,7 @@ export default function Navigation() {
 
               <SheetContent
                 side="right"
-                className="bg-background border-border w-[300px] sm:w-[400px]"
+                className="w-[300px] border-border bg-background sm:w-[400px]"
               >
                 <SheetTitle className="sr-only">
                   Mobile Navigation Menu
@@ -190,67 +186,74 @@ export default function Navigation() {
                   }
                 `}</style>
 
-                <div className="flex flex-col space-y-8 mt-8">
+                <div className="mt-8 flex flex-col space-y-8">
                   {/* Mobile Navigation Links */}
                   <Link
-                    href="#tours"
-                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    href="/#tours"
+                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
                     onClick={closeMenu}
                   >
                     TOURS
                   </Link>
                   <Link
-                    href="#about"
-                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    href="/#about"
+                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
                     onClick={closeMenu}
                   >
                     ABOUT
                   </Link>
                   <Link
-                    href="#shop"
-                    className="nav-text hover:text-primary transition-colors duration-150 font-title text-lg tracking-wide"
+                    href="/#shop"
+                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
                     onClick={closeMenu}
                   >
                     SHOP
                   </Link>
+                  <Link
+                    href="/live"
+                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
+                    onClick={closeMenu}
+                  >
+                    LIVE
+                  </Link>
 
                   {/* Mobile Book Me Options */}
                   <div className="flex flex-col space-y-4">
-                    <div className="nav-text font-title text-xl tracking-wide mb-2">
+                    <div className="nav-text mb-2 font-title text-xl tracking-wide">
                       BOOK ME
                     </div>
                     <Link
                       href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 nav-text font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
+                      className="nav-text flex w-fit items-center rounded-lg border-2 border-primary bg-primary/20 px-4 py-3 text-center font-body transition-all duration-200 hover:bg-primary/30"
                       onClick={closeMenu}
                     >
-                      <span className="text-primary mr-2">🎵</span>
+                      <span className="mr-2 text-primary">🎵</span>
                       Book a Show
                     </Link>
                     <Link
                       href="#book"
-                      className="bg-primary/20 border-2 border-primary hover:bg-primary/30 nav-text font-body py-3 px-4 w-fit transition-all duration-200 text-center rounded-lg flex items-center"
+                      className="nav-text flex w-fit items-center rounded-lg border-2 border-primary bg-primary/20 px-4 py-3 text-center font-body transition-all duration-200 hover:bg-primary/30"
                       onClick={closeMenu}
                     >
-                      <span className="text-primary mr-2">📚</span>
+                      <span className="mr-2 text-primary">📚</span>
                       Book a Lesson
                     </Link>
                   </div>
 
                   {/* Mobile Theme Toggle */}
-                  <div className="flex justify-center pt-4 border-t border-border">
+                  <div className="flex justify-center border-t border-border pt-4">
                     <ThemeToggleButton variant="circle-blur" start="center" />
                   </div>
 
                   {/* Mobile Social Links */}
-                  <div className="flex flex-wrap justify-around gap-4 pt-4 border-t border-border">
+                  <div className="flex flex-wrap justify-around gap-4 border-t border-border pt-4">
                     {socialLinks.map((social: SocialLink, index) => (
                       <Link
                         key={index}
                         href={social.href}
-                        className="p-2 transition-all duration-150 nav-text group"
+                        className="nav-text group p-2 transition-all duration-150"
                         aria-label={social.label}
                         target={
                           social.href.startsWith("http") ? "_blank" : "_self"
@@ -261,16 +264,16 @@ export default function Navigation() {
                             : undefined
                         }
                         onClick={closeMenu}
-                        onMouseEnter={(e) => {
+                        onMouseEnter={e => {
                           if (social.hoverColor) {
                             e.currentTarget.style.color = social.hoverColor;
                           }
                         }}
-                        onMouseLeave={(e) => {
+                        onMouseLeave={e => {
                           e.currentTarget.style.color = "";
                         }}
                       >
-                        <social.icon className="w-6 h-6 transition-all duration-150" />
+                        <social.icon className="h-6 w-6 transition-all duration-150" />
                       </Link>
                     ))}
                   </div>

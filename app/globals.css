@@ -4,188 +4,186 @@
 
 /* --- Your Theme Variables (Light & Dark Mode) --- */
 @layer base {
-    :root {
-        --background: #e7e7e7;
-        --foreground: #181818;
-        --card: #e7e7e7;
-        --card-foreground: #181818;
-        --popover: #e7e7e7;
-        --popover-foreground: #181818;
-        --primary: #ff4600;
-        --primary-foreground: #fafafa;
-        --secondary: #f4f4f5;
-        --secondary-foreground: #181818;
-        --muted: #f4f4f5;
-        --muted-foreground: #71717a;
-        --accent: #f4f4f5;
-        --accent-foreground: #181818;
-        --destructive: #ef4444;
-        --destructive-foreground: #fafafa;
-        --border: #e4e4e7;
-        --input: #e4e4e7;
-        --ring: #ff4600;
-        --chart-1: #ff4600;
-        --chart-2: #181818;
-        --chart-3: #71717a;
-        --chart-4: #a1a1aa;
-        --chart-5: #d4d4d8;
-        --sidebar: #f4f4f5;
-        --sidebar-foreground: #181818;
-        --sidebar-primary: #ff4600;
-        --sidebar-primary-foreground: #fafafa;
-        --sidebar-accent: #e7e7e7;
-        --sidebar-accent-foreground: #181818;
-        --sidebar-border: #e4e4e7;
-        --sidebar-ring: #ff4600;
-        --font-sans: Geist;
-        --font-serif: Lora;
-        --font-mono: Geist Mono;
-        --radius: 0.5rem;
-        --font-sans: Geist;
-        --font-serif: Lora;
-        --font-mono: Geist Mono;
-        --radius: 0.5rem;
-    }
+  :root {
+    --background: #e7e7e7;
+    --foreground: #181818;
+    --card: #e7e7e7;
+    --card-foreground: #181818;
+    --popover: #e7e7e7;
+    --popover-foreground: #181818;
+    --primary: #ff4600;
+    --primary-foreground: #fafafa;
+    --secondary: #f4f4f5;
+    --secondary-foreground: #181818;
+    --muted: #f4f4f5;
+    --muted-foreground: #71717a;
+    --accent: #f4f4f5;
+    --accent-foreground: #181818;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --ring: #ff4600;
+    --chart-1: #ff4600;
+    --chart-2: #181818;
+    --chart-3: #71717a;
+    --chart-4: #a1a1aa;
+    --chart-5: #d4d4d8;
+    --sidebar: #f4f4f5;
+    --sidebar-foreground: #181818;
+    --sidebar-primary: #ff4600;
+    --sidebar-primary-foreground: #fafafa;
+    --sidebar-accent: #e7e7e7;
+    --sidebar-accent-foreground: #181818;
+    --sidebar-border: #e4e4e7;
+    --sidebar-ring: #ff4600;
+    --font-sans: Geist;
+    --font-serif: Lora;
+    --font-mono: Geist Mono;
+    --radius: 0.5rem;
+    --font-sans: Geist;
+    --font-serif: Lora;
+    --font-mono: Geist Mono;
+    --radius: 0.5rem;
+  }
 
-    .dark {
-        --background: #0b0b0b;
-        --foreground: #e7e7e7;
-        --card: #151515;
-        --card-foreground: #e7e7e7;
-        --popover: #161616;
-        --popover-foreground: #e7e7e7;
-        --primary: #ff4600;
-        --primary-foreground: #e7e7e7;
-        --secondary: #27272a;
-        --secondary-foreground: #e7e7e7;
-        --muted: #27272a;
-        --muted-foreground: #a1a1aa;
-        --accent: #27272a;
-        --accent-foreground: #e7e7e7;
-        --destructive: #ef4444;
-        --destructive-foreground: #fafafa;
-        --border: #27272a;
-        --input: #27272a;
-        --ring: #ff4600;
-        --chart-1: #ff4600;
-        --chart-2: #e7e7e7;
-        --chart-3: #a1a1aa;
-        --chart-4: #71717a;
-        --chart-5: #52525b;
-        --sidebar: #0b0b0b;
-        --sidebar-foreground: #e7e7e7;
-        --sidebar-primary: #ff4600;
-        --sidebar-primary-foreground: #e7e7e7;
-        --sidebar-accent: #27272a;
-        --sidebar-accent-foreground: #e7e7e7;
-        --sidebar-border: #27272a;
-        --sidebar-ring: #ff4600;
-        --font-sans: Geist;
-        --font-serif: Lora;
-        --font-mono: Geist Mono;
-        --radius: 0.5rem;
-    }
+  .dark {
+    --background: #0b0b0b;
+    --foreground: #e7e7e7;
+    --card: #151515;
+    --card-foreground: #e7e7e7;
+    --popover: #161616;
+    --popover-foreground: #e7e7e7;
+    --primary: #ff4600;
+    --primary-foreground: #e7e7e7;
+    --secondary: #27272a;
+    --secondary-foreground: #e7e7e7;
+    --muted: #27272a;
+    --muted-foreground: #a1a1aa;
+    --accent: #27272a;
+    --accent-foreground: #e7e7e7;
+    --destructive: #ef4444;
+    --destructive-foreground: #fafafa;
+    --border: #27272a;
+    --input: #27272a;
+    --ring: #ff4600;
+    --chart-1: #ff4600;
+    --chart-2: #e7e7e7;
+    --chart-3: #a1a1aa;
+    --chart-4: #71717a;
+    --chart-5: #52525b;
+    --sidebar: #0b0b0b;
+    --sidebar-foreground: #e7e7e7;
+    --sidebar-primary: #ff4600;
+    --sidebar-primary-foreground: #e7e7e7;
+    --sidebar-accent: #27272a;
+    --sidebar-accent-foreground: #e7e7e7;
+    --sidebar-border: #27272a;
+    --sidebar-ring: #ff4600;
+    --font-sans: Geist;
+    --font-serif: Lora;
+    --font-mono: Geist Mono;
+    --radius: 0.5rem;
+  }
 
-    * {
-        @apply border-border;
-    }
+  * {
+    @apply border-border;
+  }
 
-    body {
-        font-family: "Quicksand", sans-serif;
-        letter-spacing: var(--tracking-normal);
-        @apply bg-background text-foreground;
-    }
+  body {
+    font-family: 'Quicksand', sans-serif;
+    letter-spacing: var(--tracking-normal);
+    @apply bg-background text-foreground;
+  }
 
-    /* --- Global Font Classes --- */
-    .font-title {
-        font-family: "Bitcount Prop Double", system-ui;
-        font-optical-sizing: auto;
-        font-weight: 100;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "CRSV" 5,
-            "ELSH" 0,
-            "ELXP" 0;
-    }
+  /* --- Global Font Classes --- */
+  .font-title {
+    font-family: 'Bitcount Prop Double', system-ui;
+    font-optical-sizing: auto;
+    font-weight: 300;
+    font-style: normal;
+    font-variation-settings:
+      'slnt' 0,
+      'CRSV' 5,
+      'ELSH' 0,
+      'ELXP' 0;
+  }
 
-    .font-body {
-        font-family: "Quicksand", sans-serif;
-    }
+  .font-body {
+    font-family: 'Quicksand', sans-serif;
+  }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5,
-    h6 {
-        font-family: "Bitcount Prop Double", system-ui;
-        font-optical-sizing: auto;
-        font-weight: 200;
-        font-style: normal;
-        font-variation-settings:
-            "slnt" 0,
-            "CRSV" 1,
-            "ELSH" 0,
-            "ELXP" 0;
-    }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Bitcount Prop Double', system-ui;
+    font-optical-sizing: auto;
+    font-weight: 200;
+    font-style: normal;
+    font-variation-settings:
+      'slnt' 0,
+      'CRSV' 1,
+      'ELSH' 0,
+      'ELXP' 0;
+  }
 }
 
 @layer utilities {
-    .text-balance {
-        text-wrap: balance;
-    }
+  .text-balance {
+    text-wrap: balance;
+  }
 
-    /* --- Carousel Animation --- */
-    @keyframes scroll {
-        from {
-            transform: translateX(0);
-        }
-        to {
-            /* This moves the carousel left by the width of the first set of items */
-            transform: translateX(
-                calc(-100% - 2rem)
-            ); /* 2rem is your gap (gap-8) */
-        }
+  /* --- Carousel Animation --- */
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
     }
+    to {
+      /* This moves the carousel left by the width of the first set of items */
+      transform: translateX(calc(-100% - 2rem)); /* 2rem is your gap (gap-8) */
+    }
+  }
 
-    .animate-scroll {
-        /* Adjust duration to control speed. Higher value = slower. */
-        animation: scroll 60s linear infinite;
-    }
+  .animate-scroll {
+    /* Adjust duration to control speed. Higher value = slower. */
+    animation: scroll 60s linear infinite;
+  }
 
-    /* Utility class to pause animation on hover */
-    .pause {
-        animation-play-state: paused;
-    }
+  /* Utility class to pause animation on hover */
+  .pause {
+    animation-play-state: paused;
+  }
 }
 
 /* --- Your Custom Utility Classes --- */
 .cursor-grab {
-    cursor: grab;
+  cursor: grab;
 }
 
 .active-dragging {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 
 /* Custom social icon hover fills */
 .instagram-hover:hover {
-    fill: #dc2743; /* Instagram color */
+  fill: #dc2743; /* Instagram color */
 }
 
 .tiktok-hover:hover {
-    fill: #69c9d0; /* TikTok color */
+  fill: #69c9d0; /* TikTok color */
 }
 
 .youtube-hover:hover {
-    fill: #ff0000; /* YouTube color */
+  fill: #ff0000; /* YouTube color */
 }
 
 .spotify-hover:hover {
-    fill: #1db954; /* Spotify color */
+  fill: #1db954; /* Spotify color */
 }
 
 .apple-music-hover:hover {
-    fill: #fc3a55; /* Apple Music color */
+  fill: #fc3a55; /* Apple Music color */
 }

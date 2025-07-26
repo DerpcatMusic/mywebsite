@@ -1,10 +1,17 @@
 // app/layout.tsx
-import type { Metadata } from "next";
-import "@/styles/globals.css";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { BrandProvider } from "@/lib/brand-provider";
+import Navigation from "@/components/navigation"; // Import Navigation component
+import PerformanceMonitor from "@/components/performance/performance-monitor";
+import "@/styles/globals.css";
+import type { Metadata } from "next";
+import { Quicksand } from "next/font/google";
 
-// Enable Edge Runtime for Cloudflare Pages
-export const runtime = "edge";
+const quicksand = Quicksand({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  variable: "--font-quicksand",
+});
 
 export const metadata: Metadata = {
   title: "Derpcat",
@@ -25,21 +32,14 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Double:wght,CRSV@100..900,1&family=Quicksand:wght@300..700&display=swap"
-          rel="stylesheet"
-        />
       </head>
-      <body className="font-body">
+      <body className={`${quicksand.variable} font-body`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {/* You can add a header, navigation, or footer here */}
-          {children}
-          {/* Your main content (where products would be displayed) will be rendered by `children` */}
+          <BrandProvider>
+            <Navigation /> {/* Added Navigation component here */}
+            {children}
+            <PerformanceMonitor />
+          </BrandProvider>
         </ThemeProvider>
       </body>
     </html>

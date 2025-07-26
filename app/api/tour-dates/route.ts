@@ -1,12 +1,12 @@
 // ARTIST-LANDING/app/api/tour-dates/route.ts
 
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 
 // Read environment variables for the artist name and the Bandsintown app ID
 const BANDSINTOWN_ARTIST_NAME = process.env.BANDSINTOWN_ARTIST_NAME;
 const BANDSINTOWN_APP_ID = process.env.BANDSINTOWN_APP_ID;
 
-export const runtime = 'edge'; // <--- ADD THIS LINE HERE!
+export const runtime = "edge"; // <--- ADD THIS LINE HERE!
 
 // Define the structure of an event object as returned by Bandsintown's API
 interface BandsintownEvent {
@@ -42,9 +42,8 @@ interface TourDate {
 export async function GET() {
   // 1. Validate that necessary environment variables are set
   if (!BANDSINTOWN_ARTIST_NAME || !BANDSINTOWN_APP_ID) {
-    console.error('SERVER ERROR: BANDSINTOWN_ARTIST_NAME or BANDSINTOWN_APP_ID environment variable is not set.');
     return NextResponse.json(
-      { error: 'Server configuration error: Artist name or App ID missing.' },
+      { error: "Server configuration error: Artist name or App ID missing." },
       { status: 500 }
     );
   }
@@ -62,12 +61,11 @@ export async function GET() {
     if (!response.ok) {
       // Attempt to parse error details from Bandsintown's response body
       const errorDetails = await response.json().catch(() => ({})); // Parse JSON, but don't fail if not JSON
-      console.error(
-        `Bandsintown API responded with status ${response.status}:`,
-        errorDetails.error || response.statusText
-      );
+
       return NextResponse.json(
-        { error: `Failed to fetch events from Bandsintown: ${errorDetails.error || response.statusText}` },
+        {
+          error: `Failed to fetch events from Bandsintown: ${errorDetails.error || response.statusText}`,
+        },
         { status: response.status }
       );
     }
@@ -81,45 +79,53 @@ export async function GET() {
       .map(event => {
         const dateObj = new Date(event.datetime);
 
-        let ticketLink = '#'; // Default link
-        let soldOut = false;  // Default sold out status
+        let ticketLink = "#"; // Default link
+        let soldOut = false; // Default sold out status
 
         // --- NEW LOGIC FOR TICKET LINK AND SOLD OUT STATUS ---
         // Prioritize finding an offer specifically for "Tickets" with a valid URL
-        const primaryTicketOffer = event.offers.find(offer => offer.type === 'Tickets' && offer.url);
+        const primaryTicketOffer = event.offers.find(
+          offer => offer.type === "Tickets" && offer.url
+        );
 
         if (primaryTicketOffer) {
           ticketLink = primaryTicketOffer.url;
-          soldOut = primaryTicketOffer.status === 'sold out';
+          soldOut = primaryTicketOffer.status === "sold out";
         } else if (event.offers.length > 0) {
           // If no specific 'Tickets' type was found, try to find ANY offer with a valid URL
           // This catches cases where the offer type might be "Presale" or general link
           const anyValidOffer = event.offers.find(offer => offer.url);
           if (anyValidOffer) {
             ticketLink = anyValidOffer.url;
-            soldOut = anyValidOffer.status === 'sold out'; // Use status from this general offer
+            soldOut = anyValidOffer.status === "sold out"; // Use status from this general offer
           }
         }
         // --- END NEW LOGIC ---
 
         return {
           id: event.id,
-          date: dateObj.toISOString().split('T')[0], // Formats date to "YYYY-MM-DD"
+          date: dateObj.toISOString().split("T")[0], // Formats date to "YYYY-MM-DD"
           venue: event.venue.name,
           city: event.venue.city,
           state: event.venue.region, // Bandsintown's 'region' usually maps to 'state'
-          time: dateObj.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }), // Formats time to "8:00 PM"
+          time: dateObj.toLocaleTimeString("en-US", {
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true,
+          }), // Formats time to "8:00 PM"
           ticketLink: ticketLink, // Use the determined ticketLink
-          soldOut: soldOut,       // Use the determined soldOut status
+          soldOut: soldOut, // Use the determined soldOut status
         };
       });
 
     // 7. Send the formatted and filtered tour dates back to the client-side component
     return NextResponse.json(tourDates);
-
-  } catch (error) {
+  } catch (_error) {
     // 8. Catch any network-level errors or unexpected issues during the fetch process
-    console.error('API ROUTE FETCH ERROR:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }

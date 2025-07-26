@@ -1,8 +1,8 @@
 // lib/hooks.ts
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
-import { getAllFourthwallProducts, FourthwallProduct } from './fourthwall';
+import { useCallback, useEffect, useState } from "react";
+import { FourthwallProduct, getAllFourthwallProducts } from "./fourthwall";
 
 export function useProducts() {
   const [products, setProducts] = useState<FourthwallProduct[]>([]);
@@ -14,12 +14,12 @@ export function useProducts() {
       setLoading(true);
       setError(null);
       const fetchedProducts = await getAllFourthwallProducts();
-      
-      console.log('API Response Data from useProducts hook:', fetchedProducts);
+
+      // API Response Data from useProducts hook received
 
       setProducts(fetchedProducts);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch products');
+      setError(err instanceof Error ? err.message : "Failed to fetch products");
     } finally {
       setLoading(false);
     }

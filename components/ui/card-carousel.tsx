@@ -1,28 +1,28 @@
-"use client"
+"use client";
 
-import React from "react"
-import Image from "next/image"
-import { Swiper, SwiperSlide } from "swiper/react"
+import Image from "next/image";
+import React from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 
-import "swiper/css"
-import "swiper/css/effect-coverflow"
-import "swiper/css/pagination"
-import "swiper/css/navigation"
-import { SparklesIcon } from "lucide-react"
+import { SparklesIcon } from "lucide-react";
+import "swiper/css";
+import "swiper/css/effect-coverflow";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import {
   Autoplay,
   EffectCoverflow,
   Navigation,
   Pagination,
-} from "swiper/modules"
+} from "swiper/modules";
 
-import { Badge } from "@/components/ui/badge"
+import { Badge } from "@/components/ui/badge";
 
 interface CarouselProps {
-  images: { src: string; alt: string }[]
-  autoplayDelay?: number
-  showPagination?: boolean
-  showNavigation?: boolean
+  images: { src: string; alt: string }[];
+  autoplayDelay?: number;
+  showPagination?: boolean;
+  showNavigation?: boolean;
 }
 
 export const CardCarousel: React.FC<CarouselProps> = ({
@@ -57,7 +57,7 @@ export const CardCarousel: React.FC<CarouselProps> = ({
   .swiper-3d .swiper-slide-shadow-right{
     background: none;
   }
-  `
+  `;
   return (
     <section className="w-ace-y-4">
       <style>{css}</style>
@@ -73,7 +73,7 @@ export const CardCarousel: React.FC<CarouselProps> = ({
           <div className="flex flex-col justify-center pb-2 pl-4 pt-14 md:items-center">
             <div className="flex gap-2">
               <div>
-                <h3 className="text-4xl opacity-85 font-bold tracking-tight">
+                <h3 className="text-4xl font-bold tracking-tight opacity-85">
                   Card Carousel
                 </h3>
                 <p>Seamless Images carousel animation.</p>
@@ -143,5 +143,5 @@ export const CardCarousel: React.FC<CarouselProps> = ({
         </div>
       </div>
     </section>
-  )
-}
+  );
+};

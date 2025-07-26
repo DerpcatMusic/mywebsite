@@ -1,0 +1,501 @@
+/* Performance-Optimized CSS */
+
+/* GPU Acceleration Base Classes */
+.transform-gpu {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.opacity-gpu {
+  will-change: opacity;
+  backface-visibility: hidden;
+}
+
+.composite-layer {
+  transform: translateZ(0);
+  will-change: transform, opacity;
+  contain: layout style paint;
+}
+
+/* Optimized Animation Classes */
+.animate-fade-in-gpu {
+  animation: fadeInGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slide-up-gpu {
+  animation: slideUpGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: translate3d(0, 20px, 0);
+}
+
+.animate-slide-down-gpu {
+  animation: slideDownGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: translate3d(0, -20px, 0);
+}
+
+.animate-slide-left-gpu {
+  animation: slideLeftGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: translate3d(20px, 0, 0);
+}
+
+.animate-slide-right-gpu {
+  animation: slideRightGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: translate3d(-20px, 0, 0);
+}
+
+.animate-scale-gpu {
+  animation: scaleGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: scale3d(0.9, 0.9, 1);
+}
+
+.animate-bounce-gpu {
+  animation: bounceGPU var(--animation-duration, 0.6s) ease-out forwards;
+}
+
+.animate-pulse-gpu {
+  animation: pulseGPU 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-rotate-gpu {
+  animation: rotateGPU var(--animation-duration, 0.3s) ease-out forwards;
+  opacity: 0;
+  transform: rotate3d(0, 0, 1, 12deg);
+}
+
+/* GPU-Accelerated Keyframes */
+@keyframes fadeInGPU {
+  to {
+    opacity: 1;
+    transform: translateZ(0);
+  }
+}
+
+@keyframes slideUpGPU {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideDownGPU {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideLeftGPU {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes slideRightGPU {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes scaleGPU {
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+@keyframes bounceGPU {
+  0%, 20%, 53%, 80%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  40%, 43% {
+    transform: translate3d(0, -15px, 0);
+  }
+  70% {
+    transform: translate3d(0, -7px, 0);
+  }
+  90% {
+    transform: translate3d(0, -2px, 0);
+  }
+}
+
+@keyframes pulseGPU {
+  0%, 100% {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale3d(1.05, 1.05, 1);
+  }
+}
+
+@keyframes rotateGPU {
+  to {
+    opacity: 1;
+    transform: rotate3d(0, 0, 1, 0deg);
+  }
+}
+
+/* Performance Mode Optimizations */
+[data-performance-mode="performance"] {
+  --animation-duration: 0.15s;
+}
+
+[data-performance-mode="quality"] {
+  --animation-duration: 0.5s;
+}
+
+[data-performance-mode="performance"] * {
+  animation-duration: 0.15s !important;
+  transition-duration: 0.15s !important;
+}
+
+[data-performance-mode="performance"] .swiper-slide {
+  will-change: auto;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+[data-performance-mode="performance"] .backdrop-blur {
+  backdrop-filter: blur(4px) !important;
+}
+
+[data-performance-mode="performance"] .shadow-lg,
+[data-performance-mode="performance"] .shadow-xl,
+[data-performance-mode="performance"] .shadow-2xl {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Memory-Efficient CSS Containment */
+.contain-layout {
+  contain: layout;
+}
+
+.contain-style {
+  contain: style;
+}
+
+.contain-paint {
+  contain: paint;
+}
+
+.contain-size {
+  contain: size;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+.contain-content {
+  contain: content;
+}
+
+/* Optimized Transitions */
+.transition-gpu {
+  transition: all var(--animation-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+.transition-transform-gpu {
+  transition: transform var(--animation-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+.transition-opacity-gpu {
+  transition: opacity var(--animation-duration, 0.3s) cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: opacity;
+}
+
+/* Swiper Optimizations */
+.swiper-optimized {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.swiper-optimized .swiper-slide {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  contain: layout;
+}
+
+.swiper-optimized .swiper-3d .swiper-slide-shadow-left,
+.swiper-optimized .swiper-3d .swiper-slide-shadow-right {
+  background: none !important;
+}
+
+/* Image Optimizations */
+.image-optimized {
+  will-change: opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+.image-skeleton {
+  background: linear-gradient(90deg,
+    rgba(229, 231, 235, 0.2) 25%,
+    rgba(229, 231, 235, 0.4) 50%,
+    rgba(229, 231, 235, 0.2) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.dark .image-skeleton {
+  background: linear-gradient(90deg,
+    rgba(55, 65, 81, 0.2) 25%,
+    rgba(55, 65, 81, 0.4) 50%,
+    rgba(55, 65, 81, 0.2) 75%);
+  background-size: 200% 100%;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Scroll Performance */
+.scroll-optimized {
+  overflow-anchor: none;
+  scroll-behavior: smooth;
+  will-change: scroll-position;
+}
+
+/* Layout Stability */
+.stable-layout {
+  contain: layout;
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+/* Mobile-Specific Optimizations */
+@media (max-width: 768px) {
+  .animate-fade-in-gpu,
+  .animate-slide-up-gpu,
+  .animate-slide-down-gpu,
+  .animate-slide-left-gpu,
+  .animate-slide-right-gpu,
+  .animate-scale-gpu,
+  .animate-bounce-gpu {
+    animation-duration: calc(var(--animation-duration, 0.3s) * 0.8);
+  }
+
+  .backdrop-blur {
+    backdrop-filter: none !important;
+    background: rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+/* Low-End Device Optimizations */
+@media (max-width: 480px) {
+  .transform-gpu {
+    transform: none;
+    will-change: auto;
+  }
+
+  .animate-fade-in-gpu,
+  .animate-slide-up-gpu,
+  .animate-slide-down-gpu,
+  .animate-slide-left-gpu,
+  .animate-slide-right-gpu,
+  .animate-scale-gpu {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .backdrop-blur {
+    backdrop-filter: none !important;
+  }
+
+  .gradient {
+    background: solid !important;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .animate-fade-in-gpu,
+  .animate-slide-up-gpu,
+  .animate-slide-down-gpu,
+  .animate-slide-left-gpu,
+  .animate-slide-right-gpu,
+  .animate-scale-gpu,
+  .animate-bounce-gpu,
+  .animate-pulse-gpu,
+  .animate-rotate-gpu {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .image-skeleton {
+    background: #000;
+  }
+
+  .backdrop-blur {
+    backdrop-filter: none !important;
+    background: rgba(0, 0, 0, 0.9) !important;
+  }
+}
+
+/* Print Optimizations */
+@media print {
+  .animate-fade-in-gpu,
+  .animate-slide-up-gpu,
+  .animate-slide-down-gpu,
+  .animate-slide-left-gpu,
+  .animate-slide-right-gpu,
+  .animate-scale-gpu,
+  .animate-bounce-gpu,
+  .animate-pulse-gpu,
+  .animate-rotate-gpu {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .backdrop-blur {
+    backdrop-filter: none !important;
+  }
+
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+  }
+}
+
+/* Performance Monitoring Styles */
+.performance-monitor {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 11px;
+  user-select: none;
+  pointer-events: auto;
+}
+
+.performance-monitor * {
+  box-sizing: border-box;
+}
+
+/* Utility Classes for Performance */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-auto {
+  will-change: auto;
+}
+
+.hardware-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+.paint-contained {
+  contain: paint;
+}
+
+.layout-contained {
+  contain: layout;
+}
+
+.style-contained {
+  contain: style;
+}
+
+.size-contained {
+  contain: size;
+}
+
+/* Content Visibility for Performance */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
+.content-visibility-hidden {
+  content-visibility: hidden;
+}
+
+.content-visibility-visible {
+  content-visibility: visible;
+}
+
+/* Efficient Gradients */
+.gradient-optimized {
+  background-attachment: local;
+  will-change: auto;
+}
+
+/* Optimized Filters */
+.filter-optimized {
+  filter: contrast(1) brightness(1);
+  will-change: filter;
+}
+
+/* Critical CSS Loading States */
+.loading-optimized {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: loading-shimmer 1.5s infinite;
+}
+
+@keyframes loading-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Memory Leak Prevention */
+.cleanup-animations {
+  animation-fill-mode: both;
+}
+
+.cleanup-animations:not(.animating) {
+  animation: none;
+  will-change: auto;
+  transform: none;
+}
