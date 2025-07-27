@@ -1,4 +1,5 @@
 // app/api/brand/route.ts
+export const runtime = 'edge';
 import { BRAND_DOMAINS, type BrandType } from "@/lib/brand";
 import BrandDev from "brand.dev";
 import { NextRequest, NextResponse } from "next/server";
