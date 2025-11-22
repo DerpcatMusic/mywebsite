@@ -19,7 +19,7 @@ const FlipLink: React.FC<FlipLinkProps> = ({ children, href }) => {
         rel: "noopener noreferrer",
       })}
       href={href}
-      className="nav-text relative inline-flex font-title text-2xl uppercase tracking-wide transition-colors duration-200 hover:text-primary"
+      className="nav-text font-title relative inline-flex text-2xl uppercase tracking-wide transition-colors duration-200 hover:text-primary"
       style={{
         lineHeight: 1,
         padding: "0.5rem 0.75rem",

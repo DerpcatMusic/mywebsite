@@ -6,9 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { getCalApi } from "@calcom/embed-react";
 import { useForm, ValidationError } from "@formspree/react";
-import { Calendar, CheckCircle, Clock, Music } from "lucide-react";
-import { motion, useMotionTemplate, useMotionValue } from "motion/react";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { CheckCircle } from "lucide-react";
+import { useEffect, useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 function BookingCard({
   title,
@@ -17,299 +21,293 @@ function BookingCard({
   className,
 }: {
   title: string;
-  description: string;
+  description?: string;
   children: React.ReactNode;
   className?: string;
 }) {
-  const [mounted, setMounted] = useState(false);
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-    const { left, top } = currentTarget.getBoundingClientRect();
-    mouseX.set(clientX - left);
-    mouseY.set(clientY - top);
-  }
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
   return (
-    <motion.div
-      className={cn("relative w-full rounded-[24px]", className)}
-      onMouseMove={handleMouseMove}
-      style={
-        {
-          "--x": useMotionTemplate`${mouseX}px`,
-          "--y": useMotionTemplate`${mouseY}px`,
-        } as React.CSSProperties
-      }
-    >
-      <div className="group relative w-full overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-card/90 via-card/60 to-card/40 backdrop-blur-sm transition-all duration-300 hover:border-primary/40 hover:shadow-2xl hover:shadow-primary/20">
-        {/* Primary gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/20 to-transparent pointer-events-none" />
-        {/* Animated border effect */}
-        <div className="absolute inset-0 rounded-3xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div
-            className="absolute inset-0 rounded-3xl bg-gradient-to-r from-primary/30 via-transparent to-primary/30"
-            style={{
-              background:
-                "radial-gradient(600px circle at var(--x) var(--y), rgba(255, 70, 0, 0.15), transparent 40%)",
-            }}
-          />
-        </div>
-
-        <div className="relative min-h-[400px] p-8">
-          <div className="mb-6">
-            <h3 className="mb-3 text-2xl font-bold text-foreground">{title}</h3>
-          </div>
-          {mounted ? children : null}
-        </div>
+    <div className={cn("pixel-card p-8", className)}>
+      <div className="mb-6">
+        <h3 className="neon-text mb-3 font-pixel text-2xl uppercase text-foreground">
+          {title}
+        </h3>
+        {description && (
+          <p className="font-terminal text-xl text-muted-foreground">
+            {description}
+          </p>
+        )}
       </div>
-    </motion.div>
+      {children}
+    </div>
   );
 }
 
 export default function BookingSection() {
   const [state, handleSubmit] = useForm("mblynnle");
+  const containerRef = useRef<HTMLDivElement>(null);
+  const leftCardRef = useRef<HTMLDivElement>(null);
+  const rightCardRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top center",
+          end: "bottom center",
+          toggleActions: "play none none reverse",
+        },
+      });
+
+      tl.from(leftCardRef.current, {
+        x: -100,
+        autoAlpha: 0,
+        duration: 0.8,
+        ease: "back.out(1.7)",
+      }).from(
+        rightCardRef.current,
+        {
+          x: 100,
+          autoAlpha: 0,
+          duration: 0.8,
+          ease: "back.out(1.7)",
+        },
+        "-=0.6"
+      );
+    },
+    { scope: containerRef }
+  );
+
+  const handleInputFocus = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    gsap.to(e.target, {
+      scale: 1.02,
+      borderColor: "hsl(var(--primary))",
+      duration: 0.3,
+      ease: "elastic.out(1, 0.3)",
+    });
+  };
+
+  const handleInputBlur = (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    gsap.to(e.target, {
+      scale: 1,
+      borderColor: "rgba(255, 255, 255, 0.2)",
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
 
   useEffect(() => {
     (async function () {
-      const calLesson = await getCalApi({"namespace":"musicproductionlesson"});
-      calLesson("ui", {"cssVarsPerTheme":{"light":{"cal-brand":"#ff4600"},"dark":{"cal-brand":"#ff4600"}},"hideEventTypeDetails":false,"layout":"month_view"});
+      const calLesson = await getCalApi({ namespace: "musicproductionlesson" });
+      calLesson("ui", {
+        cssVarsPerTheme: {
+          light: { "cal-brand": "#a855f7" },
+          dark: { "cal-brand": "#a855f7" },
+        },
+        hideEventTypeDetails: false,
+        layout: "month_view",
+      });
 
-      const calConsultation = await getCalApi({"namespace":"music-consoultation"});
-      calConsultation("ui", {"cssVarsPerTheme":{"light":{"cal-brand":"#ff4600"},"dark":{"cal-brand":"#ff4600"}},"hideEventTypeDetails":false,"layout":"month_view"});
+      const calConsultation = await getCalApi({
+        namespace: "music-consultation",
+      });
+      calConsultation("ui", {
+        cssVarsPerTheme: {
+          light: { "cal-brand": "#a855f7" },
+          dark: { "cal-brand": "#a855f7" },
+        },
+        hideEventTypeDetails: false,
+        layout: "month_view",
+      });
     })();
-  }, [])
+  }, []);
 
   return (
-    <section id="book" className="bg-background py-20">
-      <div className="container mx-auto px-4">
+    <section
+      ref={containerRef}
+      id="book"
+      className="relative flex h-full items-center py-20"
+    >
+      <div className="bg-noise absolute inset-0 opacity-20" />
+      <div className="container relative z-10 mx-auto px-4">
         <div className="mx-auto max-w-7xl">
           {/* Header Section */}
           <div className="mb-16 text-center">
-            <h2 className="mb-6 text-4xl font-bold text-foreground md:text-6xl">
-              Work <span className="text-primary">With Me</span>
+            <h2 className="mb-6 font-pixel text-3xl uppercase text-foreground md:text-5xl">
+              Let's <span className="text-gradient">Work Together</span>
             </h2>
-            <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
-              Professional music production services and personalized
-              instruction
+            <p className="mx-auto max-w-2xl font-terminal text-2xl text-muted-foreground">
+              Ready to bring your music vision to life? Get in touch or book a
+              session!
             </p>
           </div>
 
           {/* Main Content Grid */}
           <div className="grid items-start gap-12 lg:grid-cols-2">
-            {/* Talk To Me Column */}
-            <BookingCard
-              title="Talk To Me"
-              description=""
-              className="transform transition-transform duration-300 hover:scale-105"
-            >
-              <div className="space-y-6">
-                <div className="space-y-4">
-                  {/* Book a Lesson Button */}
-                  <div className="text-center">
-                    <Button
-                      asChild
-                      className="w-full rounded-2xl border border-primary/20 bg-primary py-4 text-lg font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
-                    >
-                      <button
-                        data-cal-namespace="musicproductionlesson"
-                        data-cal-link="derpcat/musicproductionlesson"
-                        data-cal-config='{"layout":"month_view"}'
-                      >
-                        Book a Lesson
-                      </button>
-                    </Button>
-                  </div>
-
-                  {/* Book a Consultation Button */}
-                  <div className="text-center">
-                    <Button
-                      asChild
-                      className="w-full rounded-2xl border border-primary/20 bg-primary py-4 text-lg font-medium text-primary-foreground transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30"
-                    >
-                      <button
-                        data-cal-namespace="music-consoultation"
-                        data-cal-link="derpcat/music-consoultation"
-                        data-cal-config='{"layout":"month_view"}'
-                      >
-                        Book a Consultation
-                      </button>
-                    </Button>
-                  </div>
-                </div>
-
-                {/* Description moved below buttons */}
-                <div className="text-center">
-                  <p className="text-muted-foreground">
-                    One-on-one personalized music production instruction and consultations
-                  </p>
-                </div>
-
-                {/* Lesson Details */}
-                <div className="grid grid-cols-2 gap-4 border-t border-primary/20 pt-4">
-                  <div className="flex flex-col items-center space-y-3 text-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
-                      <Clock className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-foreground">
-                        Duration
-                      </h4>
-                      <p className="text-xs text-muted-foreground">
-                        60 minutes
+            {/* Left Column: Get in Touch Form */}
+            <div ref={leftCardRef}>
+              <BookingCard
+                title="Get in Touch"
+                className="transform transition-transform duration-300 hover:scale-[1.02]"
+              >
+                <div className="space-y-6">
+                  {state.succeeded ? (
+                    <div className="py-12 text-center">
+                      <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center border-2 border-green-500 bg-green-500/10">
+                        <CheckCircle className="h-10 w-10 text-green-500" />
+                      </div>
+                      <h3 className="mb-4 font-pixel text-2xl uppercase text-foreground">
+                        Message Sent!
+                      </h3>
+                      <p className="font-terminal text-xl text-muted-foreground">
+                        Thanks for reaching out! I'll get back to you soon.
                       </p>
                     </div>
-                  </div>
-                  <div className="flex flex-col items-center space-y-3 text-center">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10">
-                      <Calendar className="h-6 w-6 text-primary" />
-                    </div>
-                    <div>
-                      <h4 className="text-sm font-semibold text-foreground">
-                        Scheduling
-                      </h4>
-                      <p className="text-xs text-muted-foreground">Real-time</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </BookingCard>
-
-            {/* Get in Touch Column */}
-            <BookingCard
-              title="Get in Touch"
-              description=""
-              className="transform transition-transform duration-300 hover:scale-105"
-            >
-              <div className="space-y-6">
-                {state.succeeded ? (
-                  <div className="py-12 text-center">
-                    <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-green-500/20 bg-green-500/10">
-                      <CheckCircle className="h-10 w-10 text-green-500" />
-                    </div>
-                    <h3 className="mb-4 text-3xl font-bold text-foreground">
-                      Message Sent!
-                    </h3>
-                    <p className="text-lg text-muted-foreground">
-                      Thanks for reaching out! I'll get back to you soon.
-                    </p>
-                  </div>
-                ) : (
-                  <>
+                  ) : (
                     <form className="space-y-6" onSubmit={handleSubmit}>
                       <div className="grid gap-4 sm:grid-cols-2">
                         <div>
                           <label
-                            htmlFor="prod-name"
-                            className="mb-3 block text-sm font-semibold text-foreground"
+                            htmlFor="name"
+                            className="mb-3 block font-pixel text-xs uppercase text-foreground"
                           >
                             Name
                           </label>
                           <Input
-                            id="prod-name"
+                            id="name"
                             name="name"
                             placeholder="Your name"
-                            className="h-12 rounded-xl border-primary/20 bg-background/80 text-foreground shadow-inner transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            required
+                            className="h-12 rounded-none border-2 border-white/20 bg-background font-terminal text-lg text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-0"
+                            onFocus={handleInputFocus}
+                            onBlur={handleInputBlur}
                           />
                           <ValidationError
                             prefix="Name"
                             field="name"
                             errors={state.errors}
-                            className="mt-2 text-sm text-red-400"
+                            className="mt-2 font-terminal text-sm text-red-400"
                           />
                         </div>
                         <div>
                           <label
-                            htmlFor="prod-email"
-                            className="mb-3 block text-sm font-semibold text-foreground"
+                            htmlFor="email"
+                            className="mb-3 block font-pixel text-xs uppercase text-foreground"
                           >
                             Email
                           </label>
                           <Input
-                            id="prod-email"
+                            id="email"
                             name="email"
                             type="email"
+                            required
                             placeholder="your@email.com"
-                            className="h-12 rounded-xl border-primary/20 bg-background/80 text-foreground shadow-inner transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                            className="h-12 rounded-none border-2 border-white/20 bg-background font-terminal text-lg text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-0"
+                            onFocus={handleInputFocus}
+                            onBlur={handleInputBlur}
                           />
                           <ValidationError
                             prefix="Email"
                             field="email"
                             errors={state.errors}
-                            className="mt-2 text-sm text-red-400"
+                            className="mt-2 font-terminal text-sm text-red-400"
                           />
                         </div>
                       </div>
 
                       <div>
                         <label
-                          htmlFor="prod-message"
-                          className="mb-3 block text-sm font-semibold text-foreground"
+                          htmlFor="message"
+                          className="mb-3 block font-pixel text-xs uppercase text-foreground"
                         >
-                          Project Details
+                          Message
                         </label>
                         <Textarea
-                          id="prod-message"
+                          id="message"
                           name="message"
-                          placeholder="Tell me about your project... What's your vision? Do you have vocals recorded? What services do you need?"
-                          rows={6}
-                          className="resize-none rounded-xl border-primary/20 bg-background/80 text-foreground shadow-inner transition-all duration-200 placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/20"
+                          placeholder="Tell me about your project..."
+                          rows={8}
+                          required
+                          className="resize-none rounded-none border-2 border-white/20 bg-background font-terminal text-lg text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:ring-0"
+                          onFocus={handleInputFocus}
+                          onBlur={handleInputBlur}
                         />
                         <ValidationError
                           prefix="Message"
                           field="message"
                           errors={state.errors}
-                          className="mt-2 text-sm text-red-400"
+                          className="mt-2 font-terminal text-sm text-red-400"
                         />
                       </div>
 
                       <Button
                         type="submit"
                         disabled={state.submitting}
-                        className="w-full rounded-xl border border-primary/20 bg-primary py-4 text-lg font-semibold text-primary-foreground transition-all duration-300 hover:scale-105 hover:bg-primary/90 hover:shadow-lg hover:shadow-primary/30 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="pixel-btn w-full py-6 text-sm"
                       >
                         {state.submitting ? "Sending..." : "Send Message"}
                       </Button>
                     </form>
+                  )}
+                </div>
+              </BookingCard>
+            </div>
 
-                    {/* Description moved below form */}
-                    <div className="text-center border-t border-primary/20 pt-4">
-                      <p className="text-muted-foreground">
-                        Professional music production services and collaborations
+            {/* Right Column: Book Me with Cal.com */}
+            <div ref={rightCardRef}>
+              <BookingCard
+                title="Book a Session"
+                className="transform transition-transform duration-300 hover:scale-[1.02]"
+              >
+                <div className="space-y-6">
+                  {/* Big Booking Buttons */}
+                  <div className="space-y-4">
+                    {/* Book a Lesson Button */}
+                    <Button
+                      data-cal-namespace="musicproductionlesson"
+                      data-cal-link="derpcat/musicproductionlesson"
+                      data-cal-config='{"layout":"month_view"}'
+                      className="pixel-btn w-full py-6 text-base md:text-lg"
+                    >
+                      📚 Music Production Lesson
+                    </Button>
+
+                    {/* Book a Consultation Button */}
+                    <Button
+                      data-cal-namespace="music-consultation"
+                      data-cal-link="derpcat/music-consultation"
+                      data-cal-config='{"layout":"month_view"}'
+                      className="pixel-btn w-full py-6 text-base md:text-lg"
+                    >
+                      🎵 Music Consultation
+                    </Button>
+                  </div>
+
+                  {/* Vibrant  Fun Content Instead of Services */}
+                  <div className="marching-ants relative overflow-hidden border-2 border-primary bg-primary/10 p-6">
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/20 to-transparent opacity-50"></div>
+                    <div className="relative z-10 space-y-4 text-center">
+                      <h4 className="neon-text animate-pulse font-pixel text-lg uppercase text-foreground">
+                        ⚡ Ready to Level Up? ⚡
+                      </h4>
+                      <p className="font-terminal text-xl leading-relaxed text-foreground">
+                        Whether you're just starting out or polishing your
+                        craft, I'll help you create music that stands out!
                       </p>
-                    </div>
-                  </>
-                )}
-
-                {/* Services Info */}
-                <div className="rounded-2xl border border-primary/20 bg-primary/5 p-6 shadow-inner backdrop-blur-sm">
-                  <h4 className="mb-4 flex items-center text-lg font-semibold text-foreground">
-                    <Music className="mr-3 h-5 w-5 text-primary" />
-                    Services Available
-                  </h4>
-                  <div className="grid grid-cols-1 gap-3 text-muted-foreground">
-                    {[
-                      "Composition & arrangement",
-                      "Mixing & mastering",
-                      "Vocal recording & editing",
-                      "Sound design & effects",
-                      "Ghost production",
-                    ].map((service, index) => (
-                      <div key={index} className="group flex items-center">
-                        <div className="mr-4 h-3 w-3 rounded-full bg-primary transition-all duration-200 group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-primary/50"></div>
-                        <span className="transition-colors duration-200 group-hover:text-foreground">
-                          {service}
-                        </span>
+                      <div className="flex justify-center gap-4 pt-2">
+                        <div className="h-3 w-3 animate-pulse bg-primary"></div>
+                        <div className="animation-delay-100 h-3 w-3 animate-pulse bg-primary"></div>
+                        <div className="animation-delay-200 h-3 w-3 animate-pulse bg-primary"></div>
                       </div>
-                    ))}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </BookingCard>
+              </BookingCard>
+            </div>
           </div>
         </div>
       </div>

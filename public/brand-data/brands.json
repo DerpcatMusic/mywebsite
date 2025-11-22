@@ -10,7 +10,7 @@
         "accent": "#06b6d4"
       },
       "logo": null,
-      "lastUpdated": "2025-07-26T21:53:54.566Z",
+      "lastUpdated": "2025-11-22T09:52:24.870Z",
       "fallback": true
     },
     "gumroad": {
@@ -23,7 +23,7 @@
         "accent": "#ffb3d9"
       },
       "logo": null,
-      "lastUpdated": "2025-07-26T21:53:55.640Z",
+      "lastUpdated": "2025-11-22T09:52:25.377Z",
       "fallback": true
     },
     "lemonsqueezy": {
@@ -36,7 +36,7 @@
         "accent": "#f5c842"
       },
       "logo": null,
-      "lastUpdated": "2025-07-26T21:53:56.617Z",
+      "lastUpdated": "2025-11-22T09:52:25.884Z",
       "fallback": true
     },
     "patreon": {
@@ -49,19 +49,19 @@
         "accent": "#ff7b7b"
       },
       "logo": null,
-      "lastUpdated": "2025-07-26T21:53:57.391Z",
+      "lastUpdated": "2025-11-22T09:52:26.394Z",
       "fallback": true
     }
   },
   "metadata": {
-    "generatedAt": "2025-07-26T21:53:57.905Z",
+    "generatedAt": "2025-11-22T09:52:26.907Z",
     "version": "1.0.0",
     "totalBrands": 4,
     "errors": [
-      "fourthwall: API request failed",
-      "gumroad: API request failed",
-      "lemonsqueezy: API request failed",
-      "patreon: API request failed"
+      "fourthwall: BRAND_DEV_API_KEY environment variable is not set",
+      "gumroad: BRAND_DEV_API_KEY environment variable is not set",
+      "lemonsqueezy: BRAND_DEV_API_KEY environment variable is not set",
+      "patreon: BRAND_DEV_API_KEY environment variable is not set"
     ]
   }
 }

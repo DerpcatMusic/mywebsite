@@ -9,6 +9,7 @@
 @layer base {
   :root {
     --background: 0 0% 90.6%;
+    --background-rgb: 231, 231, 231;
     --foreground: 0 0% 9.4%;
     --card: 0 0% 90.6%;
     --card-foreground: 0 0% 9.4%;
@@ -38,16 +39,11 @@
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 0 0% 90.6%;
     --sidebar-accent-foreground: 0 0% 9.4%;
-    --sidebar-border: 240 5.9% 90%;
-    --sidebar-ring: 16 100% 50%;
-    --font-sans: Geist;
-    --font-serif: Lora;
-    --font-mono: Geist Mono;
-    --radius: 0.5rem;
   }
 
   .dark {
     --background: 0 0% 4.3%;
+    --background-rgb: 11, 11, 11;
     --foreground: 0 0% 90.6%;
     --card: 0 0% 8.2%;
     --card-foreground: 0 0% 90.6%;
@@ -77,68 +73,45 @@
     --sidebar-primary-foreground: 0 0% 90.6%;
     --sidebar-accent: 240 4.9% 15.9%;
     --sidebar-accent-foreground: 0 0% 90.6%;
-    --sidebar-border: 240 4.9% 15.9%;
-    --sidebar-ring: 16 100% 50%;
-    --font-sans: Geist;
-    --font-serif: Lora;
-    --font-mono: Geist Mono;
-    --radius: 0.5rem;
-  }
-
-  * {
-    @apply border-border;
-  }
-
-  body {
-    font-family: 'Quicksand', sans-serif;
-    @apply bg-background text-foreground;
-  }
-
-  /* Performance Mode Variables */
-  :root {
-    --animation-duration: 0.3s;
-  }
-
-  [data-performance-mode="performance"] {
-    --animation-duration: 0.15s;
   }
 }
 
-  /* --- Global Font Classes --- */
-  .font-title {
-    font-family: 'Bitcount Prop Double', system-ui;
-    font-optical-sizing: auto;
-    font-weight: 100;
-    font-style: normal;
-    font-variation-settings:
-      'slnt' 0,
-      'CRSV' 5,
-      'ELSH' 0,
-      'ELXP' 0;
-  }
+/* --- Global Font Classes --- */
+.font-title {
+  font-family: 'Bitcount Prop Double', system-ui;
+  font-optical-sizing: auto;
+  font-weight: 100;
+  font-style: normal;
+  font-variation-settings:
+    'slnt' 0,
+    'CRSV' 5,
+    'ELSH' 0,
+    'ELXP' 0;
+}
 
-  .font-body {
-    font-family: 'Quicksand', sans-serif;
-  }
+.font-body {
+  font-family: 'Quicksand', sans-serif;
+}
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: 'Bitcount Prop Double', system-ui;
-    font-optical-sizing: auto;
-    font-weight: 700;
-    font-style: normal;
-    font-variation-settings:
-      'slnt' 0,
-      'CRSV' 1,
-      'ELSH' 0,
-      'ELXP' 0;
-  }
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: 'Bitcount Prop Double', system-ui;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  font-style: normal;
+  font-variation-settings:
+    'slnt' 0,
+    'CRSV' 1,
+    'ELSH' 0,
+    'ELXP' 0;
+}
 
 @layer utilities {
+
   /* Navigation text with proper visibility */
   .nav-text {
     color: hsl(var(--foreground)) !important;
@@ -164,9 +137,11 @@
     from {
       transform: translateX(0);
     }
+
     to {
       /* This moves the carousel left by the width of the first set of items */
-      transform: translateX(calc(-100% - 2rem)); /* 2rem is your gap (gap-8) */
+      transform: translateX(calc(-100% - 2rem));
+      /* 2rem is your gap (gap-8) */
     }
   }
 
@@ -183,21 +158,26 @@
 
 /* Custom social icon hover fills */
 .instagram-hover:hover {
-  fill: #dc2743; /* Instagram color */
+  fill: #dc2743;
+  /* Instagram color */
 }
 
 .tiktok-hover:hover {
-  fill: #69c9d0; /* TikTok color */
+  fill: #69c9d0;
+  /* TikTok color */
 }
 
 .youtube-hover:hover {
-  fill: #ff0000; /* YouTube color */
+  fill: #ff0000;
+  /* YouTube color */
 }
 
 .spotify-hover:hover {
-  fill: #1db954; /* Spotify color */
+  fill: #1db954;
+  /* Spotify color */
 }
 
 .apple-music-hover:hover {
-  fill: #fc3a55; /* Apple Music color */
+  fill: #fc3a55;
+  /* Apple Music color */
 }

@@ -10,17 +10,17 @@ import { useBrand } from "../../hooks/use-brand";
 import { generateBrandCSS, type BrandType } from "../../lib/brand";
 import { GumroadProduct } from "../../lib/gumroad";
 import {
-    LemonSqueezyProduct,
-    getLemonSqueezyProductDescription,
-    getLemonSqueezyProductImage,
-    getLemonSqueezyProductPrice,
+  LemonSqueezyProduct,
+  getLemonSqueezyProductDescription,
+  getLemonSqueezyProductImage,
+  getLemonSqueezyProductPrice,
 } from "../../lib/lemonsqueezy";
 import {
-    PatreonTier,
-    getPatreonTierDescription,
-    getPatreonTierImage,
-    getPatreonTierPrice,
-    getPatreonTierUrl,
+  PatreonTier,
+  getPatreonTierDescription,
+  getPatreonTierImage,
+  getPatreonTierPrice,
+  getPatreonTierUrl,
 } from "../../lib/patreon";
 
 type AltProduct = GumroadProduct | LemonSqueezyProduct | PatreonTier;

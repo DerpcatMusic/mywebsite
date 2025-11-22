@@ -1,9 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Play } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react"; // Import useState, useEffect, useRef
+import { useRef } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface ReleaseSectionProps {
   releaseImage?: string;
@@ -16,68 +21,72 @@ export default function ReleaseSection({
   releaseTitle = "Latest Release",
   streamLink = "#",
 }: ReleaseSectionProps) {
-  // 1. Create a ref for the scroll indicator element
-  const scrollIndicatorRef = useRef<HTMLDivElement>(null);
-  // 2. Create a state to control the opacity, starting at 1 (fully visible)
-  const [opacity, setOpacity] = useState(1);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const bgRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
-  // 3. Define the scroll event handler
-  const handleScroll = () => {
-    if (!scrollIndicatorRef.current) {
-      return;
-    } // Ensure ref is attached
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: containerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true,
+        },
+      });
 
-    const indicatorRect = scrollIndicatorRef.current.getBoundingClientRect();
-    // `indicatorTop` is the distance from the viewport's top to the indicator's top
-    const indicatorTop = indicatorRect.top;
+      // Parallax Background removed
 
-    const viewportHeight = window.innerHeight;
+      // Content Reveal (on load)
+      const revealTl = gsap.timeline();
+      revealTl.from(".hero-text", {
+        y: 100,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.2,
+        ease: "power4.out",
+      });
 
-    // Define the range (in pixels from the viewport top) over which the fade will occur
-    // Start fading when the indicator's top is 85% down the viewport (e.g., still clearly visible)
-    const fadeStartPixel = viewportHeight * 0.85;
-    // Fully faded when the indicator's top is 40% down the viewport (e.g., half-way up the screen)
-    // You can adjust these values based on how quickly/slowly you want it to fade
-    const fadeEndPixel = viewportHeight * 0.4;
+      revealTl.from(
+        ".hero-btn",
+        {
+          scale: 0,
+          opacity: 0,
+          duration: 0.6,
+          ease: "back.out(1.7)",
+        },
+        "-=0.5"
+      );
+    },
+    { scope: containerRef }
+  );
 
-    let newOpacity: number;
-
-    if (indicatorTop >= fadeStartPixel) {
-      // Indicator is below the fade start point, keep full opacity
-      newOpacity = 1;
-    } else if (indicatorTop <= fadeEndPixel) {
-      // Indicator has scrolled past the fade end point, make it fully transparent
-      newOpacity = 0;
-    } else {
-      // Indicator is within the fading zone. Calculate opacity based on its position.
-      // As indicatorTop decreases (scrolls up), the progress increases from 0 to 1.
-      const scrollProgress =
-        (fadeStartPixel - indicatorTop) / (fadeStartPixel - fadeEndPixel);
-      // Opacity goes from 1 down to 0 as scrollProgress goes from 0 to 1.
-      newOpacity = 1 - scrollProgress;
-    }
-
-    // Ensure opacity is clamped between 0 and 1
-    setOpacity(Math.max(0, Math.min(1, newOpacity)));
+  const handleBtnHover = (e: React.MouseEvent<HTMLButtonElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 1.1,
+      rotation: -3,
+      duration: 0.3,
+      ease: "elastic.out(1, 0.3)",
+    });
   };
 
-  // 4. Attach and clean up the scroll event listener using useEffect
-  useEffect(() => {
-    // Add event listener when component mounts
-    window.addEventListener("scroll", handleScroll);
-    // Also call it once on mount to set initial opacity correctly in case of pre-existing scroll
-    handleScroll();
-
-    // Clean up event listener when component unmounts to prevent memory leaks
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []); // Empty dependency array means this effect runs once on mount and once on unmount
+  const handleBtnLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      rotation: 0,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
-      {/* Background Image */}
-      <div className="absolute inset-0">
+    <section
+      ref={containerRef}
+      className="relative h-screen w-full overflow-hidden"
+    >
+      {/* Background Image with Parallax */}
+      <div ref={bgRef} className="absolute inset-0 -top-[10%] h-[120%] w-full">
         <Image
           src={releaseImage || "/release.png"}
           alt={releaseTitle}
@@ -86,48 +95,52 @@ export default function ReleaseSection({
           priority
           crossOrigin="anonymous"
         />
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/60" />
+        {/* Dynamic Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background/60" />
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 mix-blend-overlay" />
+        <div className="bg-noise absolute inset-0 opacity-30" />
       </div>
 
       {/* Content */}
-      <div className="relative z-10 flex h-full items-center justify-center">
+      <div
+        ref={contentRef}
+        className="relative z-10 flex h-full items-center justify-center"
+      >
         <div className="px-4 text-center">
           <div className="mb-8">
-            <h1 className="mb-4 font-title text-4xl font-bold text-primary-foreground drop-shadow-2xl md:text-6xl lg:text-7xl">
+            <h1 className="hero-text mb-4 font-pixel text-4xl font-black uppercase tracking-widest text-primary-foreground drop-shadow-[4px_4px_0_rgba(0,0,0,1)] md:text-6xl lg:text-7xl">
               {releaseTitle}
             </h1>
-            <p className="font-body text-xl text-primary-foreground/80 drop-shadow-lg md:text-2xl">
-              Out Now
-            </p>
+            <div className="hero-text mt-8 flex justify-center">
+              <Button
+                asChild
+                size="icon"
+                className="hero-btn h-16 w-16 rounded-full bg-primary hover:bg-primary/80"
+                onMouseEnter={handleBtnHover}
+                onMouseLeave={handleBtnLeave}
+              >
+                <a
+                  href={streamLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center"
+                  aria-label="Stream Now"
+                >
+                  <Play className="h-8 w-8 fill-current text-primary-foreground" />
+                </a>
+              </Button>
+            </div>
           </div>
-
-          <Button
-            asChild
-            size="lg"
-            className="group rounded-xl bg-primary px-8 py-6 font-title text-lg tracking-wide text-primary-foreground shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl"
-          >
-            <a
-              href={streamLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center"
-            >
-              <Play className="mr-3 h-6 w-6 transition-transform duration-150 group-hover:scale-110" />
-              Stream Now
-            </a>
-          </Button>
         </div>
       </div>
 
       {/* Scroll indicator */}
-      <div
-        ref={scrollIndicatorRef} // 5. Attach the ref to the scroll indicator div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 transform animate-bounce"
-        style={{ opacity: opacity }} // 6. Apply the dynamic opacity
-      >
-        <div className="flex h-10 w-6 justify-center rounded-full border-2 border-foreground/50">
-          <div className="mt-2 h-3 w-1 animate-pulse rounded-full bg-foreground/50" />
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 transform animate-bounce">
+        <div className="flex flex-col items-center gap-2">
+          <span className="font-pixel text-[10px] uppercase text-foreground/80">
+            Scroll
+          </span>
+          <div className="h-4 w-4 rotate-45 border-b-2 border-r-2 border-foreground" />
         </div>
       </div>
     </section>

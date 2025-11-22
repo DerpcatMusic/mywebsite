@@ -23,16 +23,17 @@ export default function BrandTest() {
       const data = await response.json();
       return { success: response.ok, data };
     } catch (error) {
-      return { success: false, error: error instanceof Error ? error.message : String(error) };
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
     }
   };
 
   const testBrand = async (brandType: BrandType) => {
     setResults(prev =>
       prev.map(r =>
-        r.brandType === brandType
-          ? { ...r, loading: true, error: null }
-          : r
+        r.brandType === brandType ? { ...r, loading: true, error: null } : r
       )
     );
 
@@ -54,13 +55,16 @@ export default function BrandTest() {
                 loading: false,
                 data,
                 error: null,
-                apiRoute: apiResult.success ? "✅ API Route OK" : `❌ API Route: ${apiResult.error || 'Unknown error'}`
+                apiRoute: apiResult.success
+                  ? "✅ API Route OK"
+                  : `❌ API Route: ${apiResult.error || "Unknown error"}`,
               }
             : r
         )
       );
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : String(error);
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
       console.error(`Brand test failed for ${brandType}:`, error);
 
       setResults(prev =>
@@ -71,7 +75,7 @@ export default function BrandTest() {
                 loading: false,
                 data: null,
                 error: errorMessage,
-                apiRoute: "❌ getBrandData failed"
+                apiRoute: "❌ getBrandData failed",
               }
             : r
         )
@@ -106,35 +110,35 @@ export default function BrandTest() {
 
   const checkEnvVar = async () => {
     try {
-      const response = await fetch('/api/brand?brandType=fourthwall');
+      const response = await fetch("/api/brand?brandType=fourthwall");
       if (response.ok) {
         setEnvCheck("✅ API Key working - server can access brand.dev");
       } else {
         const error = await response.json();
-        setEnvCheck(`❌ API issue: ${error.error || 'Unknown error'}`);
+        setEnvCheck(`❌ API issue: ${error.error || "Unknown error"}`);
       }
     } catch (error) {
-      setEnvCheck(`❌ Network error: ${error instanceof Error ? error.message : String(error)}`);
+      setEnvCheck(
+        `❌ Network error: ${error instanceof Error ? error.message : String(error)}`
+      );
     }
     console.log("Environment check completed");
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-4">Brand.dev API Test</h2>
+    <div className="mx-auto max-w-4xl p-6">
+      <h2 className="mb-4 text-2xl font-bold">Brand.dev API Test</h2>
 
       {/* Environment Check */}
-      <div className="mb-6 p-4 border rounded-lg">
-        <h3 className="text-lg font-semibold mb-2">Environment Check</h3>
+      <div className="mb-6 rounded-lg border p-4">
+        <h3 className="mb-2 text-lg font-semibold">Environment Check</h3>
         <button
           onClick={checkEnvVar}
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           Check Environment
         </button>
-        {envCheck && (
-          <p className="mt-2 text-sm font-medium">{envCheck}</p>
-        )}
+        {envCheck && <p className="mt-2 text-sm font-medium">{envCheck}</p>}
         <p className="mt-2 text-sm text-gray-600">
           This tests if the server-side API can access brand.dev
         </p>
@@ -145,7 +149,7 @@ export default function BrandTest() {
         <button
           onClick={testAllBrands}
           disabled={testAll}
-          className="px-6 py-3 bg-green-500 text-white rounded hover:bg-green-600 disabled:opacity-50"
+          className="rounded bg-green-500 px-6 py-3 text-white hover:bg-green-600 disabled:opacity-50"
         >
           {testAll ? "Testing All Brands..." : "Test All Brands"}
         </button>
@@ -153,60 +157,61 @@ export default function BrandTest() {
 
       {/* Individual Brand Tests */}
       <div className="space-y-4">
-        {results.map((result) => (
-          <div key={result.brandType} className="border rounded-lg p-4">
-            <div className="flex items-center justify-between mb-3">
+        {results.map(result => (
+          <div key={result.brandType} className="rounded-lg border p-4">
+            <div className="mb-3 flex items-center justify-between">
               <h3 className="text-lg font-semibold capitalize">
                 {result.brandType} ({BRAND_DOMAINS[result.brandType]})
               </h3>
               <button
                 onClick={() => testBrand(result.brandType)}
                 disabled={result.loading}
-                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+                className="rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
               >
                 {result.loading ? "Testing..." : "Test"}
               </button>
             </div>
 
-            {result.loading && (
-              <div className="text-blue-600">Loading...</div>
-            )}
+            {result.loading && <div className="text-blue-600">Loading...</div>}
 
             {result.apiRoute && (
-              <div className="text-sm font-medium mb-2">
+              <div className="mb-2 text-sm font-medium">
                 <strong>API Route Status:</strong> {result.apiRoute}
               </div>
             )}
 
             {result.error && (
-              <div className="text-red-600 bg-red-50 p-3 rounded">
+              <div className="rounded bg-red-50 p-3 text-red-600">
                 <strong>Error:</strong> {result.error}
               </div>
             )}
 
             {result.data && (
               <div className="space-y-3">
-                <div className="text-green-600 font-semibold">✓ Success!</div>
+                <div className="font-semibold text-green-600">✓ Success!</div>
 
                 {/* Logo */}
                 {result.data.logo && (
                   <div>
-                    <h4 className="font-medium mb-2">Logo:</h4>
+                    <h4 className="mb-2 font-medium">Logo:</h4>
                     <div className="flex items-center space-x-4">
                       <img
                         src={result.data.logo}
                         alt={`${result.brandType} logo`}
-                        className="w-12 h-12 object-contain"
-                        onError={(e) => {
-                          console.error(`Failed to load logo for ${result.brandType}:`, result.data.logo);
-                          e.currentTarget.style.display = 'none';
+                        className="h-12 w-12 object-contain"
+                        onError={e => {
+                          console.error(
+                            `Failed to load logo for ${result.brandType}:`,
+                            result.data.logo
+                          );
+                          e.currentTarget.style.display = "none";
                         }}
                       />
                       <a
                         href={result.data.logo}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-500 hover:underline text-sm"
+                        className="text-sm text-blue-500 hover:underline"
                       >
                         {result.data.logo}
                       </a>
@@ -217,28 +222,36 @@ export default function BrandTest() {
                 {/* Colors */}
                 {result.data.colors && (
                   <div>
-                    <h4 className="font-medium mb-2">Colors:</h4>
+                    <h4 className="mb-2 font-medium">Colors:</h4>
                     <div className="flex space-x-4">
-                      {Object.entries(result.data.colors).map(([name, color]) => (
-                        <div key={name} className="text-center">
-                          <div
-                            className="w-16 h-16 rounded border"
-                            style={{ backgroundColor: color as string }}
-                          ></div>
-                          <div className="text-sm mt-1">
-                            <div className="font-medium capitalize">{name}</div>
-                            <div className="text-gray-600">{color as string}</div>
+                      {Object.entries(result.data.colors).map(
+                        ([name, color]) => (
+                          <div key={name} className="text-center">
+                            <div
+                              className="h-16 w-16 rounded border"
+                              style={{ backgroundColor: color as string }}
+                            ></div>
+                            <div className="mt-1 text-sm">
+                              <div className="font-medium capitalize">
+                                {name}
+                              </div>
+                              <div className="text-gray-600">
+                                {color as string}
+                              </div>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   </div>
                 )}
 
                 {/* Raw Data */}
                 <details className="mt-4">
-                  <summary className="cursor-pointer font-medium">Raw Data</summary>
-                  <pre className="mt-2 p-3 bg-gray-100 rounded text-sm overflow-auto">
+                  <summary className="cursor-pointer font-medium">
+                    Raw Data
+                  </summary>
+                  <pre className="mt-2 overflow-auto rounded bg-gray-100 p-3 text-sm">
                     {JSON.stringify(result.data, null, 2)}
                   </pre>
                 </details>
@@ -253,29 +266,42 @@ export default function BrandTest() {
       </div>
 
       {/* Manual cURL Test */}
-      <div className="mt-8 p-4 border rounded-lg bg-gray-50">
-        <h3 className="text-lg font-semibold mb-2">Manual Tests</h3>
+      <div className="mt-8 rounded-lg border bg-gray-50 p-4">
+        <h3 className="mb-2 text-lg font-semibold">Manual Tests</h3>
 
         <div className="space-y-4">
           <div>
-            <h4 className="font-medium mb-2">1. Test Your API Route:</h4>
-            <code className="block p-3 bg-black text-green-400 rounded text-sm overflow-auto">
+            <h4 className="mb-2 font-medium">1. Test Your API Route:</h4>
+            <code className="block overflow-auto rounded bg-black p-3 text-sm text-green-400">
               curl http://localhost:3000/api/brand?brandType=fourthwall
             </code>
           </div>
 
           <div>
-            <h4 className="font-medium mb-2">2. Test brand.dev Directly (for verification):</h4>
-            <code className="block p-3 bg-black text-green-400 rounded text-sm overflow-auto">
-              curl -X GET "https://api.brand.dev/v1/brand/retrieve?domain=fourthwall.com" \<br/>
-              &nbsp;&nbsp;-H "Content-Type: application/json" \<br/>
-              &nbsp;&nbsp;-H "Authorization: Bearer brand__3ZKyWqDqsG3STQkuWZofSDv2"
+            <h4 className="mb-2 font-medium">
+              2. Test brand.dev Directly (for verification):
+            </h4>
+            <code className="block overflow-auto rounded bg-black p-3 text-sm text-green-400">
+              curl -X GET
+              "https://api.brand.dev/v1/brand/retrieve?domain=fourthwall.com" \
+              <br />
+              &nbsp;&nbsp;-H "Content-Type: application/json" \<br />
+              &nbsp;&nbsp;-H "Authorization: Bearer
+              brand__3ZKyWqDqsG3STQkuWZofSDv2"
             </code>
           </div>
 
           <div className="text-sm text-gray-600">
-            <p><strong>Expected Fix:</strong> The issue was likely that environment variables aren't accessible on the client side in Next.js.</p>
-            <p><strong>Solution:</strong> Created a server-side API route at <code>/api/brand</code> that handles the brand.dev API calls with proper environment variable access.</p>
+            <p>
+              <strong>Expected Fix:</strong> The issue was likely that
+              environment variables aren't accessible on the client side in
+              Next.js.
+            </p>
+            <p>
+              <strong>Solution:</strong> Created a server-side API route at{" "}
+              <code>/api/brand</code> that handles the brand.dev API calls with
+              proper environment variable access.
+            </p>
           </div>
         </div>
       </div>

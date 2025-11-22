@@ -2,188 +2,92 @@
 @tailwind components;
 @tailwind utilities;
 
-/* --- Your Theme Variables (Light & Dark Mode) --- */
 @layer base {
   :root {
-    --background: #e7e7e7;
-    --foreground: #181818;
-    --card: #e7e7e7;
-    --card-foreground: #181818;
-    --popover: #e7e7e7;
-    --popover-foreground: #181818;
-    --primary: #ff4600;
-    --primary-foreground: #fafafa;
-    --secondary: #f4f4f5;
-    --secondary-foreground: #181818;
-    --muted: #f4f4f5;
-    --muted-foreground: #71717a;
-    --accent: #f4f4f5;
-    --accent-foreground: #181818;
-    --destructive: #ef4444;
-    --destructive-foreground: #fafafa;
-    --border: #e4e4e7;
-    --input: #e4e4e7;
-    --ring: #ff4600;
-    --chart-1: #ff4600;
-    --chart-2: #181818;
-    --chart-3: #71717a;
-    --chart-4: #a1a1aa;
-    --chart-5: #d4d4d8;
-    --sidebar: #f4f4f5;
-    --sidebar-foreground: #181818;
-    --sidebar-primary: #ff4600;
-    --sidebar-primary-foreground: #fafafa;
-    --sidebar-accent: #e7e7e7;
-    --sidebar-accent-foreground: #181818;
-    --sidebar-border: #e4e4e7;
-    --sidebar-ring: #ff4600;
-    --font-sans: Geist;
-    --font-serif: Lora;
-    --font-mono: Geist Mono;
-    --radius: 0.5rem;
-    --font-sans: Geist;
-    --font-serif: Lora;
-    --font-mono: Geist Mono;
-    --radius: 0.5rem;
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 262 83% 58%;
+    /* Vibrant Purple */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 262 83% 58%;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: #0b0b0b;
-    --foreground: #e7e7e7;
-    --card: #151515;
-    --card-foreground: #e7e7e7;
-    --popover: #161616;
-    --popover-foreground: #e7e7e7;
-    --primary: #ff4600;
-    --primary-foreground: #e7e7e7;
-    --secondary: #27272a;
-    --secondary-foreground: #e7e7e7;
-    --muted: #27272a;
-    --muted-foreground: #a1a1aa;
-    --accent: #27272a;
-    --accent-foreground: #e7e7e7;
-    --destructive: #ef4444;
-    --destructive-foreground: #fafafa;
-    --border: #27272a;
-    --input: #27272a;
-    --ring: #ff4600;
-    --chart-1: #ff4600;
-    --chart-2: #e7e7e7;
-    --chart-3: #a1a1aa;
-    --chart-4: #71717a;
-    --chart-5: #52525b;
-    --sidebar: #0b0b0b;
-    --sidebar-foreground: #e7e7e7;
-    --sidebar-primary: #ff4600;
-    --sidebar-primary-foreground: #e7e7e7;
-    --sidebar-accent: #27272a;
-    --sidebar-accent-foreground: #e7e7e7;
-    --sidebar-border: #27272a;
-    --sidebar-ring: #ff4600;
-    --font-sans: Geist;
-    --font-serif: Lora;
-    --font-mono: Geist Mono;
-    --radius: 0.5rem;
-  }
-
-  * {
-    @apply border-border;
-  }
-
-  body {
-    font-family: 'Quicksand', sans-serif;
-    letter-spacing: var(--tracking-normal);
-    @apply bg-background text-foreground;
-  }
-
-  /* --- Global Font Classes --- */
-  .font-title {
-    font-family: 'Bitcount Prop Double', system-ui;
-    font-optical-sizing: auto;
-    font-weight: 300;
-    font-style: normal;
-    font-variation-settings:
-      'slnt' 0,
-      'CRSV' 5,
-      'ELSH' 0,
-      'ELXP' 0;
-  }
-
-  .font-body {
-    font-family: 'Quicksand', sans-serif;
-  }
-
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    font-family: 'Bitcount Prop Double', system-ui;
-    font-optical-sizing: auto;
-    font-weight: 200;
-    font-style: normal;
-    font-variation-settings:
-      'slnt' 0,
-      'CRSV' 1,
-      'ELSH' 0,
-      'ELXP' 0;
+    --background: 240 10% 3.9%;
+    /* Deep dark */
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 263 70% 50%;
+    /* Deep Purple */
+    --primary-foreground: 210 40% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 263 70% 50%;
   }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-
-  /* --- Carousel Animation --- */
-  @keyframes scroll {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      /* This moves the carousel left by the width of the first set of items */
-      transform: translateX(calc(-100% - 2rem)); /* 2rem is your gap (gap-8) */
-    }
-  }
-
-  .animate-scroll {
-    /* Adjust duration to control speed. Higher value = slower. */
-    animation: scroll 60s linear infinite;
-  }
-
-  /* Utility class to pause animation on hover */
-  .pause {
-    animation-play-state: paused;
-  }
+.pixel-card {
+  @apply bg-card border-2 border-white/20 shadow-[4px_4px_0px_0px_rgba(255, 255, 255, 0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(255, 255, 255, 0.2)] transition-all duration-200;
 }
 
-/* --- Your Custom Utility Classes --- */
-.cursor-grab {
-  cursor: grab;
+.pixel-btn {
+  @apply font-pixel text-xs uppercase tracking-widest border-2 border-primary bg-primary/20 text-primary hover:bg-primary hover:text-primary-foreground shadow-[4px_4px_0px_0px_rgba(147, 51, 234, 0.5)] hover:shadow-[2px_2px_0px_0px_rgba(147, 51, 234, 0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100;
 }
 
-.active-dragging {
-  cursor: grabbing;
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#ff00ff] via-[#00ffff] to-[#ffff00] animate-pulse;
+  padding: 0;
 }
 
-/* Custom social icon hover fills */
-.instagram-hover:hover {
-  fill: #dc2743; /* Instagram color */
+/* Snap Container */
+main {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
 }
 
-.tiktok-hover:hover {
-  fill: #69c9d0; /* TikTok color */
+/* Snap Sections */
+section {
+  height: 100vh;
+  width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
 }
 
-.youtube-hover:hover {
-  fill: #ff0000; /* YouTube color */
+/* Hide scrollbar for cleaner look */
+main::-webkit-scrollbar {
+  display: none;
 }
 
-.spotify-hover:hover {
-  fill: #1db954; /* Spotify color */
-}
-
-.apple-music-hover:hover {
-  fill: #fc3a55; /* Apple Music color */
+main {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

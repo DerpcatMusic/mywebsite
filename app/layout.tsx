@@ -1,16 +1,35 @@
 // app/layout.tsx
-import { ThemeProvider } from "@/components/ui/theme-provider";
-import { BrandProvider } from "@/lib/brand-provider";
-import Navigation from "@/components/navigation"; // Import Navigation component
+import CartDrawer from "@/components/CartDrawer";
+import FourthwallScript from "@/components/FourthwallScript";
+import Navigation from "@/components/navigation";
 import PerformanceMonitor from "@/components/performance/performance-monitor";
+import { ThemeProvider } from "@/components/ui/theme-provider";
+import SmoothScroll from "@/components/smooth-scroll";
+import { BrandProvider } from "@/lib/brand-provider";
 import "@/styles/globals.css";
 import type { Metadata } from "next";
-import { Quicksand } from "next/font/google";
+import { Outfit, Press_Start_2P, Space_Grotesk, VT323 } from "next/font/google";
 
-const quicksand = Quicksand({
+const outfit = Outfit({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-quicksand",
+  variable: "--font-outfit",
+});
+
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  variable: "--font-space-grotesk",
+});
+
+const pressStart2P = Press_Start_2P({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-pixel",
+});
+
+const vt323 = VT323({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--font-terminal",
 });
 
 export const metadata: Metadata = {
@@ -33,14 +52,25 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
       </head>
-      <body className={`${quicksand.variable} font-body`}>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <BrandProvider>
-            <Navigation /> {/* Added Navigation component here */}
-            {children}
-            <PerformanceMonitor />
-          </BrandProvider>
-        </ThemeProvider>
+      <body
+        suppressHydrationWarning
+        className={`${outfit.variable} ${spaceGrotesk.variable} ${pressStart2P.variable} ${vt323.variable} font-sans antialiased`}
+      >
+        <SmoothScroll>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem={false}
+          >
+            <BrandProvider>
+              <Navigation />
+              {children}
+              <CartDrawer />
+              <FourthwallScript />
+              <PerformanceMonitor />
+            </BrandProvider>
+          </ThemeProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

@@ -3,286 +3,192 @@
 import { Button } from "@/components/ui/button";
 import { HamburgerIcon } from "@/components/ui/hamburger-icon";
 import {
-    Sheet,
-    SheetContent,
-    SheetTitle,
-    SheetTrigger,
+  Sheet,
+  SheetContent,
+  SheetTitle,
+  SheetTrigger,
 } from "@/components/ui/sheet";
 import ThemeToggleButton from "@/components/ui/theme-toggle-button";
 import { SocialLink, socialLinks } from "@/lib/social-links";
-import { ChevronDown } from "lucide-react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Menu, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useCallback } from "react";
-import FlipLink from "./ui/text-effect-flipper";
+import { useCallback, useRef, useState } from "react";
+
+gsap.registerPlugin(ScrollTrigger);
+
+const navItems = [
+  { name: "TOURS", href: "/#tours" },
+  { name: "ABOUT", href: "/#about" },
+  { name: "SHOP", href: "/#shop" },
+  { name: "LIVE", href: "/live" },
+  { name: "BOOK ME", href: "/#book", isPrimary: true },
+];
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const dockRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLDivElement>(null);
+  const linksRef = useRef<HTMLDivElement>(null);
 
-  const scrollToTop = useCallback(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, []);
+  useGSAP(
+    () => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: "body",
+          start: "top top",
+          end: "+=100",
+          scrub: 0.5, // Add smoothing
+        },
+      });
 
-  const closeMenu = useCallback(() => setIsOpen(false), []);
+      // Transform to Dock Mode
+      tl.to(navRef.current, {
+        y: 20,
+        width: "auto",
+        padding: "0.5rem 1.5rem",
+        borderRadius: "9999px",
+        backgroundColor: "rgba(var(--background-rgb), 0.8)", // More opaque for tinted glass
+        backdropFilter: "blur(12px)",
+        border: "1px solid rgba(255, 255, 255, 0.1)",
+        boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
+        duration: 0.5,
+        ease: "power2.inOut",
+      });
+
+      // Animate Logo
+      tl.to(
+        logoRef.current,
+        {
+          scale: 0.8,
+          duration: 0.5,
+        },
+        "<"
+      );
+
+      // Stagger Links Entrance
+      gsap.from(".nav-link", {
+        y: -20,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: "back.out(1.7)",
+      });
+    },
+    { scope: navRef }
+  );
+
+  const handleHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 1.1,
+      duration: 0.3,
+      ease: "elastic.out(1, 0.3)",
+    });
+  };
+
+  const handleHoverExit = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    gsap.to(e.currentTarget, {
+      scale: 1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+  };
 
   return (
-    <nav className="fixed left-0 right-0 top-0 z-50 bg-background/90 backdrop-blur-xl">
-      {/* Global transparency mask - fully transparent at bottom, no border */}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/90 via-background/80 via-background/60 to-transparent pointer-events-none" />
-      <div className="container mx-auto max-w-full px-4 relative">
-        <div className="flex h-28 items-center justify-between md:grid md:grid-cols-3">
-          {/* Desktop Social Media Icons - Left Side */}
-          <div className="hidden items-center space-x-4 md:flex">
-            {socialLinks.map((social: SocialLink, index) => (
-              <div key={index}>
-                <Link
-                  href={social.href}
-                  className="group p-3 text-foreground transition-all duration-300 hover:scale-110 hover:text-current"
-                  aria-label={social.label}
-                  target={social.href.startsWith("http") ? "_blank" : "_self"}
-                  rel={
-                    social.href.startsWith("http")
-                      ? "noopener noreferrer"
-                      : undefined
-                  }
-                  style={
-                    {
-                      "--hover-color": social.hoverColor,
-                    } as React.CSSProperties
-                  }
-                  onMouseEnter={e => {
-                    if (social.hoverColor) {
-                      e.currentTarget.style.color = social.hoverColor;
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.color = "";
-                  }}
-                >
-                  <social.icon className="h-8 w-8 transition-all duration-200" />
-                </Link>
-              </div>
-            ))}
-          </div>
+    <div className="pointer-events-none fixed left-0 right-0 top-0 z-50 flex justify-center">
+      <nav
+        ref={navRef}
+        className="pointer-events-auto relative z-50 flex w-full items-center justify-between bg-background/95 backdrop-blur-sm px-6 py-4 text-foreground shadow-sm transition-all"
+      >
+        {/* Logo */}
+        <div ref={logoRef} className="flex items-center">
+          <Link href="/" className="relative block">
+            <Image
+              src="/Derpcat.svg"
+              alt="Derpcat Artist Logo"
+              width={60}
+              height={60}
+              priority
+              className="object-contain dark:invert dark:filter"
+            />
+          </Link>
+        </div>
 
-          {/* Logo - Center */}
-          <div className="flex justify-center">
+        {/* Desktop Links */}
+        <div ref={linksRef} className="hidden items-center space-x-8 md:flex">
+          {navItems.map(item => (
             <Link
-              href="/"
-              className="group relative transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-0 focus:ring-primary/20"
-              aria-label="Go to home page"
+              key={item.name}
+              href={item.href}
+              className={`nav-link font-pixel text-sm uppercase tracking-wider transition-colors ${item.isPrimary
+                ? "text-foreground hover:text-primary"
+                : "text-foreground/80 hover:text-primary"
+                }`}
+              onMouseEnter={handleHover}
+              onMouseLeave={handleHoverExit}
             >
-              <Image
-                src="/Derpcat.svg"
-                alt="Derpcat Artist Logo"
-                width={70}
-                height={70}
-                priority
-                className="object-contain transition-all duration-200 group-hover:scale-110 dark:invert dark:filter"
-              />
+              {item.name}
             </Link>
-          </div>
-
-          {/* Desktop Navigation Links - Right Side */}
-          <div className="hidden items-center justify-end space-x-6 md:flex">
-            <div className="flex items-center space-x-6">
-              <FlipLink href="/#tours">TOURS</FlipLink>
-              <FlipLink href="/#about">ABOUT</FlipLink>
-              <FlipLink href="/#shop">SHOP</FlipLink>
-              <FlipLink href="/live">LIVE</FlipLink>
-            </div>
-
+          ))}
+          <div className="border-l border-white/10 pl-4">
             <ThemeToggleButton variant="circle-blur" start="top-left" />
-
-            {/* Desktop Beautiful Book Me Button */}
-            <div className="group relative">
-              <button className="btn-text rounded-xl bg-primary px-8 py-4 font-title text-lg tracking-wide shadow-lg transition-all duration-200 hover:scale-105 hover:bg-primary/90 hover:shadow-xl">
-                <div className="flex items-center">
-                  Book Me
-                  <ChevronDown className="ml-2 h-5 w-5 animate-bounce" />
-                </div>
-              </button>
-
-              {/* Enhanced Dropdown Content */}
-              <div className="invisible absolute left-0 top-full z-50 mt-2 w-[200px] rounded-xl border border-primary/20 bg-card/95 p-3 text-card-foreground opacity-0 shadow-2xl backdrop-blur-xl transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                <div>
-                  <Link
-                    href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="nav-text group/item flex w-full cursor-pointer items-center rounded-lg px-4 py-3 text-left font-body transition-all duration-200 hover:bg-primary/20 hover:text-primary"
-                  >
-                    <span className="mr-3 text-2xl transition-transform duration-200 group-hover/item:scale-110">
-                      🎵
-                    </span>
-                    <span className="text-base">Book a Show</span>
-                  </Link>
-                </div>
-
-                <div>
-                  <Link
-                    href="#book"
-                    className="nav-text group/item flex w-full cursor-pointer items-center rounded-lg px-4 py-3 text-left font-body transition-all duration-200 hover:bg-primary/20 hover:text-primary"
-                  >
-                    <span className="mr-3 text-2xl transition-transform duration-200 group-hover/item:scale-110">
-                      📚
-                    </span>
-                    <span className="text-base">Book a Lesson</span>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile Menu Button - Right Side */}
-          <div className="flex items-center justify-end space-x-3 md:hidden">
-            <div>
-              <ThemeToggleButton variant="circle-blur" start="top-left" />
-            </div>
-
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-              <SheetTrigger asChild>
-                <div>
-                  <Button
-                    variant="ghost"
-                    className="flex h-14 w-14 items-center justify-center text-foreground hover:bg-transparent hover:text-foreground/80 focus:text-foreground/80 focus:outline-none focus:ring-0"
-                  >
-                    <HamburgerIcon
-                      isOpen={isOpen}
-                      className="h-7 w-7 text-foreground"
-                    />
-                    <span className="sr-only">Toggle menu</span>
-                  </Button>
-                </div>
-              </SheetTrigger>
-
-              <SheetContent
-                side="right"
-                className="w-[300px] border-border bg-background sm:w-[400px]"
-              >
-                <SheetTitle className="sr-only">
-                  Mobile Navigation Menu
-                </SheetTitle>
-
-                <style jsx global>{`
-                  .sheet-content > button[type="button"] {
-                    width: 40px;
-                    height: 40px;
-                    right: 1rem;
-                    top: 1rem;
-                    background: none;
-                    border: none;
-                    opacity: 1;
-                  }
-                  .sheet-content > button[type="button"]:focus,
-                  .sheet-content > button[type="button"]:active {
-                    outline: none;
-                    box-shadow: none;
-                  }
-                  .sheet-content svg.lucide {
-                    width: 24px;
-                    height: 24px;
-                    color: hsl(var(--foreground));
-                  }
-                `}</style>
-
-                <div className="mt-8 flex flex-col space-y-8">
-                  {/* Mobile Navigation Links */}
-                  <Link
-                    href="/#tours"
-                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
-                    onClick={closeMenu}
-                  >
-                    TOURS
-                  </Link>
-                  <Link
-                    href="/#about"
-                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
-                    onClick={closeMenu}
-                  >
-                    ABOUT
-                  </Link>
-                  <Link
-                    href="/#shop"
-                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
-                    onClick={closeMenu}
-                  >
-                    SHOP
-                  </Link>
-                  <Link
-                    href="/live"
-                    className="nav-text font-title text-lg tracking-wide transition-colors duration-150 hover:text-primary"
-                    onClick={closeMenu}
-                  >
-                    LIVE
-                  </Link>
-
-                  {/* Mobile Book Me Options */}
-                  <div className="flex flex-col space-y-4">
-                    <div className="nav-text mb-2 font-title text-xl tracking-wide">
-                      BOOK ME
-                    </div>
-                    <Link
-                      href="https://www.bandsintown.com/artist-subscribe/15584038-derpcat"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="nav-text flex w-fit items-center rounded-lg border-2 border-primary bg-primary/20 px-4 py-3 text-center font-body transition-all duration-200 hover:bg-primary/30"
-                      onClick={closeMenu}
-                    >
-                      <span className="mr-2 text-primary">🎵</span>
-                      Book a Show
-                    </Link>
-                    <Link
-                      href="#book"
-                      className="nav-text flex w-fit items-center rounded-lg border-2 border-primary bg-primary/20 px-4 py-3 text-center font-body transition-all duration-200 hover:bg-primary/30"
-                      onClick={closeMenu}
-                    >
-                      <span className="mr-2 text-primary">📚</span>
-                      Book a Lesson
-                    </Link>
-                  </div>
-
-                  {/* Mobile Theme Toggle */}
-                  <div className="flex justify-center border-t border-border pt-4">
-                    <ThemeToggleButton variant="circle-blur" start="center" />
-                  </div>
-
-                  {/* Mobile Social Links */}
-                  <div className="flex flex-wrap justify-around gap-4 border-t border-border pt-4">
-                    {socialLinks.map((social: SocialLink, index) => (
-                      <Link
-                        key={index}
-                        href={social.href}
-                        className="nav-text group p-2 transition-all duration-150"
-                        aria-label={social.label}
-                        target={
-                          social.href.startsWith("http") ? "_blank" : "_self"
-                        }
-                        rel={
-                          social.href.startsWith("http")
-                            ? "noopener noreferrer"
-                            : undefined
-                        }
-                        onClick={closeMenu}
-                        onMouseEnter={e => {
-                          if (social.hoverColor) {
-                            e.currentTarget.style.color = social.hoverColor;
-                          }
-                        }}
-                        onMouseLeave={e => {
-                          e.currentTarget.style.color = "";
-                        }}
-                      >
-                        <social.icon className="h-6 w-6 transition-all duration-150" />
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
           </div>
         </div>
-      </div>
-    </nav>
+
+        {/* Mobile Menu */}
+        <div className="flex items-center gap-4 md:hidden">
+          <ThemeToggleButton variant="circle-blur" start="top-left" />
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" className="h-10 w-10 p-0">
+                <HamburgerIcon
+                  isOpen={isOpen}
+                  className="h-6 w-6 text-foreground"
+                />
+              </Button>
+            </SheetTrigger>
+            <SheetContent
+              side="right"
+              className="w-[300px] border-l-2 border-white bg-black text-white"
+            >
+              <SheetTitle className="sr-only">Mobile Navigation</SheetTitle>
+              <div className="mt-12 flex flex-col space-y-8">
+                {navItems.map(item => (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`font-pixel text-xl uppercase ${item.isPrimary
+                      ? "text-primary"
+                      : "text-white hover:text-primary"
+                      }`}
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item.name}
+                  </Link>
+                ))}
+                <div className="flex flex-wrap justify-center gap-6 border-t border-white/20 pt-8">
+                  {socialLinks.map((social: SocialLink, index) => (
+                    <Link
+                      key={index}
+                      href={social.href}
+                      className="text-white/60 transition-colors hover:text-primary"
+                      target={
+                        social.href.startsWith("http") ? "_blank" : "_self"
+                      }
+                    >
+                      <social.icon className="h-6 w-6" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
+    </div>
   );
 }

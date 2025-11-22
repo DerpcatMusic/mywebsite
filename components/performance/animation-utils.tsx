@@ -1,25 +1,25 @@
 "use client";
 
-import { useAnimationOptimization } from './optimization-context';
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
+import { useAnimationOptimization } from "./optimization-context";
 
 // Animation presets based on performance mode
 export const animationPresets = {
   reduced: {
     duration: 0.15,
-    easing: 'ease-out',
+    easing: "ease-out",
     scale: 0.5,
     blur: 2,
   },
   normal: {
     duration: 0.3,
-    easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
+    easing: "cubic-bezier(0.4, 0, 0.2, 1)",
     scale: 1,
     blur: 8,
   },
   enhanced: {
     duration: 0.5,
-    easing: 'cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+    easing: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",
     scale: 1.2,
     blur: 12,
   },
@@ -27,24 +27,33 @@ export const animationPresets = {
 
 // GPU-accelerated animation classes
 export const gpuAnimationClasses = {
-  transform: 'transform-gpu',
-  fadeIn: 'animate-fade-in-gpu',
-  slideUp: 'animate-slide-up-gpu',
-  slideDown: 'animate-slide-down-gpu',
-  slideLeft: 'animate-slide-left-gpu',
-  slideRight: 'animate-slide-right-gpu',
-  scale: 'animate-scale-gpu',
-  rotate: 'animate-rotate-gpu',
-  bounce: 'animate-bounce-gpu',
-  pulse: 'animate-pulse-gpu',
+  transform: "transform-gpu",
+  fadeIn: "animate-fade-in-gpu",
+  slideUp: "animate-slide-up-gpu",
+  slideDown: "animate-slide-down-gpu",
+  slideLeft: "animate-slide-left-gpu",
+  slideRight: "animate-slide-right-gpu",
+  scale: "animate-scale-gpu",
+  rotate: "animate-rotate-gpu",
+  bounce: "animate-bounce-gpu",
+  pulse: "animate-pulse-gpu",
 };
 
 // Hook for optimized animations
 export function useOptimizedAnimation() {
-  const { reduceAnimations, useGPUAcceleration, simplifyAnimations, animationDuration } = useAnimationOptimization();
+  const {
+    reduceAnimations,
+    useGPUAcceleration,
+    simplifyAnimations,
+    animationDuration,
+  } = useAnimationOptimization();
 
-  const getAnimationClass = (animationType: keyof typeof gpuAnimationClasses) => {
-    if (reduceAnimations) return '';
+  const getAnimationClass = (
+    animationType: keyof typeof gpuAnimationClasses
+  ) => {
+    if (reduceAnimations) {
+      return "";
+    }
 
     const baseClass = useGPUAcceleration
       ? gpuAnimationClasses[animationType]
@@ -58,8 +67,8 @@ export function useOptimizedAnimation() {
   const getAnimationStyle = (customDuration?: number) => {
     if (reduceAnimations) {
       return {
-        transition: 'none',
-        animation: 'none'
+        transition: "none",
+        animation: "none",
       };
     }
 
@@ -67,23 +76,26 @@ export function useOptimizedAnimation() {
       animationDuration: `${customDuration || animationDuration}s`,
       transition: `all ${customDuration || animationDuration}s ease-out`,
       ...(useGPUAcceleration && {
-        willChange: 'transform, opacity',
-        transform: 'translateZ(0)',
-        backfaceVisibility: 'hidden' as const,
+        willChange: "transform, opacity",
+        transform: "translateZ(0)",
+        backfaceVisibility: "hidden" as const,
       }),
     };
   };
 
-  const getTransitionStyle = (property: string = 'all', customDuration?: number) => {
+  const getTransitionStyle = (
+    property: string = "all",
+    customDuration?: number
+  ) => {
     if (reduceAnimations) {
-      return { transition: 'none' };
+      return { transition: "none" };
     }
 
     return {
       transition: `${property} ${customDuration || animationDuration}s cubic-bezier(0.4, 0, 0.2, 1)`,
       ...(useGPUAcceleration && {
         willChange: property,
-        transform: 'translateZ(0)',
+        transform: "translateZ(0)",
       }),
     };
   };
@@ -102,7 +114,14 @@ export function useOptimizedAnimation() {
 // Component wrapper for optimized animations
 interface AnimatedProps {
   children: React.ReactNode;
-  type?: 'fadeIn' | 'slideUp' | 'slideDown' | 'slideLeft' | 'slideRight' | 'scale' | 'rotate';
+  type?:
+    | "fadeIn"
+    | "slideUp"
+    | "slideDown"
+    | "slideLeft"
+    | "slideRight"
+    | "scale"
+    | "rotate";
   duration?: number;
   delay?: number;
   className?: string;
@@ -112,12 +131,12 @@ interface AnimatedProps {
 
 export function AnimatedElement({
   children,
-  type = 'fadeIn',
+  type = "fadeIn",
   duration,
   delay = 0,
-  className = '',
+  className = "",
   style = {},
-  trigger = true
+  trigger = true,
 }: AnimatedProps) {
   const { getAnimationStyle, shouldAnimate } = useOptimizedAnimation();
   const [isVisible, setIsVisible] = useState(!shouldAnimate || !trigger);
@@ -130,7 +149,11 @@ export function AnimatedElement({
   }, [shouldAnimate, trigger, delay]);
 
   if (!shouldAnimate) {
-    return <div className={className} style={style}>{children}</div>;
+    return (
+      <div className={className} style={style}>
+        {children}
+      </div>
+    );
   }
 
   const animationStyles = {
@@ -140,13 +163,13 @@ export function AnimatedElement({
   };
 
   const animationClasses = {
-    fadeIn: `transition-opacity ${isVisible ? 'opacity-100' : 'opacity-0'}`,
-    slideUp: `transition-transform ${isVisible ? 'translate-y-0' : 'translate-y-8'}`,
-    slideDown: `transition-transform ${isVisible ? 'translate-y-0' : '-translate-y-8'}`,
-    slideLeft: `transition-transform ${isVisible ? 'translate-x-0' : 'translate-x-8'}`,
-    slideRight: `transition-transform ${isVisible ? 'translate-x-0' : '-translate-x-8'}`,
-    scale: `transition-transform ${isVisible ? 'scale-100' : 'scale-95'}`,
-    rotate: `transition-transform ${isVisible ? 'rotate-0' : 'rotate-12'}`,
+    fadeIn: `transition-opacity ${isVisible ? "opacity-100" : "opacity-0"}`,
+    slideUp: `transition-transform ${isVisible ? "translate-y-0" : "translate-y-8"}`,
+    slideDown: `transition-transform ${isVisible ? "translate-y-0" : "-translate-y-8"}`,
+    slideLeft: `transition-transform ${isVisible ? "translate-x-0" : "translate-x-8"}`,
+    slideRight: `transition-transform ${isVisible ? "translate-x-0" : "-translate-x-8"}`,
+    scale: `transition-transform ${isVisible ? "scale-100" : "scale-95"}`,
+    rotate: `transition-transform ${isVisible ? "rotate-0" : "rotate-12"}`,
   };
 
   return (
@@ -160,12 +183,17 @@ export function AnimatedElement({
 }
 
 // Intersection Observer hook for scroll-triggered animations
-export function useScrollAnimation(threshold: number = 0.1, rootMargin: string = '0px') {
+export function useScrollAnimation(
+  threshold: number = 0.1,
+  rootMargin: string = "0px"
+) {
   const [isVisible, setIsVisible] = useState(false);
   const [ref, setRef] = useState<Element | null>(null);
 
   useEffect(() => {
-    if (!ref) return;
+    if (!ref) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -185,11 +213,16 @@ export function useScrollAnimation(threshold: number = 0.1, rootMargin: string =
 }
 
 // Performance-aware animation frame hook
-export function useAnimationFrame(callback: (time: number) => void, deps: React.DependencyList = []) {
+export function useAnimationFrame(
+  callback: (time: number) => void,
+  deps: React.DependencyList = []
+) {
   const { shouldAnimate } = useOptimizedAnimation();
 
   useEffect(() => {
-    if (!shouldAnimate) return;
+    if (!shouldAnimate) {
+      return;
+    }
 
     let animationFrameId: number;
 
@@ -243,11 +276,11 @@ export function generateOptimizedCSS() {
     @keyframes fadeInGPU {
       from {
         opacity: 0;
-        ${useGPUAcceleration ? 'transform: translateZ(0);' : ''}
+        ${useGPUAcceleration ? "transform: translateZ(0);" : ""}
       }
       to {
         opacity: 1;
-        ${useGPUAcceleration ? 'transform: translateZ(0);' : ''}
+        ${useGPUAcceleration ? "transform: translateZ(0);" : ""}
       }
     }
 
@@ -343,9 +376,12 @@ export function useStaggerAnimation(items: unknown[], delay: number = 0.1) {
     }
 
     items.forEach((_, index) => {
-      setTimeout(() => {
-        setVisibleItems(prev => new Set([...prev, index]));
-      }, index * delay * 1000);
+      setTimeout(
+        () => {
+          setVisibleItems(prev => new Set([...prev, index]));
+        },
+        index * delay * 1000
+      );
     });
   }, [items, delay, shouldAnimate]);
 

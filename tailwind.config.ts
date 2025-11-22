@@ -1,6 +1,5 @@
 import type { Config } from "tailwindcss";
 
-/** @type {import('tailwindcss').Config} */
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -8,9 +7,7 @@ const config: Config = {
     "./components/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
-    "*.{js,ts,jsx,tsx,mdx}",
   ],
-  prefix: "",
   theme: {
     container: {
       center: true,
@@ -21,8 +18,10 @@ const config: Config = {
     },
     extend: {
       fontFamily: {
-        title: ['"Bitcount Prop Double"', "system-ui"],
-        body: ['"Quicksand"', "sans-serif"],
+        sans: ["var(--font-outfit)", "sans-serif"],
+        heading: ["var(--font-space-grotesk)", "sans-serif"],
+        pixel: ["var(--font-pixel)", "monospace"],
+        terminal: ["var(--font-terminal)", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -58,18 +57,6 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        blue: {
-          50: "#e6f3ff",
-          100: "#cce7ff",
-          200: "#99cfff",
-          300: "#66b7ff",
-          400: "#339fff",
-          500: "#0087ff", // Your vibrant blue color
-          600: "#006bcc",
-          700: "#004f99",
-          800: "#003366",
-          900: "#001733",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -89,23 +76,15 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(10px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
-        glow: {
-          "0%, 100%": { boxShadow: "0 0 5px #FF2400" },
-          "50%": { boxShadow: "0 0 20px #FF2400, 0 0 30px #FF2400" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "fade-in": "fade-in 0.6s ease-out",
-        glow: "glow 1s ease-in-out infinite alternate",
       },
     },
   },
-  plugins: [
-    require("tailwindcss-animate"),
-    require("tailwind-scrollbar-hide"), // <--- This line was missing or misplaced
-  ],
+  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar-hide")],
 };
 
 export default config;

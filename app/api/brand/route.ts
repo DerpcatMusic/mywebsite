@@ -1,5 +1,5 @@
 // app/api/brand/route.ts
-export const runtime = 'edge';
+export const runtime = "edge";
 import { BRAND_DOMAINS, type BrandType } from "@/lib/brand";
 import BrandDev from "brand.dev";
 import { NextRequest, NextResponse } from "next/server";
@@ -10,7 +10,12 @@ let brandClient: BrandDev | null = null;
 function getBrandClient(): BrandDev | null {
   console.log("getBrandClient called");
   console.log("API Key exists:", !!process.env.BRAND_DEV_API_KEY);
-  console.log("API Key value:", process.env.BRAND_DEV_API_KEY ? `${process.env.BRAND_DEV_API_KEY.substring(0, 10)}...` : 'undefined');
+  console.log(
+    "API Key value:",
+    process.env.BRAND_DEV_API_KEY
+      ? `${process.env.BRAND_DEV_API_KEY.substring(0, 10)}...`
+      : "undefined"
+  );
 
   if (!brandClient && process.env.BRAND_DEV_API_KEY) {
     try {
@@ -54,10 +59,11 @@ export async function GET(request: NextRequest) {
     console.error("Failed to get brand client");
     return NextResponse.json(
       {
-        error: "Brand.dev client not available. Check BRAND_DEV_API_KEY environment variable.",
+        error:
+          "Brand.dev client not available. Check BRAND_DEV_API_KEY environment variable.",
         brandType,
         domain,
-        hasApiKey: !!process.env.BRAND_DEV_API_KEY
+        hasApiKey: !!process.env.BRAND_DEV_API_KEY,
       },
       { status: 500 }
     );
@@ -66,21 +72,34 @@ export async function GET(request: NextRequest) {
   try {
     console.log(`Fetching brand data for ${brandType} (${domain})`);
     const response = await client.brand.retrieve({ domain });
-    console.log(`Brand.dev API response for ${brandType}:`, JSON.stringify(response, null, 2));
+    console.log(
+      `Brand.dev API response for ${brandType}:`,
+      JSON.stringify(response, null, 2)
+    );
 
     const brand = response.brand as Record<string, unknown>;
-    console.log(`Brand object:`, brand);
-    console.log(`Colors array:`, brand.colors);
-    console.log(`Colors array type:`, typeof brand.colors);
-    console.log(`Colors array length:`, Array.isArray(brand.colors) ? brand.colors.length : 'not an array');
+    console.log("Brand object:", brand);
+    console.log("Colors array:", brand.colors);
+    console.log("Colors array type:", typeof brand.colors);
+    console.log(
+      "Colors array length:",
+      Array.isArray(brand.colors) ? brand.colors.length : "not an array"
+    );
 
     if (Array.isArray(brand.colors) && brand.colors.length > 0) {
-      console.log(`First color:`, brand.colors[0]);
-      console.log(`First color type:`, typeof brand.colors[0]);
-      console.log(`First color structure:`, JSON.stringify(brand.colors[0], null, 2));
+      console.log("First color:", brand.colors[0]);
+      console.log("First color type:", typeof brand.colors[0]);
+      console.log(
+        "First color structure:",
+        JSON.stringify(brand.colors[0], null, 2)
+      );
     }
 
-    if (!brand?.colors || !Array.isArray(brand.colors) || brand.colors.length < 3) {
+    if (
+      !brand?.colors ||
+      !Array.isArray(brand.colors) ||
+      brand.colors.length < 3
+    ) {
       console.error("Insufficient color data");
       console.error("Colors exist:", !!brand?.colors);
       console.error("Is array:", Array.isArray(brand.colors));
@@ -91,7 +110,7 @@ export async function GET(request: NextRequest) {
           brandType,
           domain,
           colorsFound: brand?.colors?.length || 0,
-          colorsData: brand?.colors
+          colorsData: brand?.colors,
         },
         { status: 404 }
       );
@@ -101,8 +120,9 @@ export async function GET(request: NextRequest) {
     console.log("Extracting colors...");
     const extractColor = (colorData: any, index: number) => {
       console.log(`Color ${index}:`, colorData);
-      if (typeof colorData === 'object' && colorData !== null) {
-        const hex = colorData.hex || colorData.value || colorData.color || colorData;
+      if (typeof colorData === "object" && colorData !== null) {
+        const hex =
+          colorData.hex || colorData.value || colorData.color || colorData;
         console.log(`Extracted hex for color ${index}:`, hex);
         return String(hex);
       }
@@ -125,13 +145,15 @@ export async function GET(request: NextRequest) {
       null;
 
     if (!logo) {
-      console.warn(`No logo found for brand type: ${brandType} (domain: ${domain}).`);
+      console.warn(
+        `No logo found for brand type: ${brandType} (domain: ${domain}).`
+      );
       return NextResponse.json(
         {
           error: "No logo found for this brand",
           brandType,
           domain,
-          logosFound: logos?.length || 0
+          logosFound: logos?.length || 0,
         },
         { status: 404 }
       );
@@ -149,15 +171,20 @@ export async function GET(request: NextRequest) {
       success: true,
       brandType,
       domain,
-      data: brandData
+      data: brandData,
     });
-
   } catch (error) {
     console.error(`Failed to fetch brand data for ${brandType}:`, error);
     console.error("Error type:", typeof error);
     console.error("Error constructor:", error?.constructor?.name);
-    console.error("Error message:", error instanceof Error ? error.message : String(error));
-    console.error("Error stack:", error instanceof Error ? error.stack : 'No stack available');
+    console.error(
+      "Error message:",
+      error instanceof Error ? error.message : String(error)
+    );
+    console.error(
+      "Error stack:",
+      error instanceof Error ? error.stack : "No stack available"
+    );
 
     return NextResponse.json(
       {
@@ -165,7 +192,7 @@ export async function GET(request: NextRequest) {
         brandType,
         domain,
         details: error instanceof Error ? error.message : String(error),
-        errorType: error?.constructor?.name || typeof error
+        errorType: error?.constructor?.name || typeof error,
       },
       { status: 500 }
     );
@@ -197,7 +224,7 @@ export async function POST(request: NextRequest) {
           brandType,
           success: response.ok,
           data: response.ok ? data.data : null,
-          error: response.ok ? null : data.error
+          error: response.ok ? null : data.error,
         };
       })
     );
@@ -206,14 +233,13 @@ export async function POST(request: NextRequest) {
       success: true,
       results: results.map(result =>
         result.status === "fulfilled" ? result.value : { error: result.reason }
-      )
+      ),
     });
-
   } catch (error) {
     return NextResponse.json(
       {
         error: "Failed to process batch request",
-        details: error instanceof Error ? error.message : String(error)
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );

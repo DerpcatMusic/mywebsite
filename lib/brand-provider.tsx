@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 export interface BrandColors {
   primary: string;
@@ -38,13 +38,19 @@ interface BrandProviderProps {
   fallbackData?: BrandDataMap;
 }
 
-export function BrandProvider({ children, fallbackData = {} }: BrandProviderProps) {
+export function BrandProvider({
+  children,
+  fallbackData = {},
+}: BrandProviderProps) {
   const [brands, setBrands] = useState<BrandDataMap>(fallbackData);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   // Memoize fallbackData to prevent infinite loops
-  const stableFallbackData = React.useMemo(() => fallbackData, [JSON.stringify(fallbackData)]);
+  const stableFallbackData = React.useMemo(
+    () => fallbackData,
+    [JSON.stringify(fallbackData)]
+  );
 
   useEffect(() => {
     async function loadBrandData() {
@@ -53,39 +59,44 @@ export function BrandProvider({ children, fallbackData = {} }: BrandProviderProp
         setError(null);
 
         // Try to load from static file first (generated at build time)
-        const response = await fetch('/brand-data/brands.json');
+        const response = await fetch("/brand-data/brands.json");
 
         if (response.ok) {
           const data = await response.json();
 
           if (data.brands) {
             setBrands(data.brands);
-            console.log('✅ Brand data loaded successfully from static cache');
+            console.log("✅ Brand data loaded successfully from static cache");
             console.log(`📊 Loaded ${Object.keys(data.brands).length} brands`);
 
             // Log metadata if available
             if (data.metadata) {
               console.log(`🕐 Generated at: ${data.metadata.generatedAt}`);
               if (data.metadata.errors) {
-                console.warn('⚠️ Some brands using fallback data:', data.metadata.errors);
+                console.warn(
+                  "⚠️ Some brands using fallback data:",
+                  data.metadata.errors
+                );
               }
             }
           } else {
-            throw new Error('Invalid brand data format');
+            throw new Error("Invalid brand data format");
           }
         } else {
           // Fallback to runtime API if static file doesn't exist
-          console.warn('📁 Static brand data not found, falling back to runtime loading...');
+          console.warn(
+            "📁 Static brand data not found, falling back to runtime loading..."
+          );
           await loadBrandDataFromAPI();
         }
       } catch (err) {
-        console.error('❌ Failed to load brand data:', err);
-        setError(err instanceof Error ? err.message : 'Unknown error');
+        console.error("❌ Failed to load brand data:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
 
         // Use fallback data if provided
         if (Object.keys(stableFallbackData).length > 0) {
           setBrands(stableFallbackData);
-          console.log('🔄 Using fallback brand data');
+          console.log("🔄 Using fallback brand data");
         }
       } finally {
         setLoading(false);
@@ -97,7 +108,7 @@ export function BrandProvider({ children, fallbackData = {} }: BrandProviderProp
 
   // Fallback to runtime API loading (only used if static data fails)
   async function loadBrandDataFromAPI() {
-    const brandTypes = ['fourthwall', 'gumroad', 'lemonsqueezy', 'patreon'];
+    const brandTypes = ["fourthwall", "gumroad", "lemonsqueezy", "patreon"];
     const loadedBrands: BrandDataMap = {};
 
     for (const brandType of brandTypes) {
@@ -110,7 +121,7 @@ export function BrandProvider({ children, fallbackData = {} }: BrandProviderProp
               ...result.data,
               brandType,
               domain: result.domain,
-              lastUpdated: new Date().toISOString()
+              lastUpdated: new Date().toISOString(),
             };
           }
         }
@@ -136,7 +147,7 @@ export function BrandProvider({ children, fallbackData = {} }: BrandProviderProp
     error,
     getBrand,
     hasBrand,
-    isLoaded: !loading && error === null
+    isLoaded: !loading && error === null,
   };
 
   return (
@@ -150,7 +161,7 @@ export function BrandProvider({ children, fallbackData = {} }: BrandProviderProp
 export function useBrandContext(): BrandContextType {
   const context = useContext(BrandContext);
   if (context === undefined) {
-    throw new Error('useBrandContext must be used within a BrandProvider');
+    throw new Error("useBrandContext must be used within a BrandProvider");
   }
   return context;
 }
@@ -165,7 +176,7 @@ export function useBrand(brandType: string) {
     loading,
     error,
     isLoaded,
-    hasData: brandData !== null
+    hasData: brandData !== null,
   };
 }
 
@@ -178,8 +189,12 @@ export function useMultipleBrands(brandTypes: string[]) {
     return acc;
   }, {} as BrandDataMap);
 
-  const hasAllBrands = brandTypes.every(brandType => brands[brandType] !== null);
-  const loadedCount = brandTypes.filter(brandType => brands[brandType] !== null).length;
+  const hasAllBrands = brandTypes.every(
+    brandType => brands[brandType] !== null
+  );
+  const loadedCount = brandTypes.filter(
+    brandType => brands[brandType] !== null
+  ).length;
 
   return {
     brandsData,
@@ -188,14 +203,17 @@ export function useMultipleBrands(brandTypes: string[]) {
     isLoaded,
     hasAllBrands,
     loadedCount,
-    totalRequested: brandTypes.length
+    totalRequested: brandTypes.length,
   };
 }
 
 // Helper functions for brand data
-export function generateBrandCSS(brandData: BrandData | null, prefix: string = 'brand'): string {
+export function generateBrandCSS(
+  brandData: BrandData | null,
+  prefix: string = "brand"
+): string {
   if (!brandData || !brandData.colors) {
-    return '';
+    return "";
   }
 
   const { colors } = brandData;
@@ -213,7 +231,7 @@ export function generateBrandCSS(brandData: BrandData | null, prefix: string = '
 function hexToRgb(hex: string): string {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) {
-    return '0, 0, 0';
+    return "0, 0, 0";
   }
 
   const r = parseInt(result[1], 16);
@@ -225,7 +243,7 @@ function hexToRgb(hex: string): string {
 
 // Helper to determine if a color is light or dark (for text contrast)
 export function isLightColor(hex: string): boolean {
-  const rgb = hexToRgb(hex).split(', ').map(Number);
+  const rgb = hexToRgb(hex).split(", ").map(Number);
   const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
   return luminance > 0.5;
 }
@@ -233,39 +251,39 @@ export function isLightColor(hex: string): boolean {
 // Default fallback brand data
 export const DEFAULT_BRAND_DATA: BrandDataMap = {
   fourthwall: {
-    brandType: 'fourthwall',
-    domain: 'fourthwall.com',
-    title: 'Fourthwall',
-    colors: { primary: '#6366f1', secondary: '#8b5cf6', accent: '#06b6d4' },
+    brandType: "fourthwall",
+    domain: "fourthwall.com",
+    title: "Fourthwall",
+    colors: { primary: "#6366f1", secondary: "#8b5cf6", accent: "#06b6d4" },
     logo: null,
     lastUpdated: new Date().toISOString(),
-    fallback: true
+    fallback: true,
   },
   gumroad: {
-    brandType: 'gumroad',
-    domain: 'gumroad.com',
-    title: 'Gumroad',
-    colors: { primary: '#ff90e8', secondary: '#ffa8cc', accent: '#ffb3d9' },
+    brandType: "gumroad",
+    domain: "gumroad.com",
+    title: "Gumroad",
+    colors: { primary: "#ff90e8", secondary: "#ffa8cc", accent: "#ffb3d9" },
     logo: null,
     lastUpdated: new Date().toISOString(),
-    fallback: true
+    fallback: true,
   },
   lemonsqueezy: {
-    brandType: 'lemonsqueezy',
-    domain: 'lemonsqueezy.com',
-    title: 'Lemon Squeezy',
-    colors: { primary: '#ffd23f', secondary: '#fccc02', accent: '#f5c842' },
+    brandType: "lemonsqueezy",
+    domain: "lemonsqueezy.com",
+    title: "Lemon Squeezy",
+    colors: { primary: "#ffd23f", secondary: "#fccc02", accent: "#f5c842" },
     logo: null,
     lastUpdated: new Date().toISOString(),
-    fallback: true
+    fallback: true,
   },
   patreon: {
-    brandType: 'patreon',
-    domain: 'patreon.com',
-    title: 'Patreon',
-    colors: { primary: '#ff424d', secondary: '#ff5a5a', accent: '#ff7b7b' },
+    brandType: "patreon",
+    domain: "patreon.com",
+    title: "Patreon",
+    colors: { primary: "#ff424d", secondary: "#ff5a5a", accent: "#ff7b7b" },
     logo: null,
     lastUpdated: new Date().toISOString(),
-    fallback: true
-  }
+    fallback: true,
+  },
 };

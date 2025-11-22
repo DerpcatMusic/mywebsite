@@ -16,10 +16,10 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import {
-    Autoplay,
-    EffectCoverflow,
-    Navigation,
-    Pagination,
+  Autoplay,
+  EffectCoverflow,
+  Navigation,
+  Pagination,
 } from "swiper/modules";
 
 import AltProductCard from "./alt-product-card";
@@ -108,7 +108,6 @@ export default function AltProductsSection({
   const [loading] = useState(false);
   const [error] = useState<string | null>(null);
   const [isMobile, setIsMobile] = useState(false);
-
 
   // --- Device Detection ---
   useEffect(() => {

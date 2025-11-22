@@ -42,10 +42,8 @@ interface TourDate {
 export async function GET() {
   // 1. Validate that necessary environment variables are set
   if (!BANDSINTOWN_ARTIST_NAME || !BANDSINTOWN_APP_ID) {
-    return NextResponse.json(
-      { error: "Server configuration error: Artist name or App ID missing." },
-      { status: 500 }
-    );
+    console.warn("Bandsintown env variables not set - returning empty tour dates");
+    return NextResponse.json([]);
   }
 
   // 2. Encode the artist name for URL safely
