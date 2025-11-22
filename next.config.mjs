@@ -1,9 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Add runtime: 'edge' for Cloudflare Pages deployment
-  experimental: {
-    runtime: 'edge',
-  },
   eslint: {
     ignoreDuringBuilds: true,
   },

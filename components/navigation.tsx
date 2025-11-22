@@ -10,13 +10,13 @@ import {
 } from "@/components/ui/sheet";
 import ThemeToggleButton from "@/components/ui/theme-toggle-button";
 import { SocialLink, socialLinks } from "@/lib/social-links";
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -30,57 +30,96 @@ const navItems = [
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const dockRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
   const linksRef = useRef<HTMLDivElement>(null);
+  const { theme, resolvedTheme } = useTheme();
 
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: "body",
-          start: "top top",
-          end: "+=100",
-          scrub: 0.5, // Add smoothing
-        },
-      });
+  // Ensure component is mounted (avoid hydration mismatch)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
-      // Transform to Dock Mode
-      tl.to(navRef.current, {
-        y: 20,
-        width: "auto",
-        padding: "0.5rem 1.5rem",
-        borderRadius: "9999px",
-        backgroundColor: "rgba(var(--background-rgb), 0.8)", // More opaque for tinted glass
-        backdropFilter: "blur(12px)",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        boxShadow: "0 10px 30px -10px rgba(0, 0, 0, 0.5)",
-        duration: 0.5,
-        ease: "power2.inOut",
-      });
+  const isDark = mounted && (theme === "dark" || resolvedTheme === "dark");
 
-      // Animate Logo
-      tl.to(
-        logoRef.current,
-        {
-          scale: 0.8,
-          duration: 0.5,
-        },
-        "<"
-      );
+  useEffect(() => {
+    // Only run on client after mount
+    if (!mounted || !navRef.current || !logoRef.current) return;
 
-      // Stagger Links Entrance
-      gsap.from(".nav-link", {
+    const navElement = navRef.current;
+    const logoElement = logoRef.current;
+
+    // Find the scroll container (main element)
+    const scrollContainer = document.querySelector('main');
+    if (!scrollContainer) {
+      console.warn('Scroll container (main) not found');
+      return;
+    }
+
+    // Create dock transition timeline
+    const dockTl = gsap.timeline({
+      scrollTrigger: {
+        trigger: scrollContainer,
+        scroller: scrollContainer,
+        start: "top top",
+        end: "+=200",
+        scrub: 1,
+        onUpdate: (self) => {
+          // Add a class when scrolled for additional styling if needed
+          if (self.progress > 0.1) {
+            navElement.classList.add('is-docked');
+          } else {
+            navElement.classList.remove('is-docked');
+          }
+        }
+      },
+    });
+
+    // Transform to Dock Mode - animate the nav container
+    dockTl.to(navElement, {
+      width: "fit-content",
+      maxWidth: "90%",
+      margin: "0 auto",
+      padding: "0.75rem 2rem",
+      borderRadius: "9999px",
+      y: 12,
+      boxShadow: "0 20px 40px -15px rgba(0, 0, 0, 0.6)",
+      ease: "power2.out",
+    });
+
+    // Animate Logo scale
+    dockTl.to(
+      logoElement,
+      {
+        scale: 0.85,
+        ease: "power2.out",
+      },
+      "<"
+    );
+
+    // Stagger Links Entrance (once on mount)
+    const navLinks = navElement.querySelectorAll(".nav-link");
+    if (navLinks.length > 0) {
+      gsap.from(navLinks, {
         y: -20,
         opacity: 0,
         duration: 0.5,
         stagger: 0.1,
         ease: "back.out(1.7)",
       });
-    },
-    { scope: navRef }
-  );
+    }
+
+    // Cleanup only on unmount
+    return () => {
+      if (dockTl.scrollTrigger) {
+        dockTl.scrollTrigger.kill();
+      }
+      dockTl.kill();
+    };
+  }, [mounted]); // Only run once on mount
+
 
   const handleHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
     gsap.to(e.currentTarget, {
@@ -102,7 +141,7 @@ export default function Navigation() {
     <div className="pointer-events-none fixed left-0 right-0 top-0 z-50 flex justify-center">
       <nav
         ref={navRef}
-        className="pointer-events-auto relative z-50 flex w-full items-center justify-between bg-background/95 backdrop-blur-sm px-6 py-4 text-foreground shadow-sm transition-all"
+        className="navbar-glass pointer-events-auto relative z-50 flex w-full items-center justify-between px-6 py-4 shadow-lg transition-colors"
       >
         {/* Logo */}
         <div ref={logoRef} className="flex items-center">
@@ -125,8 +164,8 @@ export default function Navigation() {
               key={item.name}
               href={item.href}
               className={`nav-link font-pixel text-sm uppercase tracking-wider transition-colors ${item.isPrimary
-                ? "text-foreground hover:text-primary"
-                : "text-foreground/80 hover:text-primary"
+                ? "text-black dark:text-white hover:text-primary"
+                : "text-black/80 dark:text-white/80 hover:text-primary"
                 }`}
               onMouseEnter={handleHover}
               onMouseLeave={handleHoverExit}
@@ -134,7 +173,7 @@ export default function Navigation() {
               {item.name}
             </Link>
           ))}
-          <div className="border-l border-white/10 pl-4">
+          <div className="border-l border-black/10 dark:border-white/10 pl-4">
             <ThemeToggleButton variant="circle-blur" start="top-left" />
           </div>
         </div>
@@ -147,7 +186,7 @@ export default function Navigation() {
               <Button variant="ghost" className="h-10 w-10 p-0">
                 <HamburgerIcon
                   isOpen={isOpen}
-                  className="h-6 w-6 text-foreground"
+                  className="h-6 w-6 text-black dark:text-white"
                 />
               </Button>
             </SheetTrigger>

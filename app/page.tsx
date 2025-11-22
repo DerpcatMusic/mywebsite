@@ -1,13 +1,36 @@
 import AboutToursSection from "@/components/about-tours-section";
 import BookingSection from "@/components/booking-section";
 import ClientPageWrapper from "@/components/client-page-wrapper";
-import ProductLoader from "@/components/digital products/product-loader";
-import FourthwallProductsSection from "@/components/fourthwall-products-section";
 import PageSection from "@/components/page-section";
 import ReleaseSection from "@/components/release-section";
+import UnifiedShopSection from "@/components/unified-shop-section";
 import { currentRelease } from "@/config/releases";
+import { getAllGumroadProducts } from "@/lib/gumroad";
+import { getAllLemonSqueezyProducts } from "@/lib/lemonsqueezy";
+import { getAllPatreonTiers } from "@/lib/patreon";
 
-export default function ArtistLandingPage() {
+export default async function ArtistLandingPage() {
+  // Fetch Digital Products Server-Side
+  const [gumroadResult, lemonsqueezyResult, patreonResult] =
+    await Promise.allSettled([
+      getAllGumroadProducts(),
+      getAllLemonSqueezyProducts(),
+      getAllPatreonTiers(),
+    ]);
+
+  const gumroadProducts =
+    gumroadResult.status === "fulfilled" ? gumroadResult.value : [];
+  const lemonsqueezyProducts =
+    lemonsqueezyResult.status === "fulfilled" ? lemonsqueezyResult.value : [];
+  const patreonTiers =
+    patreonResult.status === "fulfilled" ? patreonResult.value : [];
+
+  const allDigitalProducts = [
+    ...gumroadProducts,
+    ...lemonsqueezyProducts,
+    ...patreonTiers,
+  ];
+
   return (
     <ClientPageWrapper>
       <main className="w-full overflow-x-hidden">
@@ -25,27 +48,9 @@ export default function ArtistLandingPage() {
           <AboutToursSection />
         </PageSection>
 
-        {/* Shop Section - Combined Title + Products */}
-        <PageSection className="bg-background py-10">
-          <div className="container mx-auto flex h-full flex-col justify-center px-4">
-            <h2 className="mb-12 text-center font-pixel text-4xl uppercase tracking-widest text-primary drop-shadow-[4px_4px_0_rgba(255,255,255,0.2)] md:text-6xl">
-              Item Shop
-            </h2>
-            <div className="mx-auto grid w-full max-w-7xl grid-cols-1 items-start gap-8 lg:grid-cols-2">
-              <div className="flex flex-col items-center">
-                <h3 className="mb-6 font-pixel text-xl text-muted-foreground">
-                  Merch
-                </h3>
-                <FourthwallProductsSection />
-              </div>
-              <div className="flex flex-col items-center">
-                <h3 className="mb-6 font-pixel text-xl text-muted-foreground">
-                  Digital Goods
-                </h3>
-                <ProductLoader />
-              </div>
-            </div>
-          </div>
+        {/* Unified Shop Section */}
+        <PageSection className="bg-background">
+          <UnifiedShopSection digitalProducts={allDigitalProducts} />
         </PageSection>
 
         {/* Booking Section */}

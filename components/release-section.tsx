@@ -114,8 +114,8 @@ export default function ReleaseSection({
             <div className="hero-text mt-8 flex justify-center">
               <Button
                 asChild
-                size="icon"
-                className="hero-btn h-16 w-16 rounded-full bg-primary hover:bg-primary/80"
+                size="lg"
+                className="hero-btn group gap-3 rounded-full bg-primary px-8 py-6 font-pixel text-sm uppercase tracking-wider hover:bg-primary/80"
                 onMouseEnter={handleBtnHover}
                 onMouseLeave={handleBtnLeave}
               >
@@ -123,10 +123,10 @@ export default function ReleaseSection({
                   href={streamLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center"
-                  aria-label="Stream Now"
+                  className="flex items-center justify-center gap-3"
                 >
-                  <Play className="h-8 w-8 fill-current text-primary-foreground" />
+                  <Play className="h-5 w-5 fill-current text-primary-foreground transition-transform group-hover:scale-110" />
+                  <span className="text-primary-foreground">Stream Now</span>
                 </a>
               </Button>
             </div>
