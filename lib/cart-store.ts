@@ -8,6 +8,10 @@ export type CartItem = {
   image?: string;
   quantity: number;
   type: "service" | "product";
+  // Variant support for Fourthwall products
+  variantId?: string;
+  variantName?: string;
+  variantAttributes?: Record<string, unknown>;
 };
 
 interface CartState {

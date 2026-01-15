@@ -1,5 +1,6 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import * as React from "react";
 
 interface HamburgerIconProps extends React.SVGProps<SVGSVGElement> {
@@ -7,25 +8,35 @@ interface HamburgerIconProps extends React.SVGProps<SVGSVGElement> {
 }
 
 const HamburgerIcon = ({
-  isOpen = false,
+  isOpen,
   className,
-  ..._props
-}: HamburgerIconProps & { className?: string }) => {
+  ...props
+}: HamburgerIconProps) => {
   return (
     <div
-      className={`relative flex transform items-center justify-center transition-all duration-200 ${className}`}
+      className={cn(
+        "relative flex h-6 w-6 transform items-center justify-center transition-all duration-300",
+        className
+      )}
     >
-      <div className="flex h-full w-full transform flex-col items-center justify-center overflow-hidden transition-all duration-300">
-        <span
-          className={`relative block h-0.5 w-7 transform rounded-sm bg-current transition-all duration-300 ease-in-out ${isOpen ? "translate-y-1.5 rotate-45" : "-translate-y-2"}`}
-        ></span>
-        <span
-          className={`relative block h-0.5 w-7 transform rounded-sm bg-current transition-all duration-300 ease-in-out ${isOpen ? "rotate-[-45deg]" : ""}`}
-        ></span>
-        <span
-          className={`relative block h-0.5 w-7 transform rounded-sm bg-current transition-all duration-300 ease-in-out ${isOpen ? "-translate-y-1.5 -rotate-45" : "translate-y-2"}`}
-        ></span>
-      </div>
+      <div
+        className={cn(
+          "absolute h-[2px] w-6 transform bg-current transition-all duration-300",
+          isOpen ? "rotate-45" : "-translate-y-1.5"
+        )}
+      />
+      <div
+        className={cn(
+          "absolute h-[2px] w-6 transform bg-current transition-all duration-300",
+          isOpen ? "opacity-0" : "opacity-100"
+        )}
+      />
+      <div
+        className={cn(
+          "absolute h-[2px] w-6 transform bg-current transition-all duration-300",
+          isOpen ? "-rotate-45" : "translate-y-1.5"
+        )}
+      />
     </div>
   );
 };

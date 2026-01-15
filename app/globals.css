@@ -4,40 +4,14 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
-    --primary: 262 83% 58%;
-    /* Vibrant Purple */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 46.1%;
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 262 83% 58%;
-    --radius: 0.75rem;
-  }
-
-  .dark {
-    --background: 240 10% 3.9%;
-    /* Deep dark */
+    --background: 240 10% 3.9%; /* #09090b - Zinc 950 essentially */
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 263 70% 50%;
-    /* Deep Purple */
-    --primary-foreground: 210 40% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 240 3.7% 15.9%;
@@ -48,61 +22,56 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 263 70% 50%;
+    --ring: 240 4.9% 83.9%;
+    --radius: 0.75rem; /* Elegant subtle rounding */
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+  }
+
+  body {
+    @apply bg-background text-foreground min-h-screen overflow-x-hidden font-sans;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    @apply bg-white/20 text-white;
   }
 }
 
-.pixel-card {
-  @apply bg-card border-2 border-white/20 shadow-[4px_4px_0px_0px_rgba(255, 255, 255, 0.2)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_0px_rgba(255, 255, 255, 0.2)] transition-all duration-200;
+@layer utilities {
+  .glass-card {
+    @apply bg-white/[0.02] backdrop-blur-3xl border border-white/[0.05] shadow-2xl;
+  }
+
+  .glass-header {
+    @apply bg-background/60 backdrop-blur-xl border-b border-white/[0.05];
+  }
+
+  .font-pixel {
+    font-family: var(--font-pixel), monospace;
+  }
 }
 
-.pixel-btn {
-  @apply font-pixel text-xs uppercase tracking-widest border-2 border-primary bg-primary/20 text-primary hover:bg-primary hover:text-primary-foreground shadow-[4px_4px_0px_0px_rgba(147, 51, 234, 0.5)] hover:shadow-[2px_2px_0px_0px_rgba(147, 51, 234, 0.5)] hover:translate-x-[2px] hover:translate-y-[2px] transition-all duration-100;
-}
-
-.text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#ff00ff] via-[#00ffff] to-[#ffff00] animate-pulse;
-  padding: 0;
-}
-
-/* Snap Container */
 main {
-  height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
+  height: auto;
+  overflow-y: visible;
 }
 
-/* Snap Sections */
 section {
-  height: 100vh;
-  width: 100%;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
   position: relative;
+  overflow: hidden;
 }
 
-/* Hide scrollbar for cleaner look */
-main::-webkit-scrollbar {
-  display: none;
-}
-
-main {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-/* Navbar Glassmorphism with Grain */
-.navbar-glass {
-  background-color: rgba(255, 255, 255, 0.8);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-.dark .navbar-glass {
-  background-color: rgba(0, 0, 0, 0.8);
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.1'/%3E%3C/svg%3E");
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Atmospheric Light Leak */
+.light-leak {
+  position: absolute;
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, hsla(var(--primary), 0.15) 0%, transparent 70%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 0;
 }

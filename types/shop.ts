@@ -11,4 +11,5 @@ export interface UnifiedProduct {
     isExternal: boolean;
     type: "fourthwall" | "gumroad" | "lemonsqueezy" | "patreon";
     available: boolean;
+    rawProduct?: unknown; // Store raw product data for Fourthwall variants
 }

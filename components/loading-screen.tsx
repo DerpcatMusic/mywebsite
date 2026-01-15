@@ -33,7 +33,7 @@ export default function LoadingScreen({
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black text-white"
     >
       <div className="mb-8 text-center">
-        <h1 className="animate-pulse font-pixel text-4xl text-primary md:text-6xl">
+        <h1 className="font-pixel animate-pulse text-4xl text-primary md:text-6xl">
           LOADING...
         </h1>
       </div>
@@ -47,12 +47,12 @@ export default function LoadingScreen({
         />
       </div>
 
-      <div className="mt-4 font-terminal text-xl text-muted-foreground">
+      <div className="font-terminal mt-4 text-xl text-muted-foreground">
         {progress}%
       </div>
 
       {/* Decorative "Tips" or Flavor Text */}
-      <div className="absolute bottom-10 font-terminal text-sm text-white/50">
+      <div className="font-terminal absolute bottom-10 text-sm text-white/50">
         INITIALIZING SYSTEM...
       </div>
     </motion.div>

@@ -46,9 +46,48 @@ const productVariantSchema = z.object({
   attributes: z
     .object({
       description: z.string().optional().nullable(),
+      color: z
+        .object({
+          name: z.string(),
+          swatch: z.string().optional(),
+        })
+        .optional()
+        .nullable(),
+      size: z
+        .object({
+          name: z.string(),
+        })
+        .optional()
+        .nullable(),
+    })
+    .passthrough() // Allow additional attributes
+    .optional()
+    .nullable(),
+  stock: z
+    .object({
+      type: z.string().optional(),
+      inStock: z.number().optional(),
     })
     .optional()
     .nullable(),
+  weight: z
+    .object({
+      value: z.number(),
+      unit: z.string(),
+    })
+    .optional()
+    .nullable(),
+  dimensions: z
+    .object({
+      length: z.number(),
+      width: z.number(),
+      height: z.number(),
+      unit: z.string(),
+    })
+    .optional()
+    .nullable(),
+  images: z.array(imageSchema).optional().nullable(),
+  thumbnailImage: imageSchema.optional().nullable(),
 });
 
 const productSchema = z.object({
@@ -56,14 +95,12 @@ const productSchema = z.object({
   name: z.string(),
   slug: z.string().optional(),
   description: z.string().optional().nullable(),
-  // --- FIX APPLIED HERE ---
-  // Add transform to handle undefined values and ensure proper type
+  // Ensure images is never undefined, only null or array
   images: z
     .array(imageSchema)
     .nullable()
-    .default(null)
-    .transform(val => val ?? null),
-  // --- END FIX ---
+    .default([])
+    .transform(val => (val === null ? [] : val)),
   thumbnailImage: imageSchema.optional().nullable(),
   variants: z.array(productVariantSchema).default([]),
 });

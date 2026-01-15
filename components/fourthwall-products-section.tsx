@@ -2,7 +2,14 @@
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { FourthwallProduct, getAllFourthwallProducts } from "@/lib/fourthwall";
+import {
+  FourthwallProduct,
+  getAllFourthwallProducts,
+  getProductDescription,
+  getProductImage,
+  getProductPrice,
+} from "@/lib/fourthwall";
+import { UnifiedProduct } from "@/types/shop";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -155,17 +162,30 @@ export default function FourthwallProductsSection() {
             ref={gridRef}
             className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3"
           >
-            {products.map(product => (
-              <div
-                key={product.id}
-                className="flex transform justify-center transition-transform duration-300 hover:scale-105"
-              >
-                <ProductCard
-                  product={product}
-                  fourthwallCheckoutDomain={checkoutDomain}
-                />
-              </div>
-            ))}
+            {products.map(product => {
+              const unifiedProduct: UnifiedProduct = {
+                id: product.id,
+                name: product.name,
+                description: getProductDescription(product),
+                image: getProductImage(product),
+                price: product.variants[0]?.unitPrice?.value || 0,
+                currency: product.variants[0]?.unitPrice?.currency || "USD",
+                formattedPrice: getProductPrice(product),
+                slug: product.slug,
+                isExternal: false,
+                type: "fourthwall",
+                available: true,
+              };
+
+              return (
+                <div
+                  key={product.id}
+                  className="flex transform justify-center transition-transform duration-300 hover:scale-105"
+                >
+                  <ProductCard product={unifiedProduct} rawProduct={product} />
+                </div>
+              );
+            })}
           </div>
         )}
       </div>

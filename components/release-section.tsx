@@ -1,12 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Play } from "lucide-react";
 import Image from "next/image";
-import { useRef } from "react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -21,126 +17,76 @@ export default function ReleaseSection({
   releaseTitle = "Latest Release",
   streamLink = "#",
 }: ReleaseSectionProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const bgRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  useGSAP(
-    () => {
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top top",
-          end: "bottom top",
-          scrub: true,
-        },
-      });
-
-      // Parallax Background removed
-
-      // Content Reveal (on load)
-      const revealTl = gsap.timeline();
-      revealTl.from(".hero-text", {
-        y: 100,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.2,
-        ease: "power4.out",
-      });
-
-      revealTl.from(
-        ".hero-btn",
-        {
-          scale: 0,
-          opacity: 0,
-          duration: 0.6,
-          ease: "back.out(1.7)",
-        },
-        "-=0.5"
-      );
-    },
-    { scope: containerRef }
-  );
-
-  const handleBtnHover = (e: React.MouseEvent<HTMLButtonElement>) => {
-    gsap.to(e.currentTarget, {
-      scale: 1.1,
-      rotation: -3,
-      duration: 0.3,
-      ease: "elastic.out(1, 0.3)",
-    });
-  };
-
-  const handleBtnLeave = (e: React.MouseEvent<HTMLButtonElement>) => {
-    gsap.to(e.currentTarget, {
-      scale: 1,
-      rotation: 0,
-      duration: 0.3,
-      ease: "power2.out",
-    });
-  };
-
   return (
-    <section
-      ref={containerRef}
-      className="relative h-screen w-full overflow-hidden"
-    >
-      {/* Background Image with Parallax */}
-      <div ref={bgRef} className="absolute inset-0 -top-[10%] h-[120%] w-full">
+    <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden py-32">
+      {/* Blurred "Filler" Background */}
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden opacity-40">
         <Image
           src={releaseImage || "/release.png"}
-          alt={releaseTitle}
+          alt=""
           fill
-          className="object-cover object-center"
+          className="scale-150 object-cover opacity-50 blur-[150px]"
           priority
-          crossOrigin="anonymous"
         />
-        {/* Dynamic Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-background/60" />
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-cyan-900/20 mix-blend-overlay" />
-        <div className="bg-noise absolute inset-0 opacity-30" />
+        <div className="absolute inset-0 bg-background/60" />{" "}
+        {/* Overlay to blend with theme */}
       </div>
 
-      {/* Content */}
+      {/* Decorative Light Leak */}
+      <div className="light-leak relative left-[-10%] top-[-10%] z-0 animate-pulse opacity-40" />
       <div
-        ref={contentRef}
-        className="relative z-10 flex h-full items-center justify-center"
-      >
-        <div className="px-4 text-center">
-          <div className="mb-8">
-            <h1 className="hero-text mb-4 font-pixel text-4xl font-black uppercase tracking-widest text-primary-foreground drop-shadow-[4px_4px_0_rgba(0,0,0,1)] md:text-6xl lg:text-7xl">
-              {releaseTitle}
-            </h1>
-            <div className="hero-text mt-8 flex justify-center">
-              <Button
-                asChild
-                size="lg"
-                className="hero-btn group gap-3 rounded-full bg-primary px-8 py-6 font-pixel text-sm uppercase tracking-wider hover:bg-primary/80"
-                onMouseEnter={handleBtnHover}
-                onMouseLeave={handleBtnLeave}
-              >
-                <a
-                  href={streamLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3"
-                >
-                  <Play className="h-5 w-5 fill-current text-primary-foreground transition-transform group-hover:scale-110" />
-                  <span className="text-primary-foreground">Stream Now</span>
-                </a>
-              </Button>
-            </div>
+        className="light-leak relative bottom-[-20%] right-[-10%] z-0 animate-pulse opacity-30"
+        style={{ animationDelay: "2s" }}
+      />
+
+      <div className="container relative z-10 mx-auto grid grid-cols-1 items-center gap-16 px-6 lg:grid-cols-2">
+        {/* Artwork - Large & Floating */}
+        <div className="perspective-[1000px] group relative">
+          <div className="absolute inset-0 scale-75 rounded-full bg-primary/20 blur-[100px] transition-transform duration-1000 group-hover:scale-100" />
+          <div className="glass-card hover:rotate-y-6 hover:rotate-x-6 relative mx-auto aspect-square w-full max-w-lg transform overflow-hidden rounded-[3rem] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)] transition-transform duration-700 hover:scale-105">
+            <Image
+              src={releaseImage || "/release.png"}
+              alt={releaseTitle}
+              fill
+              priority
+              className="scale-100 object-cover transition-transform duration-1000 group-hover:scale-110"
+            />
           </div>
         </div>
-      </div>
 
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 transform animate-bounce">
-        <div className="flex flex-col items-center gap-2">
-          <span className="font-pixel text-[10px] uppercase text-foreground/80">
-            Scroll
-          </span>
-          <div className="h-4 w-4 rotate-45 border-b-2 border-r-2 border-foreground" />
+        {/* Info - Elegant & Minimal */}
+        <div className="z-10 flex flex-col items-center space-y-8 text-center lg:items-start lg:text-left">
+          <div className="space-y-2">
+            <span className="ml-1 block font-sans text-xs uppercase tracking-[0.3em] text-white/60">
+              NEW RELEASE
+            </span>
+            <h1 className="font-pixel text-6xl font-normal leading-[0.9] tracking-tight text-white drop-shadow-2xl md:text-8xl lg:text-9xl">
+              {releaseTitle}
+            </h1>
+          </div>
+
+          <div className="flex flex-wrap gap-4 pt-4">
+            <a
+              href={streamLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-8 py-4 backdrop-blur-md transition-all duration-500 hover:bg-white/10"
+            >
+              <span className="font-sans text-sm font-medium uppercase tracking-widest text-white transition-all group-hover:tracking-[0.25em]">
+                Stream Now
+              </span>
+              <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]" />
+            </a>
+
+            <a
+              href="#shop"
+              className="group relative inline-flex items-center gap-3 rounded-full border border-white/10 px-8 py-4 transition-all duration-500 hover:bg-white/5"
+            >
+              <span className="font-sans text-sm font-medium uppercase tracking-widest text-white/60 transition-colors group-hover:text-white">
+                Get Merch
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

@@ -77,6 +77,11 @@ export default function CartDrawer() {
                         <div className="flex flex-1 flex-col justify-between">
                           <div>
                             <h3 className="font-medium">{item.name}</h3>
+                            {item.variantName && (
+                              <p className="text-xs text-muted-foreground">
+                                {item.variantName}
+                              </p>
+                            )}
                             <p className="text-sm text-muted-foreground">
                               ${item.price.toFixed(2)}
                             </p>

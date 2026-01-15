@@ -20,8 +20,8 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-outfit)", "sans-serif"],
         heading: ["var(--font-space-grotesk)", "sans-serif"],
-        pixel: ["var(--font-pixel)", "monospace"],
-        terminal: ["var(--font-terminal)", "monospace"],
+        mono: ["var(--font-mono)", "monospace"],
+        serif: ["var(--font-serif)", "serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -59,9 +59,9 @@ const config: Config = {
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "0px",
+        md: "0px",
+        sm: "0px",
       },
       keyframes: {
         "accordion-down": {

@@ -8,6 +8,7 @@ export interface LemonSqueezyProduct {
   name: string;
   description: string;
   price_formatted: string;
+  price: number; // Numeric price for cart
   buy_now_url: string;
   thumb_url: string | null;
   large_thumb_url: string | null;
@@ -61,15 +62,23 @@ export async function getAllLemonSqueezyProducts(): Promise<
           | Record<string, unknown>
           | undefined;
 
+        // Parse numeric price from formatted price
+        const priceFormatted = String(variantAttrs?.price_formatted || "$0.00");
+        const priceMatch = priceFormatted.match(/[\d,]+\.?\d*/);
+        const numericPrice = priceMatch
+          ? parseFloat(priceMatch[0].replace(/,/g, ""))
+          : 0;
+
         return {
           id: String(item.id),
-          name: String(itemAttrs.name),
-          description: String(itemAttrs.description) || "",
+          name: String(itemAttrs.name || "Unnamed Product"),
+          description: String(itemAttrs.description || ""),
           // Use the variant's price, as the base product doesn't have one
-          price_formatted: String(variantAttrs?.price_formatted) || "N/A",
-          buy_now_url: String(variantAttrs?.buy_now_url) || "",
-          thumb_url: String(itemAttrs.thumb_url) || null,
-          large_thumb_url: String(itemAttrs.large_thumb_url) || null,
+          price_formatted: priceFormatted,
+          price: numericPrice, // Add numeric price for cart
+          buy_now_url: String(variantAttrs?.buy_now_url || ""),
+          thumb_url: String(itemAttrs.thumb_url || "") || null,
+          large_thumb_url: String(itemAttrs.large_thumb_url || "") || null,
         };
       }
     );

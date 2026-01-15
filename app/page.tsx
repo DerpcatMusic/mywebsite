@@ -1,9 +1,8 @@
 import AboutToursSection from "@/components/about-tours-section";
 import BookingSection from "@/components/booking-section";
 import ClientPageWrapper from "@/components/client-page-wrapper";
-import PageSection from "@/components/page-section";
+import FourthwallProductsSection from "@/components/fourthwall-products-section";
 import ReleaseSection from "@/components/release-section";
-import UnifiedShopSection from "@/components/unified-shop-section";
 import { currentRelease } from "@/config/releases";
 import { getAllGumroadProducts } from "@/lib/gumroad";
 import { getAllLemonSqueezyProducts } from "@/lib/lemonsqueezy";
@@ -34,35 +33,38 @@ export default async function ArtistLandingPage() {
   return (
     <ClientPageWrapper>
       <main className="w-full overflow-x-hidden">
-        {/* Hero / Release Section */}
-        <PageSection>
+        {/* Hero / Release Section - Full Width */}
+        <div className="w-full">
           <ReleaseSection
             releaseImage={currentRelease.image}
             releaseTitle={currentRelease.title}
             streamLink={currentRelease.streamLink}
           />
-        </PageSection>
+        </div>
 
-        {/* About & Tours */}
-        <PageSection className="bg-background">
+        {/* Live / Tour Section */}
+        <section className="w-full px-6 py-32 md:px-24">
           <AboutToursSection />
-        </PageSection>
+        </section>
 
-        {/* Unified Shop Section */}
-        <PageSection className="bg-background">
-          <UnifiedShopSection digitalProducts={allDigitalProducts} />
-        </PageSection>
+        {/* Official Merch (Fourthwall) - Full Width */}
+        <section id="shop" className="w-full px-6 py-32 md:px-24">
+          <FourthwallProductsSection />
+        </section>
 
-        {/* Booking Section */}
-        <PageSection>
+        {/* Booking Section - Full Width / Compact */}
+        <section className="w-full">
           <BookingSection />
-        </PageSection>
+        </section>
       </main>
 
-      <footer className="snap-start border-t border-border bg-card/5 py-8">
-        <div className="container mx-auto px-4 text-center">
-          <p className="font-terminal text-muted-foreground">
-            © {new Date().getFullYear()} Derpcat 2025. All rights reserved.
+      <footer className="border-t border-white/5 py-12">
+        <div className="container mx-auto px-6 text-center">
+          <p className="font-sans text-xs font-medium tracking-wide text-muted-foreground/40">
+            <span className="font-pixel mr-2 font-bold text-muted-foreground/60">
+              DERPCAT
+            </span>
+            © {new Date().getFullYear()}
           </p>
         </div>
       </footer>

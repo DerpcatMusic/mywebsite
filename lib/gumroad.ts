@@ -56,31 +56,47 @@ export async function getAllGumroadProducts(): Promise<GumroadProduct[]> {
       return [];
     }
 
-    const gumroadProducts: GumroadProduct[] = data.products.map(
-      (product: Record<string, unknown>) => {
-        // Add more specific logging for each product if needed, during mapping
-        // console.log("Mapping Gumroad product:", product.id, product.name);
+    const gumroadProducts: GumroadProduct[] = data.products
+      .map((product: Record<string, unknown>) => {
+        // Validate that we have required fields
+        if (!product.id || !product.name) {
+          return null;
+        }
+
+        // Get the best available URL
+        const url = String(product.short_url || product.url || "");
+        if (!url || !url.startsWith("http")) {
+          // Skip products with invalid URLs to prevent 404 errors
+          return null;
+        }
+
+        // Get the best available image
+        const previewUrl =
+          String(product.thumbnail_url || "") ||
+          String(product.preview_url || "") ||
+          String(product.cover_url || "") ||
+          null;
+
+        // Parse price correctly (Gumroad returns price in cents)
+        const priceInCents = Number(product.price || 0);
+        const priceInDollars = priceInCents / 100;
 
         return {
           id: String(product.id),
           name: String(product.name),
           description:
-            String(product.description) || "No description available.",
-          price: Number(product.price),
-          currency: String(product.currency),
-          url: String(product.url),
-          preview_url:
-            String(product.thumbnail_url) ||
-            String(product.preview_url) ||
-            String(product.featured_product_thumbnail_url) ||
-            null, // Common image fields
+            String(product.description || "") || "No description available.",
+          price: priceInCents,
+          currency: String(product.currency || "USD"),
+          url: url,
+          preview_url: previewUrl,
           formatted_price:
-            String(product.formatted_price) ||
-            `${(Number(product.price) / 100).toFixed(2)} ${String(product.currency)}`,
-          short_url: String(product.short_url) || String(product.url),
+            String(product.formatted_price || "") ||
+            `$${priceInDollars.toFixed(2)}`,
+          short_url: url,
         };
-      }
-    );
+      })
+      .filter((p): p is GumroadProduct => p !== null);
 
     // SUCCESS: Fetched Gumroad products
     return gumroadProducts;
