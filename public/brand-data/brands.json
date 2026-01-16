@@ -10,7 +10,7 @@
         "accent": "#06b6d4"
       },
       "logo": null,
-      "lastUpdated": "2026-01-15T23:50:35.023Z",
+      "lastUpdated": "2026-01-16T11:31:38.701Z",
       "fallback": true
     },
     "gumroad": {
@@ -23,7 +23,7 @@
         "accent": "#ffb3d9"
       },
       "logo": null,
-      "lastUpdated": "2026-01-15T23:50:35.536Z",
+      "lastUpdated": "2026-01-16T11:31:39.207Z",
       "fallback": true
     },
     "lemonsqueezy": {
@@ -36,7 +36,7 @@
         "accent": "#f5c842"
       },
       "logo": null,
-      "lastUpdated": "2026-01-15T23:50:36.045Z",
+      "lastUpdated": "2026-01-16T11:31:39.716Z",
       "fallback": true
     },
     "patreon": {
@@ -49,12 +49,12 @@
         "accent": "#ff7b7b"
       },
       "logo": null,
-      "lastUpdated": "2026-01-15T23:50:36.555Z",
+      "lastUpdated": "2026-01-16T11:31:40.225Z",
       "fallback": true
     }
   },
   "metadata": {
-    "generatedAt": "2026-01-15T23:50:37.060Z",
+    "generatedAt": "2026-01-16T11:31:40.727Z",
     "version": "1.0.0",
     "totalBrands": 4,
     "errors": [
