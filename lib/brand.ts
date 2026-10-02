@@ -2,7 +2,7 @@
 // Backward compatibility layer for the new brand provider system
 // This file maintains the old API while using the new centralized system
 
-export { useBrand, useMultipleBrands, type BrandType } from "@/hooks/use-brand";
+export { useBrand, useMultipleBrands } from "@/hooks/use-brand";
 
 export {
   generateBrandCSS,
