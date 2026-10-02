@@ -116,7 +116,9 @@ export function OptimizationProvider({ children }: { children: ReactNode }) {
 
       // Check motion preference
       if (window.matchMedia) {
-        prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        prefersReducedMotion = window.matchMedia(
+          "(prefers-reduced-motion: reduce)"
+        ).matches;
       }
 
       // Check memory
@@ -144,7 +146,10 @@ export function OptimizationProvider({ children }: { children: ReactNode }) {
 
     // Listen for connection changes
     if ("connection" in navigator) {
-      (navigator as any).connection.addEventListener("change", detectCapabilities);
+      (navigator as any).connection.addEventListener(
+        "change",
+        detectCapabilities
+      );
     }
 
     // Listen for motion preference changes
@@ -155,7 +160,10 @@ export function OptimizationProvider({ children }: { children: ReactNode }) {
 
     return () => {
       if ("connection" in navigator) {
-        (navigator as any).connection.removeEventListener("change", detectCapabilities);
+        (navigator as any).connection.removeEventListener(
+          "change",
+          detectCapabilities
+        );
       }
     };
   }, []);
@@ -229,7 +237,7 @@ export function OptimizationProvider({ children }: { children: ReactNode }) {
   // Determine if optimizations are active
   const isOptimized =
     settings.performanceMode === "performance" ||
-    (settings.performanceMode === "auto" && (
+    (settings.performanceMode === "auto" &&
       (deviceCapabilities.isLowEnd ||
         deviceCapabilities.hasSlowConnection ||
         deviceCapabilities.memoryStatus === "low"));
@@ -252,7 +260,9 @@ export function OptimizationProvider({ children }: { children: ReactNode }) {
 export function useOptimization() {
   const context = useContext(OptimizationContext);
   if (context === undefined) {
-    throw new Error("useOptimization must be used within an OptimizationProvider");
+    throw new Error(
+      "useOptimization must be used within an OptimizationProvider"
+    );
   }
   return context;
 }

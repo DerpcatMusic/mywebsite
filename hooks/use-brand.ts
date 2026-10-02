@@ -2,13 +2,13 @@
 "use client";
 
 import {
-    useBrandContext,
-    useBrand as useProviderBrand,
-    useMultipleBrands as useProviderMultipleBrands,
-    type BrandData
-} from '@/lib/brand-provider';
+  useBrandContext,
+  useBrand as useProviderBrand,
+  useMultipleBrands as useProviderMultipleBrands,
+  type BrandData,
+} from "@/lib/brand-provider";
 
-export type BrandType = 'fourthwall' | 'gumroad' | 'lemonsqueezy' | 'patreon';
+export type BrandType = "fourthwall" | "gumroad" | "lemonsqueezy" | "patreon";
 
 // Legacy interface for backward compatibility
 export interface LegacyBrandData {
@@ -22,13 +22,15 @@ export interface LegacyBrandData {
 }
 
 // Convert new BrandData to legacy format for backward compatibility
-function convertToLegacyFormat(brandData: BrandData | null): LegacyBrandData | null {
+function convertToLegacyFormat(
+  brandData: BrandData | null
+): LegacyBrandData | null {
   if (!brandData) return null;
 
   return {
     colors: brandData.colors,
     logo: brandData.logo,
-    title: brandData.title
+    title: brandData.title,
   };
 }
 
@@ -37,7 +39,8 @@ function convertToLegacyFormat(brandData: BrandData | null): LegacyBrandData | n
  * Uses the centralized brand provider - no API calls needed!
  */
 export function useBrand(brandType: BrandType) {
-  const { brandData, loading, error, isLoaded, hasData } = useProviderBrand(brandType);
+  const { brandData, loading, error, isLoaded, hasData } =
+    useProviderBrand(brandType);
 
   // Convert to legacy format for backward compatibility
   const legacyBrandData = convertToLegacyFormat(brandData);
@@ -47,7 +50,7 @@ export function useBrand(brandType: BrandType) {
     loading,
     error: error ? new Error(error) : null,
     isLoaded,
-    hasData
+    hasData,
   };
 }
 
@@ -63,14 +66,17 @@ export function useMultipleBrands(brandTypes: BrandType[]) {
     isLoaded,
     hasAllBrands,
     loadedCount,
-    totalRequested
+    totalRequested,
   } = useProviderMultipleBrands(brandTypes);
 
   // Convert to legacy format for backward compatibility
-  const legacyBrandsData: Record<BrandType, LegacyBrandData | null> = {};
+  const legacyBrandsData: Partial<Record<BrandType, LegacyBrandData | null>> =
+    {};
 
   for (const brandType of brandTypes) {
-    legacyBrandsData[brandType as BrandType] = convertToLegacyFormat(brandsData[brandType] || null);
+    legacyBrandsData[brandType as BrandType] = convertToLegacyFormat(
+      brandsData[brandType] || null
+    );
   }
 
   return {
@@ -80,7 +86,7 @@ export function useMultipleBrands(brandTypes: BrandType[]) {
     isLoaded,
     hasAllBrands,
     loadedCount,
-    totalRequested
+    totalRequested,
   };
 }
 
@@ -97,7 +103,7 @@ export function useAllBrands() {
     error: context.error ? new Error(context.error) : null,
     getBrand: context.getBrand,
     hasBrand: context.hasBrand,
-    isLoaded: context.isLoaded
+    isLoaded: context.isLoaded,
   };
 }
 
@@ -109,18 +115,18 @@ export function useBrandAvailability(brandType: BrandType) {
 
   return {
     isAvailable: hasBrand(brandType),
-    isLoaded
+    isLoaded,
   };
 }
 
 /**
  * Hook for getting brand-specific CSS variables
  */
-export function useBrandCSS(brandType: BrandType, prefix: string = 'brand') {
+export function useBrandCSS(brandType: BrandType, prefix: string = "brand") {
   const { brandData } = useProviderBrand(brandType);
 
   if (!brandData || !brandData.colors) {
-    return '';
+    return "";
   }
 
   const { colors } = brandData;
@@ -138,7 +144,7 @@ export function useBrandCSS(brandType: BrandType, prefix: string = 'brand') {
 function hexToRgb(hex: string): string {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   if (!result) {
-    return '0, 0, 0';
+    return "0, 0, 0";
   }
 
   const r = parseInt(result[1], 16);
